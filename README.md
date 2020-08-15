@@ -10,6 +10,8 @@ GitHub Action to login against a Docker registry
 
 If you are interested, [check out](https://git.io/Je09Y) my other :octocat: GitHub Actions!
 
+![GitHub Pages](.github/ghaction-docker-login.png)
+
 ___
 
 * [Usage](#usage)
