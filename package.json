@@ -18,7 +18,7 @@
     "login"
   ],
   "author": "CrazyMax",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.2.4",
     "@actions/exec": "^1.0.4"
