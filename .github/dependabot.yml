@@ -1,0 +1,22 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "06:00"
+      timezone: "Europe/Paris"
+    labels:
+      - ":game_die: dependencies"
+      - ":robot: bot"
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "06:00"
+      timezone: "Europe/Paris"
+    allow:
+      - dependency-type: "production"
+    labels:
+      - ":game_die: dependencies"
+      - ":robot: bot"
