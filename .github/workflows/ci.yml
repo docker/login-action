@@ -1,0 +1,28 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - master
+      - releases/v*
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        logout:
+          - true
+          - false
+      steps:
+        -
+          name: Checkout
+          uses: actions/checkout@v2.3.1
+        -
+          name: Login
+          uses: ./login/
+          with:
+            username: ${{ secrets.DOCKER_USERNAME_TEST }}
+            password: ${{ secrets.DOCKER_PASSWORD_TEST }}
+            logout: ${{ matrix.logout }}

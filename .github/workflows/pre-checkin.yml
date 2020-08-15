@@ -1,0 +1,30 @@
+name: pre-checkin
+
+on:
+  push:
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  pre-checkin:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2.3.1
+      -
+        name: Install
+        run: yarn install
+      -
+        name: Pre-checkin
+        run: yarn run pre-checkin
+      -
+        name: Check for uncommitted changes
+        run: |
+          if [[ `git status --porcelain` ]]; then
+            git status --porcelain
+            echo "::warning::Found changes. Please run 'yarn run pre-checkin' and push"
+          fi
