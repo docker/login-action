@@ -36,7 +36,7 @@ jobs:
         uses: actions/checkout@v2
       -
         name: Login to DockerHub
-        uses: docker/login-action@v1
+        uses: crazy-max/ghaction-docker-login@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}

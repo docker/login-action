@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/docker/login-action.git"
+    "url": "git+https://github.com/crazy-max/ghaction-docker-login.git"
   },
   "keywords": [
     "actions",
