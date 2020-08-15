@@ -7,7 +7,7 @@ on:
       - releases/v*
 
 jobs:
-  main:
+  dockerhub:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -20,11 +20,63 @@ jobs:
         name: Checkout
         uses: actions/checkout@v2.3.1
       -
-        name: Login
+        name: Login to DockerHub
         uses: ./
         with:
-          username: ${{ secrets.DOCKER_USERNAME_TEST }}
-          password: ${{ secrets.DOCKER_PASSWORD_TEST }}
+          username: ${{ secrets.DOCKERHUB_USERNAME_TEST }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD_TEST }}
+          logout: ${{ matrix.logout }}
+      -
+        name: Clear
+        if: always()
+        run: |
+          rm -f ${HOME}/.docker/config.json
+
+  gpr:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        logout:
+          - true
+          - false
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2.3.1
+      -
+        name: Login to GitHub Package Registry
+        uses: ./
+        with:
+          registry: docker.pkg.github.com
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          logout: ${{ matrix.logout }}
+      -
+        name: Clear
+        if: always()
+        run: |
+          rm -f ${HOME}/.docker/config.json
+
+  gitlab:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        logout:
+          - true
+          - false
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2.3.1
+      -
+        name: Login to GitLab
+        uses: ./
+        with:
+          registry: registry.gitlab.com
+          username: ${{ secrets.GITLAB_USERNAME_TEST }}
+          password: ${{ secrets.GITLAB_PASSWORD_TEST }}
           logout: ${{ matrix.logout }}
       -
         name: Clear
