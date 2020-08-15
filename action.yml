@@ -3,7 +3,7 @@ name: 'Docker Login'
 description: 'GitHub Action to login against a Docker registry'
 author: 'crazy-max'
 branding:
-  icon: 'anchor'
+  icon: 'log-in'
   color: 'blue'
 
 inputs:
