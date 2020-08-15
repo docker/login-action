@@ -15,6 +15,9 @@ If you are interested, [check out](https://git.io/Je09Y) my other :octocat: GitH
 ___
 
 * [Usage](#usage)
+  * [DockerHub](#dockerhub)
+  * [GitHub Package Registry](#github-package-registry)
+  * [GitLab](#gitlab)
 * [Customizing](#customizing)
   * [inputs](#inputs)
 * [Limitation](#limitation)
@@ -22,6 +25,8 @@ ___
 * [License](#license)
 
 ## Usage
+
+### DockerHub
 
 ```yaml
 name: ci
@@ -42,8 +47,60 @@ jobs:
         name: Login to DockerHub
         uses: crazy-max/ghaction-docker-login@v1
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+```
+
+### GitHub Package Registry
+
+```yaml
+name: ci
+
+on:
+  push:
+    branches: master
+    tags:
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Login to DockerHub
+        uses: crazy-max/ghaction-docker-login@v1
+        with:
+          registry: docker.pkg.github.com
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+```
+
+### GitLab
+
+```yaml
+name: ci
+
+on:
+  push:
+    branches: master
+    tags:
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Login to GitLab
+        uses: crazy-max/ghaction-docker-login@v1
+        with:
+          registry: registry.gitlab.com
+          username: ${{ secrets.GITLAB_USERNAME }}
+          password: ${{ secrets.GITLAB_PASSWORD }}
 ```
 
 ## Customizing
