@@ -69,7 +69,7 @@ jobs:
         name: Checkout
         uses: actions/checkout@v2
       -
-        name: Login to DockerHub
+        name: Login to GitHub Package Registry
         uses: crazy-max/ghaction-docker-login@v1
         with:
           registry: docker.pkg.github.com
