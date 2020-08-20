@@ -1095,12 +1095,18 @@ function run() {
                 const ecrRegion = yield ecr.getRegion(registry);
                 process.env.AWS_ACCESS_KEY_ID = username;
                 process.env.AWS_SECRET_ACCESS_KEY = password;
-                core.info(`🔑 Logging into AWS ECR region ${ecrRegion}...`);
+                core.info(`⬇️ Retrieving docker login command for ECR region ${ecrRegion}...`);
                 yield execm.exec('aws', ['ecr', 'get-login', '--region', ecrRegion, '--no-include-email'], true).then(res => {
                     if (res.stderr != '' && !res.success) {
                         throw new Error(res.stderr);
                     }
-                    core.info('🎉 Login Succeeded!');
+                    core.info(`🔑 Logging into ${registry}...`);
+                    execm.exec(res.stdout, [], true).then(res => {
+                        if (res.stderr != '' && !res.success) {
+                            throw new Error(res.stderr);
+                        }
+                        core.info('🎉 Login Succeeded!');
+                    });
                 });
             }
             else {
