@@ -19,13 +19,7 @@ async function run(): Promise<void> {
     const password: string = core.getInput('password', {required: true});
 
     if (await ecr.isECR(registry)) {
-      await exec.exec('aws', ['--version'], true).then(res => {
-        if (res.stderr != '' && !res.success) {
-          throw new Error(res.stderr);
-        }
-        core.info(`💡 Using ${res.stdout}`);
-      });
-
+      await exec.exec('aws', ['--version'], false);
       const ecrRegion = await ecr.getRegion(registry);
       process.env.AWS_ACCESS_KEY_ID = username;
       process.env.AWS_SECRET_ACCESS_KEY = password;

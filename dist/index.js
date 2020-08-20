@@ -1090,12 +1090,7 @@ function run() {
             const username = core.getInput('username');
             const password = core.getInput('password', { required: true });
             if (yield ecr.isECR(registry)) {
-                yield exec.exec('aws', ['--version'], true).then(res => {
-                    if (res.stderr != '' && !res.success) {
-                        throw new Error(res.stderr);
-                    }
-                    core.info(`💡 Using ${res.stdout}`);
-                });
+                yield exec.exec('aws', ['--version'], false);
                 const ecrRegion = yield ecr.getRegion(registry);
                 process.env.AWS_ACCESS_KEY_ID = username;
                 process.env.AWS_SECRET_ACCESS_KEY = password;
