@@ -22,6 +22,8 @@ async function run(): Promise<void> {
       const ecrRegion = await ecr.getRegion(registry);
       process.env.AWS_ACCESS_KEY_ID = username;
       process.env.AWS_SECRET_ACCESS_KEY = password;
+
+      core.info(`Logging into AWS ECR region ${ecrRegion}...`);
       await exec.exec('aws', ['ecr', 'get-login', '--region', ecrRegion, '--no-include-email'], true).then(res => {
         if (res.stderr != '' && !res.success) {
           throw new Error(res.stderr);
