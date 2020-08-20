@@ -22,6 +22,7 @@ ___
   * [AWS Elastic Container Registry (ECR)](#gitlab)
 * [Customizing](#customizing)
   * [inputs](#inputs)
+* [Keep up-to-date with GitHub Dependabot](#keep-up-to-date-with-github-dependabot)
 * [Limitation](#limitation)
 * [How can I help?](#how-can-i-help)
 * [License](#license)
@@ -175,6 +176,22 @@ Following inputs can be used as `step.with` keys
 | `username`       | String  |                             | Username used to log against the Docker registry |
 | `password`       | String  |                             | Password or personal access token used to log against the Docker registry |
 | `logout`         | Bool    | `true`                      | Log out from the Docker registry at the end of a job |
+
+## Keep up-to-date with GitHub Dependabot
+
+Since [Dependabot](https://docs.github.com/en/github/administering-a-repository/keeping-your-actions-up-to-date-with-github-dependabot)
+has [native GitHub Actions support](https://docs.github.com/en/github/administering-a-repository/configuration-options-for-dependency-updates#package-ecosystem),
+to enable it on your GitHub repo all you need to do is add the `.github/dependabot.yml` file:
+
+```yaml
+version: 2
+updates:
+  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+```
 
 ## Limitation
 
