@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.0 (2020/08/20)
+
+* Add support for AWS Elastic Container Registry (ECR)
+* Add example for Google Container Registry (GCR)
+
 ## 1.1.1 (2020/08/16)
 
 * Typo
