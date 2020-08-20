@@ -1090,10 +1090,16 @@ function run() {
             const username = core.getInput('username');
             const password = core.getInput('password', { required: true });
             if (yield ecr.isECR(registry)) {
+                yield exec.exec('aws', ['--version'], true).then(res => {
+                    if (res.stderr != '' && !res.success) {
+                        throw new Error(res.stderr);
+                    }
+                    core.info(`💡 Using ${res.stdout}`);
+                });
                 const ecrRegion = yield ecr.getRegion(registry);
                 process.env.AWS_ACCESS_KEY_ID = username;
                 process.env.AWS_SECRET_ACCESS_KEY = password;
-                core.info(`Logging into AWS ECR region ${ecrRegion}...`);
+                core.info(`🔑 Logging into AWS ECR region ${ecrRegion}...`);
                 yield exec.exec('aws', ['ecr', 'get-login', '--region', ecrRegion, '--no-include-email'], true).then(res => {
                     if (res.stderr != '' && !res.success) {
                         throw new Error(res.stderr);
@@ -1107,6 +1113,12 @@ function run() {
                     loginArgs.push('--username', username);
                 }
                 loginArgs.push(registry);
+                if (registry) {
+                    core.info(`🔑 Logging into ${registry}...`);
+                }
+                else {
+                    core.info(`🔑 Logging into DockerHub...`);
+                }
                 yield exec.exec('docker', loginArgs, true).then(res => {
                     if (res.stderr != '' && !res.success) {
                         throw new Error(res.stderr);
