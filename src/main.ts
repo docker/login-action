@@ -1,7 +1,9 @@
 import * as os from 'os';
 import * as core from '@actions/core';
+import * as exec from '@actions/exec';
 import * as ecr from './ecr';
-import * as exec from './exec';
+import * as execm from './exec';
+
 import * as stateHelper from './state-helper';
 
 async function run(): Promise<void> {
@@ -19,13 +21,13 @@ async function run(): Promise<void> {
     const password: string = core.getInput('password', {required: true});
 
     if (await ecr.isECR(registry)) {
-      await exec.exec('aws', ['--version'], false);
+      await exec.exec('aws', ['--version']);
       const ecrRegion = await ecr.getRegion(registry);
       process.env.AWS_ACCESS_KEY_ID = username;
       process.env.AWS_SECRET_ACCESS_KEY = password;
 
       core.info(`🔑 Logging into AWS ECR region ${ecrRegion}...`);
-      await exec.exec('aws', ['ecr', 'get-login', '--region', ecrRegion, '--no-include-email'], true).then(res => {
+      await execm.exec('aws', ['ecr', 'get-login', '--region', ecrRegion, '--no-include-email'], true).then(res => {
         if (res.stderr != '' && !res.success) {
           throw new Error(res.stderr);
         }
@@ -43,7 +45,7 @@ async function run(): Promise<void> {
       } else {
         core.info(`🔑 Logging into DockerHub...`);
       }
-      await exec.exec('docker', loginArgs, true).then(res => {
+      await execm.exec('docker', loginArgs, true).then(res => {
         if (res.stderr != '' && !res.success) {
           throw new Error(res.stderr);
         }
@@ -59,7 +61,7 @@ async function logout(): Promise<void> {
   if (!stateHelper.logout) {
     return;
   }
-  await exec.exec('docker', ['logout', stateHelper.registry], false).then(res => {
+  await execm.exec('docker', ['logout', stateHelper.registry], false).then(res => {
     if (res.stderr != '' && !res.success) {
       core.warning(res.stderr);
     }

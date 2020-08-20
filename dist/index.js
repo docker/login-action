@@ -1074,8 +1074,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const os = __importStar(__webpack_require__(87));
 const core = __importStar(__webpack_require__(470));
+const exec = __importStar(__webpack_require__(986));
 const ecr = __importStar(__webpack_require__(34));
-const exec = __importStar(__webpack_require__(807));
+const execm = __importStar(__webpack_require__(807));
 const stateHelper = __importStar(__webpack_require__(153));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -1090,12 +1091,12 @@ function run() {
             const username = core.getInput('username');
             const password = core.getInput('password', { required: true });
             if (yield ecr.isECR(registry)) {
-                yield exec.exec('aws', ['--version'], false);
+                yield exec.exec('aws', ['--version']);
                 const ecrRegion = yield ecr.getRegion(registry);
                 process.env.AWS_ACCESS_KEY_ID = username;
                 process.env.AWS_SECRET_ACCESS_KEY = password;
                 core.info(`🔑 Logging into AWS ECR region ${ecrRegion}...`);
-                yield exec.exec('aws', ['ecr', 'get-login', '--region', ecrRegion, '--no-include-email'], true).then(res => {
+                yield execm.exec('aws', ['ecr', 'get-login', '--region', ecrRegion, '--no-include-email'], true).then(res => {
                     if (res.stderr != '' && !res.success) {
                         throw new Error(res.stderr);
                     }
@@ -1114,7 +1115,7 @@ function run() {
                 else {
                     core.info(`🔑 Logging into DockerHub...`);
                 }
-                yield exec.exec('docker', loginArgs, true).then(res => {
+                yield execm.exec('docker', loginArgs, true).then(res => {
                     if (res.stderr != '' && !res.success) {
                         throw new Error(res.stderr);
                     }
@@ -1132,7 +1133,7 @@ function logout() {
         if (!stateHelper.logout) {
             return;
         }
-        yield exec.exec('docker', ['logout', stateHelper.registry], false).then(res => {
+        yield execm.exec('docker', ['logout', stateHelper.registry], false).then(res => {
             if (res.stderr != '' && !res.success) {
                 core.warning(res.stderr);
             }
