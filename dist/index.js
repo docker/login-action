@@ -953,6 +953,32 @@ class ExecState extends events.EventEmitter {
 
 /***/ }),
 
+/***/ 34:
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getRegion = exports.isECR = void 0;
+exports.isECR = (registry) => __awaiter(void 0, void 0, void 0, function* () {
+    return registry.includes('amazonaws');
+});
+exports.getRegion = (registry) => __awaiter(void 0, void 0, void 0, function* () {
+    return registry.substring(registry.indexOf('ecr.') + 4, registry.indexOf('.amazonaws'));
+});
+//# sourceMappingURL=ecr.js.map
+
+/***/ }),
+
 /***/ 87:
 /***/ (function(module) {
 
@@ -1048,6 +1074,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const os = __importStar(__webpack_require__(87));
 const core = __importStar(__webpack_require__(470));
+const ecr = __importStar(__webpack_require__(34));
 const exec = __importStar(__webpack_require__(807));
 const stateHelper = __importStar(__webpack_require__(153));
 function run() {
@@ -1062,17 +1089,30 @@ function run() {
             stateHelper.setLogout(core.getInput('logout'));
             const username = core.getInput('username');
             const password = core.getInput('password', { required: true });
-            let loginArgs = ['login', '--password', password];
-            if (username) {
-                loginArgs.push('--username', username);
+            if (yield ecr.isECR(registry)) {
+                const ecrRegion = yield ecr.getRegion(registry);
+                process.env.AWS_ACCESS_KEY_ID = username;
+                process.env.AWS_SECRET_ACCESS_KEY = password;
+                yield exec.exec('aws', ['ecr', 'get-login', '--region', ecrRegion, '--no-include-email'], true).then(res => {
+                    if (res.stderr != '' && !res.success) {
+                        throw new Error(res.stderr);
+                    }
+                    core.info('🎉 Login Succeeded!');
+                });
             }
-            loginArgs.push(registry);
-            yield exec.exec('docker', loginArgs, true).then(res => {
-                if (res.stderr != '' && !res.success) {
-                    throw new Error(res.stderr);
+            else {
+                let loginArgs = ['login', '--password', password];
+                if (username) {
+                    loginArgs.push('--username', username);
                 }
-                core.info('🎉 Login Succeeded!');
-            });
+                loginArgs.push(registry);
+                yield exec.exec('docker', loginArgs, true).then(res => {
+                    if (res.stderr != '' && !res.success) {
+                        throw new Error(res.stderr);
+                    }
+                    core.info('🎉 Login Succeeded!');
+                });
+            }
         }
         catch (error) {
             core.setFailed(error.message);

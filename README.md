@@ -18,6 +18,8 @@ ___
   * [DockerHub](#dockerhub)
   * [GitHub Package Registry](#github-package-registry)
   * [GitLab](#gitlab)
+  * [Google Container Registry (GCR)](#gitlab)
+  * [AWS Elastic Container Registry (ECR)](#gitlab)
 * [Customizing](#customizing)
   * [inputs](#inputs)
 * [Limitation](#limitation)
@@ -34,7 +36,6 @@ name: ci
 on:
   push:
     branches: master
-    tags:
 
 jobs:
   login:
@@ -59,7 +60,6 @@ name: ci
 on:
   push:
     branches: master
-    tags:
 
 jobs:
   login:
@@ -85,7 +85,6 @@ name: ci
 on:
   push:
     branches: master
-    tags:
 
 jobs:
   login:
@@ -102,6 +101,67 @@ jobs:
           username: ${{ secrets.GITLAB_USERNAME }}
           password: ${{ secrets.GITLAB_PASSWORD }}
 ```
+
+### Google Container Registry (GCR)
+
+Use a service account with the ability to push to GCR and [configure access control](https://cloud.google.com/container-registry/docs/access-control).
+Then create and download the JSON key for this service account and save content of `.json` file
+[as a secret](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository)
+called `GCR_JSON_KEY` in your GitHub repo. Ensure you set the username to `_json_key`.
+
+```yaml
+name: ci
+
+on:
+  push:
+    branches: master
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Login to GCR
+        uses: crazy-max/ghaction-docker-login@v1
+        with:
+          registry: gcr.io
+          username: _json_key
+          password: ${{ secrets.GCR_JSON_KEY }}
+```
+
+### AWS Elastic Container Registry (ECR)
+
+Use an IAM user with the [ability to push to ECR](https://docs.aws.amazon.com/AmazonECR/latest/userguide/ecr_managed_policies.html).
+Then create and download access keys and save `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` [as secrets](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository)
+in your GitHub repo.
+
+```yaml
+name: ci
+
+on:
+  push:
+    branches: master
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Login to ECR
+        uses: crazy-max/ghaction-docker-login@v1
+        with:
+          registry: <aws-account-number>.dkr.ecr.<region>.amazonaws.com
+          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+```
+
+> Replace `<aws-account-number>` and `<region>` with their respective values.
 
 ## Customizing
 

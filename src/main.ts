@@ -1,5 +1,6 @@
 import * as os from 'os';
 import * as core from '@actions/core';
+import * as ecr from './ecr';
 import * as exec from './exec';
 import * as stateHelper from './state-helper';
 
@@ -17,18 +18,30 @@ async function run(): Promise<void> {
     const username: string = core.getInput('username');
     const password: string = core.getInput('password', {required: true});
 
-    let loginArgs: Array<string> = ['login', '--password', password];
-    if (username) {
-      loginArgs.push('--username', username);
-    }
-    loginArgs.push(registry);
-
-    await exec.exec('docker', loginArgs, true).then(res => {
-      if (res.stderr != '' && !res.success) {
-        throw new Error(res.stderr);
+    if (await ecr.isECR(registry)) {
+      const ecrRegion = await ecr.getRegion(registry);
+      process.env.AWS_ACCESS_KEY_ID = username;
+      process.env.AWS_SECRET_ACCESS_KEY = password;
+      await exec.exec('aws', ['ecr', 'get-login', '--region', ecrRegion, '--no-include-email'], true).then(res => {
+        if (res.stderr != '' && !res.success) {
+          throw new Error(res.stderr);
+        }
+        core.info('🎉 Login Succeeded!');
+      });
+    } else {
+      let loginArgs: Array<string> = ['login', '--password', password];
+      if (username) {
+        loginArgs.push('--username', username);
       }
-      core.info('🎉 Login Succeeded!');
-    });
+      loginArgs.push(registry);
+
+      await exec.exec('docker', loginArgs, true).then(res => {
+        if (res.stderr != '' && !res.success) {
+          throw new Error(res.stderr);
+        }
+        core.info('🎉 Login Succeeded!');
+      });
+    }
   } catch (error) {
     core.setFailed(error.message);
   }
