@@ -1,9 +1,7 @@
 import * as os from 'os';
 import * as core from '@actions/core';
-import * as exec from '@actions/exec';
-import * as ecr from './ecr';
-import * as execm from './exec';
-
+import {getInputs, Inputs} from './context';
+import * as docker from './docker';
 import * as stateHelper from './state-helper';
 
 async function run(): Promise<void> {
@@ -13,51 +11,10 @@ async function run(): Promise<void> {
       return;
     }
 
-    const registry: string = core.getInput('registry');
-    stateHelper.setRegistry(registry);
-    stateHelper.setLogout(core.getInput('logout'));
-
-    const username: string = core.getInput('username');
-    const password: string = core.getInput('password', {required: true});
-
-    if (await ecr.isECR(registry)) {
-      await exec.exec('aws', ['--version']);
-      const ecrRegion = await ecr.getRegion(registry);
-      process.env.AWS_ACCESS_KEY_ID = username;
-      process.env.AWS_SECRET_ACCESS_KEY = password;
-
-      core.info(`⬇️ Retrieving docker login command for ECR region ${ecrRegion}...`);
-      await execm.exec('aws', ['ecr', 'get-login', '--region', ecrRegion, '--no-include-email'], true).then(res => {
-        if (res.stderr != '' && !res.success) {
-          throw new Error(res.stderr);
-        }
-        core.info(`🔑 Logging into ${registry}...`);
-        execm.exec(res.stdout, [], true).then(res => {
-          if (res.stderr != '' && !res.success) {
-            throw new Error(res.stderr);
-          }
-          core.info('🎉 Login Succeeded!');
-        });
-      });
-    } else {
-      let loginArgs: Array<string> = ['login', '--password', password];
-      if (username) {
-        loginArgs.push('--username', username);
-      }
-      loginArgs.push(registry);
-
-      if (registry) {
-        core.info(`🔑 Logging into ${registry}...`);
-      } else {
-        core.info(`🔑 Logging into DockerHub...`);
-      }
-      await execm.exec('docker', loginArgs, true).then(res => {
-        if (res.stderr != '' && !res.success) {
-          throw new Error(res.stderr);
-        }
-        core.info('🎉 Login Succeeded!');
-      });
-    }
+    let inputs: Inputs = await getInputs();
+    stateHelper.setRegistry(inputs.registry);
+    stateHelper.setLogout(inputs.logout);
+    await docker.login(inputs.registry, inputs.username, inputs.password);
   } catch (error) {
     core.setFailed(error.message);
   }
@@ -67,11 +24,7 @@ async function logout(): Promise<void> {
   if (!stateHelper.logout) {
     return;
   }
-  await execm.exec('docker', ['logout', stateHelper.registry], false).then(res => {
-    if (res.stderr != '' && !res.success) {
-      core.warning(res.stderr);
-    }
-  });
+  await docker.logout(stateHelper.registry);
 }
 
 if (!stateHelper.IsPost) {

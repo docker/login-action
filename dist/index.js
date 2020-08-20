@@ -1074,9 +1074,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const os = __importStar(__webpack_require__(87));
 const core = __importStar(__webpack_require__(470));
-const exec = __importStar(__webpack_require__(986));
-const ecr = __importStar(__webpack_require__(34));
-const execm = __importStar(__webpack_require__(807));
+const context_1 = __webpack_require__(482);
+const docker = __importStar(__webpack_require__(231));
 const stateHelper = __importStar(__webpack_require__(153));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -1085,49 +1084,10 @@ function run() {
                 core.setFailed('Only supported on linux platform');
                 return;
             }
-            const registry = core.getInput('registry');
-            stateHelper.setRegistry(registry);
-            stateHelper.setLogout(core.getInput('logout'));
-            const username = core.getInput('username');
-            const password = core.getInput('password', { required: true });
-            if (yield ecr.isECR(registry)) {
-                yield exec.exec('aws', ['--version']);
-                const ecrRegion = yield ecr.getRegion(registry);
-                process.env.AWS_ACCESS_KEY_ID = username;
-                process.env.AWS_SECRET_ACCESS_KEY = password;
-                core.info(`⬇️ Retrieving docker login command for ECR region ${ecrRegion}...`);
-                yield execm.exec('aws', ['ecr', 'get-login', '--region', ecrRegion, '--no-include-email'], true).then(res => {
-                    if (res.stderr != '' && !res.success) {
-                        throw new Error(res.stderr);
-                    }
-                    core.info(`🔑 Logging into ${registry}...`);
-                    execm.exec(res.stdout, [], true).then(res => {
-                        if (res.stderr != '' && !res.success) {
-                            throw new Error(res.stderr);
-                        }
-                        core.info('🎉 Login Succeeded!');
-                    });
-                });
-            }
-            else {
-                let loginArgs = ['login', '--password', password];
-                if (username) {
-                    loginArgs.push('--username', username);
-                }
-                loginArgs.push(registry);
-                if (registry) {
-                    core.info(`🔑 Logging into ${registry}...`);
-                }
-                else {
-                    core.info(`🔑 Logging into DockerHub...`);
-                }
-                yield execm.exec('docker', loginArgs, true).then(res => {
-                    if (res.stderr != '' && !res.success) {
-                        throw new Error(res.stderr);
-                    }
-                    core.info('🎉 Login Succeeded!');
-                });
-            }
+            let inputs = yield context_1.getInputs();
+            stateHelper.setRegistry(inputs.registry);
+            stateHelper.setLogout(inputs.logout);
+            yield docker.login(inputs.registry, inputs.username, inputs.password);
         }
         catch (error) {
             core.setFailed(error.message);
@@ -1139,11 +1099,7 @@ function logout() {
         if (!stateHelper.logout) {
             return;
         }
-        yield execm.exec('docker', ['logout', stateHelper.registry], false).then(res => {
-            if (res.stderr != '' && !res.success) {
-                core.warning(res.stderr);
-            }
-        });
+        yield docker.logout(stateHelper.registry);
     });
 }
 if (!stateHelper.IsPost) {
@@ -1153,6 +1109,114 @@ else {
     logout();
 }
 //# sourceMappingURL=main.js.map
+
+/***/ }),
+
+/***/ 231:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.loginECR = exports.loginStandard = exports.logout = exports.login = void 0;
+const exec = __importStar(__webpack_require__(986));
+const core = __importStar(__webpack_require__(470));
+const ecr = __importStar(__webpack_require__(34));
+const execm = __importStar(__webpack_require__(807));
+function login(registry, username, password) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (yield ecr.isECR(registry)) {
+            yield loginECR(registry, username, password);
+        }
+        else {
+            yield loginStandard(registry, username, password);
+        }
+    });
+}
+exports.login = login;
+function logout(registry) {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield execm.exec('docker', ['logout', registry], false).then(res => {
+            if (res.stderr != '' && !res.success) {
+                core.warning(res.stderr);
+            }
+        });
+    });
+}
+exports.logout = logout;
+function loginStandard(registry, username, password) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let loginArgs = ['login', '--password', password];
+        if (username) {
+            loginArgs.push('--username', username);
+        }
+        loginArgs.push(registry);
+        if (registry) {
+            core.info(`🔑 Logging into ${registry}...`);
+        }
+        else {
+            core.info(`🔑 Logging into DockerHub...`);
+        }
+        yield execm.exec('docker', loginArgs, true).then(res => {
+            if (res.stderr != '' && !res.success) {
+                throw new Error(res.stderr);
+            }
+            core.info('🎉 Login Succeeded!');
+        });
+    });
+}
+exports.loginStandard = loginStandard;
+function loginECR(registry, username, password) {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield exec.exec('aws', ['--version']);
+        const ecrRegion = yield ecr.getRegion(registry);
+        process.env.AWS_ACCESS_KEY_ID = username;
+        process.env.AWS_SECRET_ACCESS_KEY = password;
+        core.info(`⬇️ Retrieving docker login command for ECR region ${ecrRegion}...`);
+        yield execm.exec('aws', ['ecr', 'get-login', '--region', ecrRegion, '--no-include-email'], true).then(res => {
+            if (res.stderr != '' && !res.success) {
+                throw new Error(res.stderr);
+            }
+            core.info(`🔑 Logging into ${registry}...`);
+            execm.exec(res.stdout, [], true).then(res => {
+                if (res.stderr != '' && !res.success) {
+                    throw new Error(res.stderr);
+                }
+                core.info('🎉 Login Succeeded!');
+            });
+        });
+    });
+}
+exports.loginECR = loginECR;
+//# sourceMappingURL=docker.js.map
 
 /***/ }),
 
@@ -1488,6 +1552,57 @@ function getState(name) {
 }
 exports.getState = getState;
 //# sourceMappingURL=core.js.map
+
+/***/ }),
+
+/***/ 482:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getInputs = void 0;
+const core = __importStar(__webpack_require__(470));
+function getInputs() {
+    return __awaiter(this, void 0, void 0, function* () {
+        return {
+            registry: core.getInput('registry'),
+            username: core.getInput('username'),
+            password: core.getInput('password', { required: true }),
+            logout: core.getInput('logout')
+        };
+    });
+}
+exports.getInputs = getInputs;
+//# sourceMappingURL=context.js.map
 
 /***/ }),
 
