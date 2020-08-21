@@ -19,11 +19,19 @@ describe('getCLI', () => {
   });
 });
 
+describe('getCLICmdOutput', () => {
+  it('--version not empty', async () => {
+    const cliCmdOutput = await aws.getCLICmdOutput(['--version']);
+    console.log(`cliCmdOutput: ${cliCmdOutput}`);
+    expect(cliCmdOutput).not.toEqual('');
+  });
+});
+
 describe('getCLIVersion', () => {
   it('valid', async () => {
     const cliVersion = await aws.getCLIVersion();
     console.log(`cliVersion: ${cliVersion}`);
-    expect(semver.valid(cliVersion)).toBe(true);
+    expect(semver.valid(cliVersion)).not.toBeNull();
   });
 });
 

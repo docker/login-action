@@ -3023,13 +3023,10 @@ function loginECR(registry, username, password) {
         core.info(`💡 AWS ECR registry detected with ${ecrRegion} region`);
         process.env.AWS_ACCESS_KEY_ID = username;
         process.env.AWS_SECRET_ACCESS_KEY = password;
-        core.info(`⬇️ Retrieving docker login command through AWS CLI ${cliVersion}...`);
-        yield execm.exec(cliPath, ['ecr', 'get-login', '--region', ecrRegion, '--no-include-email'], true).then(res => {
-            if (res.stderr != '' && !res.success) {
-                throw new Error(res.stderr);
-            }
+        core.info(`⬇️ Retrieving docker login command through AWS CLI ${cliVersion} (${cliPath})...`);
+        aws.getCLICmdOutput(['ecr', 'get-login', '--region', ecrRegion, '--no-include-email']).then(stdout => {
             core.info(`🔑 Logging into ${registry}...`);
-            execm.exec(res.stdout, [], true).then(res => {
+            execm.exec(stdout, [], true).then(res => {
                 if (res.stderr != '' && !res.success) {
                     throw new Error(res.stderr);
                 }
@@ -4102,7 +4099,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRegion = exports.parseCLIVersion = exports.getCLIVersion = exports.getCLI = exports.isECR = void 0;
+exports.getRegion = exports.parseCLIVersion = exports.getCLIVersion = exports.getCLICmdOutput = exports.getCLI = exports.isECR = void 0;
 const semver = __importStar(__webpack_require__(383));
 const io = __importStar(__webpack_require__(436));
 const execm = __importStar(__webpack_require__(757));
@@ -4112,13 +4109,16 @@ exports.isECR = (registry) => __awaiter(void 0, void 0, void 0, function* () {
 exports.getCLI = () => __awaiter(void 0, void 0, void 0, function* () {
     return io.which('aws', true);
 });
-exports.getCLIVersion = () => __awaiter(void 0, void 0, void 0, function* () {
-    return execm.exec('aws', ['--version'], true).then(res => {
+exports.getCLICmdOutput = (args) => __awaiter(void 0, void 0, void 0, function* () {
+    return execm.exec(yield exports.getCLI(), args, true).then(res => {
         if (res.stderr != '' && !res.success) {
             throw new Error(res.stderr);
         }
-        return exports.parseCLIVersion(res.stdout);
+        return res.stdout;
     });
+});
+exports.getCLIVersion = () => __awaiter(void 0, void 0, void 0, function* () {
+    return exports.parseCLIVersion(yield exports.getCLICmdOutput(['--version']));
 });
 exports.parseCLIVersion = (stdout) => __awaiter(void 0, void 0, void 0, function* () {
     const matches = /aws-cli\/([0-9.]+)/.exec(stdout);

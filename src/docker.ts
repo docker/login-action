@@ -47,13 +47,11 @@ export async function loginECR(registry: string, username: string, password: str
 
   process.env.AWS_ACCESS_KEY_ID = username;
   process.env.AWS_SECRET_ACCESS_KEY = password;
-  core.info(`⬇️ Retrieving docker login command through AWS CLI ${cliVersion}...`);
-  await execm.exec(cliPath, ['ecr', 'get-login', '--region', ecrRegion, '--no-include-email'], true).then(res => {
-    if (res.stderr != '' && !res.success) {
-      throw new Error(res.stderr);
-    }
+
+  core.info(`⬇️ Retrieving docker login command through AWS CLI ${cliVersion} (${cliPath})...`);
+  aws.getCLICmdOutput(['ecr', 'get-login', '--region', ecrRegion, '--no-include-email']).then(stdout => {
     core.info(`🔑 Logging into ${registry}...`);
-    execm.exec(res.stdout, [], true).then(res => {
+    execm.exec(stdout, [], true).then(res => {
       if (res.stderr != '' && !res.success) {
         throw new Error(res.stderr);
       }

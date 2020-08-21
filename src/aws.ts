@@ -10,13 +10,17 @@ export const getCLI = async (): Promise<string> => {
   return io.which('aws', true);
 };
 
-export const getCLIVersion = async (): Promise<string | undefined> => {
-  return execm.exec('aws', ['--version'], true).then(res => {
+export const getCLICmdOutput = async (args: string[]): Promise<string> => {
+  return execm.exec(await getCLI(), args, true).then(res => {
     if (res.stderr != '' && !res.success) {
       throw new Error(res.stderr);
     }
-    return parseCLIVersion(res.stdout);
+    return res.stdout;
   });
+};
+
+export const getCLIVersion = async (): Promise<string | undefined> => {
+  return parseCLIVersion(await getCLICmdOutput(['--version']));
 };
 
 export const parseCLIVersion = async (stdout: string): Promise<string | undefined> => {
