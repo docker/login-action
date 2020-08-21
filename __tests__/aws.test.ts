@@ -24,7 +24,7 @@ describe('execCLI', () => {
     const cliCmdOutput = await aws.execCLI(['--version']);
     console.log(`cliCmdOutput: ${cliCmdOutput}`);
     expect(cliCmdOutput).not.toEqual('');
-  });
+  }, 100000);
 });
 
 describe('getCLIVersion', () => {
@@ -32,7 +32,7 @@ describe('getCLIVersion', () => {
     const cliVersion = await aws.getCLIVersion();
     console.log(`cliVersion: ${cliVersion}`);
     expect(semver.valid(cliVersion)).not.toBeNull();
-  });
+  }, 100000);
 });
 
 describe('parseCLIVersion', () => {
