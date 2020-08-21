@@ -1,4 +1,3 @@
-import * as exec from '@actions/exec';
 import * as core from '@actions/core';
 import * as aws from './aws';
 import * as execm from './exec';
@@ -43,13 +42,13 @@ export async function loginECR(registry: string, username: string, password: str
   const cliPath = await aws.getCLI();
   const cliVersion = await aws.getCLIVersion();
   const region = await aws.getRegion(registry);
-  core.info(`💡 AWS ECR registry detected with ${region} region`);
+  core.info(`💡 AWS ECR detected with ${region} region`);
 
   process.env.AWS_ACCESS_KEY_ID = username;
   process.env.AWS_SECRET_ACCESS_KEY = password;
 
   core.info(`⬇️ Retrieving docker login command through AWS CLI ${cliVersion} (${cliPath})...`);
-  const loginCmd = await aws.getECRLoginCmd(cliVersion, registry, region);
+  const loginCmd = await aws.getDockerLoginCmd(cliVersion, registry, region);
 
   core.info(`🔑 Logging into ${registry}...`);
   execm.exec(loginCmd, [], true).then(res => {

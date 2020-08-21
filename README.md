@@ -3,6 +3,7 @@
 [![CI workflow](https://img.shields.io/github/workflow/status/crazy-max/ghaction-docker-login/test?label=ci&logo=github&style=flat-square)](https://github.com/crazy-max/ghaction-docker-login/actions?workflow=ci)
 [![Test workflow](https://img.shields.io/github/workflow/status/crazy-max/ghaction-docker-login/test?label=test&logo=github&style=flat-square)](https://github.com/crazy-max/ghaction-docker-login/actions?workflow=test)
 [![Codecov](https://img.shields.io/codecov/c/github/crazy-max/ghaction-docker-login?logo=codecov&style=flat-square)](https://codecov.io/gh/crazy-max/ghaction-docker-login)
+
 [![Become a sponsor](https://img.shields.io/badge/sponsor-crazy--max-181717.svg?logo=github&style=flat-square)](https://github.com/sponsors/crazy-max)
 [![Paypal Donate](https://img.shields.io/badge/donate-paypal-00457c.svg?logo=paypal&style=flat-square)](https://www.paypal.me/crazyws)
 
@@ -20,8 +21,9 @@ ___
   * [DockerHub](#dockerhub)
   * [GitHub Package Registry](#github-package-registry)
   * [GitLab](#gitlab)
-  * [Google Container Registry (GCR)](#gitlab)
-  * [AWS Elastic Container Registry (ECR)](#gitlab)
+  * [Azure Container Registry (ACR)](#azure-container-registry-acr)
+  * [Google Container Registry (GCR)](#google-container-registry-gcr)
+  * [AWS Elastic Container Registry (ECR)](#aws-elastic-container-registry-ecr)
 * [Customizing](#customizing)
   * [inputs](#inputs)
 * [Keep up-to-date with GitHub Dependabot](#keep-up-to-date-with-github-dependabot)
@@ -104,6 +106,37 @@ jobs:
           username: ${{ secrets.GITLAB_USERNAME }}
           password: ${{ secrets.GITLAB_PASSWORD }}
 ```
+
+### Azure Container Registry (ACR)
+
+[Create a service principal](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-auth-service-principal#create-a-service-principal)
+with access to your container registry through the [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+and take note of the generated service principal's ID (also called _client ID_) and password (also called _client secret_).
+
+```yaml
+name: ci
+
+on:
+  push:
+    branches: master
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Login to ACR
+        uses: crazy-max/ghaction-docker-login@v1
+        with:
+          registry: <registry-name>.azurecr.io
+          username: ${{ secrets.AZURE_CLIENT_ID }}
+          password: ${{ secrets.AZURE_CLIENT_SECRET }}
+```
+
+> Replace `<registry-name>` with the name of your registry.
 
 ### Google Container Registry (GCR)
 

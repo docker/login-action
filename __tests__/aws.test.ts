@@ -19,9 +19,9 @@ describe('getCLI', () => {
   });
 });
 
-describe('getCLICmdOutput', () => {
+describe('execCLI', () => {
   it('--version not empty', async () => {
-    const cliCmdOutput = await aws.getCLICmdOutput(['--version']);
+    const cliCmdOutput = await aws.execCLI(['--version']);
     console.log(`cliCmdOutput: ${cliCmdOutput}`);
     expect(cliCmdOutput).not.toEqual('');
   });
