@@ -1,5 +1,6 @@
 [![GitHub release](https://img.shields.io/github/release/crazy-max/ghaction-docker-login.svg?style=flat-square)](https://github.com/crazy-max/ghaction-docker-login/releases/latest)
 [![GitHub marketplace](https://img.shields.io/badge/marketplace-docker--login-blue?logo=github&style=flat-square)](https://github.com/marketplace/actions/docker-login)
+[![CI workflow](https://img.shields.io/github/workflow/status/crazy-max/ghaction-docker-login/test?label=ci&logo=github&style=flat-square)](https://github.com/crazy-max/ghaction-docker-login/actions?workflow=ci)
 [![Test workflow](https://img.shields.io/github/workflow/status/crazy-max/ghaction-docker-login/test?label=test&logo=github&style=flat-square)](https://github.com/crazy-max/ghaction-docker-login/actions?workflow=test)
 [![Codecov](https://img.shields.io/codecov/c/github/crazy-max/ghaction-docker-login?logo=codecov&style=flat-square)](https://codecov.io/gh/crazy-max/ghaction-docker-login)
 [![Become a sponsor](https://img.shields.io/badge/sponsor-crazy--max-181717.svg?logo=github&style=flat-square)](https://github.com/sponsors/crazy-max)

@@ -42,20 +42,20 @@ export async function loginStandard(registry: string, username: string, password
 export async function loginECR(registry: string, username: string, password: string): Promise<void> {
   const cliPath = await aws.getCLI();
   const cliVersion = await aws.getCLIVersion();
-  const ecrRegion = await aws.getRegion(registry);
-  core.info(`💡 AWS ECR registry detected with ${ecrRegion} region`);
+  const region = await aws.getRegion(registry);
+  core.info(`💡 AWS ECR registry detected with ${region} region`);
 
   process.env.AWS_ACCESS_KEY_ID = username;
   process.env.AWS_SECRET_ACCESS_KEY = password;
 
   core.info(`⬇️ Retrieving docker login command through AWS CLI ${cliVersion} (${cliPath})...`);
-  aws.getCLICmdOutput(['ecr', 'get-login', '--region', ecrRegion, '--no-include-email']).then(stdout => {
-    core.info(`🔑 Logging into ${registry}...`);
-    execm.exec(stdout, [], true).then(res => {
-      if (res.stderr != '' && !res.success) {
-        throw new Error(res.stderr);
-      }
-      core.info('🎉 Login Succeeded!');
-    });
+  const loginCmd = await aws.getECRLoginCmd(cliVersion, registry, region);
+
+  core.info(`🔑 Logging into ${registry}...`);
+  execm.exec(loginCmd, [], true).then(res => {
+    if (res.stderr != '' && !res.success) {
+      throw new Error(res.stderr);
+    }
+    core.info('🎉 Login Succeeded!');
   });
 }

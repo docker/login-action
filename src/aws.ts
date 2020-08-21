@@ -26,14 +26,26 @@ export const getCLICmdOutput = async (args: string[]): Promise<string> => {
   });
 };
 
-export const getCLIVersion = async (): Promise<string | undefined> => {
+export const getCLIVersion = async (): Promise<string> => {
   return parseCLIVersion(await getCLICmdOutput(['--version']));
 };
 
-export const parseCLIVersion = async (stdout: string): Promise<string | undefined> => {
+export const parseCLIVersion = async (stdout: string): Promise<string> => {
   const matches = /aws-cli\/([0-9.]+)/.exec(stdout);
-  if (matches) {
-    return semver.clean(matches[1]);
+  if (!matches) {
+    throw new Error(`Cannot parse AWS CLI version`);
   }
-  return undefined;
+  return semver.clean(matches[1]);
+};
+
+export const getECRLoginCmd = async (cliVersion: string, registry: string, region: string): Promise<string> => {
+  if (semver.satisfies(cliVersion, '>=2.0.0')) {
+    return getCLICmdOutput(['ecr', 'get-login-password', '--region', region]).then(pwd => {
+      return `docker login --username AWS --password ${pwd} ${registry}`;
+    });
+  } else {
+    return getCLICmdOutput(['ecr', 'get-login', '--region', region, '--no-include-email']).then(dockerLoginCmd => {
+      return dockerLoginCmd;
+    });
+  }
 };
