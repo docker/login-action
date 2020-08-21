@@ -8,7 +8,7 @@ on:
 
 jobs:
   dockerhub:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
@@ -89,7 +89,7 @@ jobs:
           rm -f ${HOME}/.docker/config.json
 
   ecr:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
