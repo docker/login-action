@@ -1,10 +1,10 @@
 import * as exec from '@actions/exec';
 import * as core from '@actions/core';
-import * as ecr from './ecr';
+import * as aws from './aws';
 import * as execm from './exec';
 
 export async function login(registry: string, username: string, password: string): Promise<void> {
-  if (await ecr.isECR(registry)) {
+  if (await aws.isECR(registry)) {
     await loginECR(registry, username, password);
   } else {
     await loginStandard(registry, username, password);
@@ -40,13 +40,15 @@ export async function loginStandard(registry: string, username: string, password
 }
 
 export async function loginECR(registry: string, username: string, password: string): Promise<void> {
-  await exec.exec('aws', ['--version']);
-  const ecrRegion = await ecr.getRegion(registry);
+  const cliPath = await aws.getCLI();
+  const cliVersion = await aws.getCLIVersion();
+  const ecrRegion = await aws.getRegion(registry);
+  core.info(`💡 AWS ECR registry detected with ${ecrRegion} region`);
+
   process.env.AWS_ACCESS_KEY_ID = username;
   process.env.AWS_SECRET_ACCESS_KEY = password;
-
-  core.info(`⬇️ Retrieving docker login command for ECR region ${ecrRegion}...`);
-  await execm.exec('aws', ['ecr', 'get-login', '--region', ecrRegion, '--no-include-email'], true).then(res => {
+  core.info(`⬇️ Retrieving docker login command through AWS CLI ${cliVersion}...`);
+  await execm.exec(cliPath, ['ecr', 'get-login', '--region', ecrRegion, '--no-include-email'], true).then(res => {
     if (res.stderr != '' && !res.success) {
       throw new Error(res.stderr);
     }

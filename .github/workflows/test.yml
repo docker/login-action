@@ -1,0 +1,40 @@
+name: test
+
+on:
+  push:
+    branches:
+      - master
+      - releases/v*
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-20.04
+          - ubuntu-18.04
+          - ubuntu-16.04
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2.3.2
+      -
+        name: Install
+        run: yarn install
+      -
+        name: Test
+        run: yarn run test
+      -
+        name: Upload coverage
+        uses: codecov/codecov-action@v1.0.13
+        if: success()
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage/clover.xml
