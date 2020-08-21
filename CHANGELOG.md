@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.0 (2020/08/21)
+
+* Handle AWS CLI v2
+* Check AWS CLI version
+* Add tests
+* Add example for Azure Container Registry (ACR)
+* Move zeit/ncc to vercel/ncc
+
 ## 1.2.0 (2020/08/20)
 
 * Add support for AWS Elastic Container Registry (ECR)
