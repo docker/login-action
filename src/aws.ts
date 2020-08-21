@@ -6,6 +6,10 @@ export const isECR = async (registry: string): Promise<boolean> => {
   return registry.includes('amazonaws');
 };
 
+export const getRegion = async (registry: string): Promise<string> => {
+  return registry.substring(registry.indexOf('ecr.') + 4, registry.indexOf('.amazonaws'));
+};
+
 export const getCLI = async (): Promise<string> => {
   return io.which('aws', true);
 };
@@ -14,8 +18,11 @@ export const getCLICmdOutput = async (args: string[]): Promise<string> => {
   return execm.exec(await getCLI(), args, true).then(res => {
     if (res.stderr != '' && !res.success) {
       throw new Error(res.stderr);
+    } else if (res.stderr != '') {
+      return res.stderr.trim();
+    } else {
+      return res.stdout.trim();
     }
-    return res.stdout;
   });
 };
 
@@ -29,8 +36,4 @@ export const parseCLIVersion = async (stdout: string): Promise<string | undefine
     return semver.clean(matches[1]);
   }
   return undefined;
-};
-
-export const getRegion = async (registry: string): Promise<string> => {
-  return registry.substring(registry.indexOf('ecr.') + 4, registry.indexOf('.amazonaws'));
 };

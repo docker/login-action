@@ -4099,12 +4099,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRegion = exports.parseCLIVersion = exports.getCLIVersion = exports.getCLICmdOutput = exports.getCLI = exports.isECR = void 0;
+exports.parseCLIVersion = exports.getCLIVersion = exports.getCLICmdOutput = exports.getCLI = exports.getRegion = exports.isECR = void 0;
 const semver = __importStar(__webpack_require__(383));
 const io = __importStar(__webpack_require__(436));
 const execm = __importStar(__webpack_require__(757));
 exports.isECR = (registry) => __awaiter(void 0, void 0, void 0, function* () {
     return registry.includes('amazonaws');
+});
+exports.getRegion = (registry) => __awaiter(void 0, void 0, void 0, function* () {
+    return registry.substring(registry.indexOf('ecr.') + 4, registry.indexOf('.amazonaws'));
 });
 exports.getCLI = () => __awaiter(void 0, void 0, void 0, function* () {
     return io.which('aws', true);
@@ -4114,7 +4117,12 @@ exports.getCLICmdOutput = (args) => __awaiter(void 0, void 0, void 0, function* 
         if (res.stderr != '' && !res.success) {
             throw new Error(res.stderr);
         }
-        return res.stdout;
+        else if (res.stderr != '') {
+            return res.stderr.trim();
+        }
+        else {
+            return res.stdout.trim();
+        }
     });
 });
 exports.getCLIVersion = () => __awaiter(void 0, void 0, void 0, function* () {
@@ -4126,9 +4134,6 @@ exports.parseCLIVersion = (stdout) => __awaiter(void 0, void 0, void 0, function
         return semver.clean(matches[1]);
     }
     return undefined;
-});
-exports.getRegion = (registry) => __awaiter(void 0, void 0, void 0, function* () {
-    return registry.substring(registry.indexOf('ecr.') + 4, registry.indexOf('.amazonaws'));
 });
 //# sourceMappingURL=aws.js.map
 
