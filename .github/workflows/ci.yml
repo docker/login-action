@@ -8,7 +8,7 @@ on:
 
 jobs:
   dockerhub:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -93,6 +93,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        os:
+          - ubuntu-20.04
+          - ubuntu-18.04
+          - ubuntu-16.04
         logout:
           - true
           - false
