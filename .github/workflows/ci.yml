@@ -7,34 +7,34 @@ on:
       - releases/v*
 
 jobs:
-  dockerhub:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-20.04
-          - ubuntu-18.04
-          - ubuntu-16.04
-        logout:
-          - true
-          - false
-    steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v2.3.2
-      -
-        name: Login to DockerHub
-        uses: ./
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME_TEST }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD_TEST }}
-          logout: ${{ matrix.logout }}
-      -
-        name: Clear
-        if: always()
-        run: |
-          rm -f ${HOME}/.docker/config.json
+#  dockerhub:
+#    runs-on: ${{ matrix.os }}
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        os:
+#          - ubuntu-20.04
+#          - ubuntu-18.04
+#          - ubuntu-16.04
+#        logout:
+#          - true
+#          - false
+#    steps:
+#      -
+#        name: Checkout
+#        uses: actions/checkout@v2.3.2
+#      -
+#        name: Login to DockerHub
+#        uses: ./
+#        with:
+#          username: ${{ secrets.DOCKERHUB_USERNAME_TEST }}
+#          password: ${{ secrets.DOCKERHUB_PASSWORD_TEST }}
+#          logout: ${{ matrix.logout }}
+#      -
+#        name: Clear
+#        if: always()
+#        run: |
+#          rm -f ${HOME}/.docker/config.json
 
   gpr:
     runs-on: ubuntu-latest
@@ -62,58 +62,58 @@ jobs:
         run: |
           rm -f ${HOME}/.docker/config.json
 
-  gitlab:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        logout:
-          - true
-          - false
-    steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v2.3.2
-      -
-        name: Login to GitLab
-        uses: ./
-        with:
-          registry: registry.gitlab.com
-          username: ${{ secrets.GITLAB_USERNAME_TEST }}
-          password: ${{ secrets.GITLAB_PASSWORD_TEST }}
-          logout: ${{ matrix.logout }}
-      -
-        name: Clear
-        if: always()
-        run: |
-          rm -f ${HOME}/.docker/config.json
-
-  ecr:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-20.04
-          - ubuntu-18.04
-          - ubuntu-16.04
-        logout:
-          - true
-          - false
-    steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v2.3.1
-      -
-        name: Login to ECR
-        uses: ./
-        with:
-          registry: ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
-          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          logout: ${{ matrix.logout }}
-      -
-        name: Clear
-        if: always()
-        run: |
-          rm -f ${HOME}/.docker/config.json
+#  gitlab:
+#    runs-on: ubuntu-latest
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        logout:
+#          - true
+#          - false
+#    steps:
+#      -
+#        name: Checkout
+#        uses: actions/checkout@v2.3.2
+#      -
+#        name: Login to GitLab
+#        uses: ./
+#        with:
+#          registry: registry.gitlab.com
+#          username: ${{ secrets.GITLAB_USERNAME_TEST }}
+#          password: ${{ secrets.GITLAB_PASSWORD_TEST }}
+#          logout: ${{ matrix.logout }}
+#      -
+#        name: Clear
+#        if: always()
+#        run: |
+#          rm -f ${HOME}/.docker/config.json
+#
+#  ecr:
+#    runs-on: ${{ matrix.os }}
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        os:
+#          - ubuntu-20.04
+#          - ubuntu-18.04
+#          - ubuntu-16.04
+#        logout:
+#          - true
+#          - false
+#    steps:
+#      -
+#        name: Checkout
+#        uses: actions/checkout@v2.3.1
+#      -
+#        name: Login to ECR
+#        uses: ./
+#        with:
+#          registry: ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+#          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          logout: ${{ matrix.logout }}
+#      -
+#        name: Clear
+#        if: always()
+#        run: |
+#          rm -f ${HOME}/.docker/config.json
