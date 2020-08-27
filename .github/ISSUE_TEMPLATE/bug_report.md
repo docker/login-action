@@ -13,11 +13,11 @@ about: Create a report to help us improve
 
 #### Expected behaviour
 
-> Tell me what should happen
+> Tell us what should happen
 
 #### Actual behaviour
 
-> Tell me what happens instead
+> Tell us what happens instead
 
 ### Configuration
 

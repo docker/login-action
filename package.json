@@ -11,14 +11,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/crazy-max/ghaction-docker-login.git"
+    "url": "git+https://github.com/docker/login-action.git"
   },
   "keywords": [
     "actions",
     "docker",
     "login"
   ],
-  "author": "CrazyMax",
+  "author": "Docker",
+  "contributors": [
+    {
+      "name": "CrazyMax",
+      "url": "https://crazymax.dev"
+    }
+  ],
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.2.4",
