@@ -8,13 +8,19 @@
 
 GitHub Action to login against a Docker registry.
 
+> :bulb: See also:
+> * [setup-buildx](https://github.com/docker/setup-buildx-action) action
+> * [setup-qemu](https://github.com/docker/setup-qemu-action) action
+> * [build-push](https://github.com/docker/build-push-action) action
+
 ![Screenshot](.github/docker-login.png)
 
 ___
 
 * [Usage](#usage)
   * [DockerHub](#dockerhub)
-  * [GitHub Package Registry](#github-package-registry)
+  * [GitHub Packages Docker Registry](#github-packages-docker-registry)
+  * [GitHub Container Registry](#github-container-registry)
   * [GitLab](#gitlab)
   * [Azure Container Registry (ACR)](#azure-container-registry-acr)
   * [Google Container Registry (GCR)](#google-container-registry-gcr)
@@ -40,9 +46,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       -
-        name: Checkout
-        uses: actions/checkout@v2
-      -
         name: Login to DockerHub
         uses: docker/login-action@v1
         with:
@@ -50,7 +53,9 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 ```
 
-### GitHub Package Registry
+### GitHub Packages Docker Registry
+
+You can configure the Docker client to use [GitHub Packages to publish and retrieve docker images](https://docs.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages).
 
 ```yaml
 name: ci
@@ -64,15 +69,38 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       -
-        name: Checkout
-        uses: actions/checkout@v2
-      -
-        name: Login to GitHub Package Registry
+        name: Login to GitHub Packages Docker Registry
         uses: docker/login-action@v1
         with:
           registry: docker.pkg.github.com
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
+```
+
+### GitHub Container Registry
+
+To authenticate against the [GitHub Container Registry](https://docs.github.com/en/packages/getting-started-with-github-container-registry),
+you will need to create a new [personal access token (PAT)](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)
+with the [appropriate scopes](https://docs.github.com/en/packages/getting-started-with-github-container-registry/migrating-to-github-container-registry-for-docker-images#authenticating-with-the-container-registry).
+
+```yaml
+name: ci
+
+on:
+  push:
+    branches: master
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CR_PAT }}
 ```
 
 ### GitLab
@@ -88,9 +116,6 @@ jobs:
   login:
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v2
       -
         name: Login to GitLab
         uses: docker/login-action@v1
@@ -117,9 +142,6 @@ jobs:
   login:
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v2
       -
         name: Login to ACR
         uses: docker/login-action@v1
@@ -150,9 +172,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       -
-        name: Checkout
-        uses: actions/checkout@v2
-      -
         name: Login to GCR
         uses: docker/login-action@v1
         with:
@@ -178,9 +197,6 @@ jobs:
   login:
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v2
       -
         name: Login to ECR
         uses: docker/login-action@v1
