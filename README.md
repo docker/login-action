@@ -34,6 +34,9 @@ ___
 
 ### DockerHub
 
+To authenticate against [DockerHub](https://hub.docker.com) it's strongly recommended to create a
+[personal access token](https://docs.docker.com/docker-hub/access-tokens/) as an alternative to your password.
+
 ```yaml
 name: ci
 
@@ -50,7 +53,7 @@ jobs:
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 ```
 
 ### GitHub Packages Docker Registry
