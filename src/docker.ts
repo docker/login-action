@@ -19,7 +19,7 @@ export async function logout(registry: string): Promise<void> {
 }
 
 export async function loginStandard(registry: string, username: string, password: string): Promise<void> {
-  let loginArgs: Array<string> = ['login', '--password', password];
+  let loginArgs: Array<string> = ['login', '--password-stdin'];
   if (username) {
     loginArgs.push('--username', username);
   }
@@ -30,7 +30,7 @@ export async function loginStandard(registry: string, username: string, password
   } else {
     core.info(`🔑 Logging into DockerHub...`);
   }
-  await execm.exec('docker', loginArgs, true).then(res => {
+  await execm.exec('docker', loginArgs, true, password).then(res => {
     if (res.stderr != '' && !res.success) {
       throw new Error(res.stderr);
     }

@@ -7,13 +7,19 @@ export interface ExecResult {
   stderr: string;
 }
 
-export const exec = async (command: string, args: string[] = [], silent: boolean): Promise<ExecResult> => {
+export const exec = async (
+  command: string,
+  args: string[] = [],
+  silent: boolean,
+  stdin?: string
+): Promise<ExecResult> => {
   let stdout: string = '';
   let stderr: string = '';
 
   const options: ExecOptions = {
     silent: silent,
-    ignoreReturnCode: true
+    ignoreReturnCode: true,
+    input: Buffer.from(stdin || '')
   };
   options.listeners = {
     stdout: (data: Buffer) => {
