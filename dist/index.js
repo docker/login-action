@@ -2908,12 +2908,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.exec = void 0;
 const actionsExec = __importStar(__webpack_require__(514));
-exports.exec = (command, args = [], silent) => __awaiter(void 0, void 0, void 0, function* () {
+exports.exec = (command, args = [], silent, stdin) => __awaiter(void 0, void 0, void 0, function* () {
     let stdout = '';
     let stderr = '';
     const options = {
         silent: silent,
-        ignoreReturnCode: true
+        ignoreReturnCode: true,
+        input: Buffer.from(stdin || '')
     };
     options.listeners = {
         stdout: (data) => {
@@ -2995,7 +2996,7 @@ function logout(registry) {
 exports.logout = logout;
 function loginStandard(registry, username, password) {
     return __awaiter(this, void 0, void 0, function* () {
-        let loginArgs = ['login', '--password', password];
+        let loginArgs = ['login', '--password-stdin'];
         if (username) {
             loginArgs.push('--username', username);
         }
@@ -3006,7 +3007,7 @@ function loginStandard(registry, username, password) {
         else {
             core.info(`🔑 Logging into DockerHub...`);
         }
-        yield execm.exec('docker', loginArgs, true).then(res => {
+        yield execm.exec('docker', loginArgs, true, password).then(res => {
             if (res.stderr != '' && !res.success) {
                 throw new Error(res.stderr);
             }
