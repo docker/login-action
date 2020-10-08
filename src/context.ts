@@ -7,7 +7,7 @@ export interface Inputs {
   logout: string;
 }
 
-export async function getInputs(): Promise<Inputs> {
+export function getInputs(): Inputs {
   return {
     registry: core.getInput('registry'),
     username: core.getInput('username'),
