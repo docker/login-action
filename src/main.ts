@@ -4,17 +4,16 @@ import {getInputs, Inputs} from './context';
 import * as docker from './docker';
 import * as stateHelper from './state-helper';
 
-async function run(): Promise<void> {
+export async function run(): Promise<void> {
   try {
     if (os.platform() !== 'linux') {
-      core.setFailed('Only supported on linux platform');
-      return;
+      throw new Error('Only supported on linux platform');
     }
 
-    let inputs: Inputs = await getInputs();
-    stateHelper.setRegistry(inputs.registry);
-    stateHelper.setLogout(inputs.logout);
-    await docker.login(inputs.registry, inputs.username, inputs.password);
+    const {registry, username, password, logout} = getInputs();
+    stateHelper.setRegistry(registry);
+    stateHelper.setLogout(logout);
+    await docker.login(registry, username, password);
   } catch (error) {
     core.setFailed(error.message);
   }
