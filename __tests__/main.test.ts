@@ -29,22 +29,22 @@ test('errors without password', async () => {
 });
 
 test('successful with only password', async () => {
-    const platSpy = jest.spyOn(osm, 'platform');
-    platSpy.mockImplementation(() => 'linux');
-  
-    const setRegistrySpy: jest.SpyInstance = jest.spyOn(stateHelper, 'setRegistry');
-    const setLogoutSpy: jest.SpyInstance = jest.spyOn(stateHelper, 'setLogout');
-    const dockerSpy: jest.SpyInstance = jest.spyOn(docker, 'login');
-    dockerSpy.mockImplementation(() => {});
-  
-    const password: string = 'groundcontrol';
-    process.env[`INPUT_PASSWORD`] = password;
+  const platSpy = jest.spyOn(osm, 'platform');
+  platSpy.mockImplementation(() => 'linux');
 
-    await run();
+  const setRegistrySpy: jest.SpyInstance = jest.spyOn(stateHelper, 'setRegistry');
+  const setLogoutSpy: jest.SpyInstance = jest.spyOn(stateHelper, 'setLogout');
+  const dockerSpy: jest.SpyInstance = jest.spyOn(docker, 'login');
+  dockerSpy.mockImplementation(() => {});
 
-    expect(setRegistrySpy).toHaveBeenCalledWith('');
-    expect(setLogoutSpy).toHaveBeenCalledWith('');
-    expect(dockerSpy).toHaveBeenCalledWith('', '', password);
+  const password: string = 'groundcontrol';
+  process.env[`INPUT_PASSWORD`] = password;
+
+  await run();
+
+  expect(setRegistrySpy).toHaveBeenCalledWith('');
+  expect(setLogoutSpy).toHaveBeenCalledWith('');
+  expect(dockerSpy).toHaveBeenCalledWith('', '', password);
 });
 
 test('calls docker login', async () => {
@@ -66,7 +66,7 @@ test('calls docker login', async () => {
   process.env[`INPUT_REGISTRY`] = registry;
 
   const logout: string = 'true';
-  process.env['INPUT_LOGOUT'] = logout
+  process.env['INPUT_LOGOUT'] = logout;
 
   await run();
 

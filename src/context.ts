@@ -10,7 +10,7 @@ export interface Inputs {
 export function getInputs(): Inputs {
   return {
     registry: core.getInput('registry'),
-    username: core.getInput('username'),
+    username: core.getInput('username', {required: true}),
     password: core.getInput('password', {required: true}),
     logout: core.getInput('logout')
   };

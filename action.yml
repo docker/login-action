@@ -12,7 +12,7 @@ inputs:
     required: false
   username:
     description: 'Username used to log against the Docker registry'
-    required: false
+    required: true
   password:
     description: 'Password or personal access token used to log against the Docker registry'
     required: true
