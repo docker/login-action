@@ -17,7 +17,7 @@ test('errors when not run on linux platform', async () => {
   expect(coreSpy).toHaveBeenCalledWith('Only supported on linux platform');
 });
 
-test('errors without password', async () => {
+test('errors without username', async () => {
   const platSpy = jest.spyOn(osm, 'platform');
   platSpy.mockImplementation(() => 'linux');
 
@@ -25,10 +25,24 @@ test('errors without password', async () => {
 
   await run();
 
+  expect(coreSpy).toHaveBeenCalledWith('Input required and not supplied: username');
+});
+
+test('errors without password', async () => {
+  const platSpy = jest.spyOn(osm, 'platform');
+  platSpy.mockImplementation(() => 'linux');
+
+  const coreSpy: jest.SpyInstance = jest.spyOn(core, 'setFailed');
+
+  const username: string = 'dbowie';
+  process.env[`INPUT_USERNAME`] = username;
+
+  await run();
+
   expect(coreSpy).toHaveBeenCalledWith('Input required and not supplied: password');
 });
 
-test('successful with only password', async () => {
+test('successful with username and password', async () => {
   const platSpy = jest.spyOn(osm, 'platform');
   platSpy.mockImplementation(() => 'linux');
 
@@ -37,6 +51,9 @@ test('successful with only password', async () => {
   const dockerSpy: jest.SpyInstance = jest.spyOn(docker, 'login');
   dockerSpy.mockImplementation(() => {});
 
+  const username: string = 'dbowie';
+  process.env[`INPUT_USERNAME`] = username;
+
   const password: string = 'groundcontrol';
   process.env[`INPUT_PASSWORD`] = password;
 
@@ -44,7 +61,7 @@ test('successful with only password', async () => {
 
   expect(setRegistrySpy).toHaveBeenCalledWith('');
   expect(setLogoutSpy).toHaveBeenCalledWith('');
-  expect(dockerSpy).toHaveBeenCalledWith('', '', password);
+  expect(dockerSpy).toHaveBeenCalledWith('', username, password);
 });
 
 test('calls docker login', async () => {
