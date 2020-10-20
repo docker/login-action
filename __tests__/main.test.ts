@@ -17,7 +17,7 @@ test('errors when not run on linux platform', async () => {
   expect(coreSpy).toHaveBeenCalledWith('Only supported on linux platform');
 });
 
-test('errors without username', async () => {
+test('errors without username and password', async () => {
   const platSpy = jest.spyOn(osm, 'platform');
   platSpy.mockImplementation(() => 'linux');
 
@@ -25,21 +25,7 @@ test('errors without username', async () => {
 
   await run();
 
-  expect(coreSpy).toHaveBeenCalledWith('Input required and not supplied: username');
-});
-
-test('errors without password', async () => {
-  const platSpy = jest.spyOn(osm, 'platform');
-  platSpy.mockImplementation(() => 'linux');
-
-  const coreSpy: jest.SpyInstance = jest.spyOn(core, 'setFailed');
-
-  const username: string = 'dbowie';
-  process.env[`INPUT_USERNAME`] = username;
-
-  await run();
-
-  expect(coreSpy).toHaveBeenCalledWith('Input required and not supplied: password');
+  expect(coreSpy).toHaveBeenCalledWith('Username and password required');
 });
 
 test('successful with username and password', async () => {
@@ -79,7 +65,7 @@ test('calls docker login', async () => {
   const password: string = 'groundcontrol';
   process.env[`INPUT_PASSWORD`] = password;
 
-  const registry: string = 'https://ghcr.io';
+  const registry: string = 'ghcr.io';
   process.env[`INPUT_REGISTRY`] = registry;
 
   const logout: string = 'true';

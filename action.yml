@@ -12,10 +12,10 @@ inputs:
     required: false
   username:
     description: 'Username used to log against the Docker registry'
-    required: true
+    required: false
   password:
     description: 'Password or personal access token used to log against the Docker registry'
-    required: true
+    required: false
   logout:
     description: 'Log out from the Docker registry at the end of a job'
     default: 'true'

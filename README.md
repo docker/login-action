@@ -213,6 +213,34 @@ jobs:
           password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 ```
 
+You can also use the [Configure AWS Credentials](https://github.com/aws-actions/configure-aws-credentials) action in
+combination with this action:
+
+```yaml
+name: ci
+
+on:
+  push:
+    branches: master
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: <region>
+      -
+        name: Login to ECR
+        uses: docker/login-action@v1
+        with:
+          registry: <aws-account-number>.dkr.ecr.<region>.amazonaws.com
+```
+
 > Replace `<aws-account-number>` and `<region>` with their respective values.
 
 ## Customizing
