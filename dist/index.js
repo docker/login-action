@@ -3062,10 +3062,11 @@ function logout(registry) {
 exports.logout = logout;
 function loginStandard(registry, username, password) {
     return __awaiter(this, void 0, void 0, function* () {
-        let loginArgs = ['login', '--password-stdin'];
-        if (username) {
-            loginArgs.push('--username', username);
+        if (!username || !password) {
+            throw new Error('Username and password required');
         }
+        let loginArgs = ['login', '--password-stdin'];
+        loginArgs.push('--username', username);
         loginArgs.push(registry);
         if (registry) {
             core.info(`🔑 Logging into ${registry}...`);
@@ -3088,8 +3089,8 @@ function loginECR(registry, username, password) {
         const cliVersion = yield aws.getCLIVersion();
         const region = yield aws.getRegion(registry);
         core.info(`💡 AWS ECR detected with ${region} region`);
-        process.env.AWS_ACCESS_KEY_ID = username;
-        process.env.AWS_SECRET_ACCESS_KEY = password;
+        process.env.AWS_ACCESS_KEY_ID = username || process.env.AWS_ACCESS_KEY_ID;
+        process.env.AWS_SECRET_ACCESS_KEY = password || process.env.AWS_SECRET_ACCESS_KEY;
         core.info(`⬇️ Retrieving docker login command through AWS CLI ${cliVersion} (${cliPath})...`);
         const loginCmd = yield aws.getDockerLoginCmd(cliVersion, registry, region);
         core.info(`🔑 Logging into ${registry}...`);
@@ -3647,8 +3648,8 @@ const core = __importStar(__webpack_require__(186));
 function getInputs() {
     return {
         registry: core.getInput('registry'),
-        username: core.getInput('username', { required: true }),
-        password: core.getInput('password', { required: true }),
+        username: core.getInput('username'),
+        password: core.getInput('password'),
         logout: core.getInput('logout')
     };
 }
