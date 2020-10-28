@@ -19,10 +19,12 @@ export async function logout(registry: string): Promise<void> {
 }
 
 export async function loginStandard(registry: string, username: string, password: string): Promise<void> {
-  let loginArgs: Array<string> = ['login', '--password-stdin'];
-  if (username) {
-    loginArgs.push('--username', username);
+  if (!username || !password) {
+    throw new Error('Username and password required');
   }
+
+  let loginArgs: Array<string> = ['login', '--password-stdin'];
+  loginArgs.push('--username', username);
   loginArgs.push(registry);
 
   if (registry) {
@@ -44,8 +46,8 @@ export async function loginECR(registry: string, username: string, password: str
   const region = await aws.getRegion(registry);
   core.info(`💡 AWS ECR detected with ${region} region`);
 
-  process.env.AWS_ACCESS_KEY_ID = username;
-  process.env.AWS_SECRET_ACCESS_KEY = password;
+  process.env.AWS_ACCESS_KEY_ID = username || process.env.AWS_ACCESS_KEY_ID;
+  process.env.AWS_SECRET_ACCESS_KEY = password || process.env.AWS_SECRET_ACCESS_KEY;
 
   core.info(`⬇️ Retrieving docker login command through AWS CLI ${cliVersion} (${cliPath})...`);
   const loginCmd = await aws.getDockerLoginCmd(cliVersion, registry, region);

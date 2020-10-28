@@ -24,6 +24,7 @@ ___
   * [GitLab](#gitlab)
   * [Azure Container Registry (ACR)](#azure-container-registry-acr)
   * [Google Container Registry (GCR)](#google-container-registry-gcr)
+  * [Google Artifact Registry (GAR)](#google-artifact-registry-gar)
   * [AWS Elastic Container Registry (ECR)](#aws-elastic-container-registry-ecr)
 * [Customizing](#customizing)
   * [inputs](#inputs)
@@ -162,6 +163,11 @@ jobs:
 
 ### Google Container Registry (GCR)
 
+> [Google Artifact Registry](#google-artifact-registry-gar) is the evolution of Google Container Registry. As a
+> fully-managed service with support for both container images and non-container artifacts. If you currently use
+> Google Container Registry, use the information [on this page](https://cloud.google.com/artifact-registry/docs/transition/transition-from-gcr)
+> to learn about transitioning to Google Artifact Registry. 
+
 Use a service account with the ability to push to GCR and [configure access control](https://cloud.google.com/container-registry/docs/access-control).
 Then create and download the JSON key for this service account and save content of `.json` file
 [as a secret](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository)
@@ -187,6 +193,36 @@ jobs:
           password: ${{ secrets.GCR_JSON_KEY }}
 ```
 
+### Google Artifact Registry (GAR)
+
+Use a service account with the ability to push to GAR and [configure access control](https://cloud.google.com/artifact-registry/docs/access-control).
+Then create and download the JSON key for this service account and save content of `.json` file
+[as a secret](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository)
+called `GAR_JSON_KEY` in your GitHub repo. Ensure you set the username to `_json_key`.
+
+```yaml
+name: ci
+
+on:
+  push:
+    branches: master
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Login to GAR
+        uses: docker/login-action@v1
+        with:
+          registry: <location>-docker.pkg.dev
+          username: _json_key
+          password: ${{ secrets.GAR_JSON_KEY }}
+```
+
+> Replace `<location>` with the regional or multi-regional [location](https://cloud.google.com/artifact-registry/docs/repo-organize#locations)
+> of the repository where the image is stored.
+
 ### AWS Elastic Container Registry (ECR)
 
 Use an IAM user with the [ability to push to ECR](https://docs.aws.amazon.com/AmazonECR/latest/userguide/ecr_managed_policies.html).
@@ -211,6 +247,34 @@ jobs:
           registry: <aws-account-number>.dkr.ecr.<region>.amazonaws.com
           username: ${{ secrets.AWS_ACCESS_KEY_ID }}
           password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+```
+
+You can also use the [Configure AWS Credentials](https://github.com/aws-actions/configure-aws-credentials) action in
+combination with this action:
+
+```yaml
+name: ci
+
+on:
+  push:
+    branches: master
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: <region>
+      -
+        name: Login to ECR
+        uses: docker/login-action@v1
+        with:
+          registry: <aws-account-number>.dkr.ecr.<region>.amazonaws.com
 ```
 
 > Replace `<aws-account-number>` and `<region>` with their respective values.
