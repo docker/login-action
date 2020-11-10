@@ -26,6 +26,7 @@ ___
   * [Google Container Registry (GCR)](#google-container-registry-gcr)
   * [Google Artifact Registry (GAR)](#google-artifact-registry-gar)
   * [AWS Elastic Container Registry (ECR)](#aws-elastic-container-registry-ecr)
+  * [OCI Oracle Cloud Infrastructure Registry (OCIR)](#oci-oracle-cloud-infrastructure-registry-ocir)
 * [Customizing](#customizing)
   * [inputs](#inputs)
 * [Keep up-to-date with GitHub Dependabot](#keep-up-to-date-with-github-dependabot)
@@ -278,6 +279,33 @@ jobs:
 ```
 
 > Replace `<aws-account-number>` and `<region>` with their respective values.
+
+### OCI Oracle Cloud Infrastructure Registry (OCIR)
+To push into OCIR in specific tenancy the [username](https://www.oracle.com/webfolder/technetwork/tutorials/obe/oci/registry/index.html#LogintoOracleCloudInfrastructureRegistryfromtheDockerCLI)
+must be placed in format `<tenancy>/<username>` (in case of federated tenancy use the format `<tenancy-namespace>/oracleidentitycloudservice/<username>`). 
+For password [create an auth token](https://www.oracle.com/webfolder/technetwork/tutorials/obe/oci/registry/index.html#GetanAuthToken). Save username and token
+ [as a secrets](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository) in your GitHub repo. 
+
+```yaml
+name: ci
+
+on:
+  push:
+    branches: master
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Login to OCIR
+        uses: docker/login-action@v1
+        with:
+          registry: <region>.ocir.io
+          username: ${{ secrets.OCI_USERNAME }}
+          password: ${{ secrets.OCI_TOKEN }}
+```
+> Replace `<region>` with their respective values from [availability regions](https://docs.cloud.oracle.com/iaas/Content/Registry/Concepts/registryprerequisites.htm#Availab)
 
 ## Customizing
 
