@@ -21,7 +21,7 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v2.3.2
+        uses: actions/checkout@v2
       -
         name: Login to DockerHub
         uses: ./
@@ -29,59 +29,59 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-#  ecr:
-#    runs-on: ${{ matrix.os }}
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        os:
-#          - ubuntu-20.04
-#          - ubuntu-18.04
-#          - ubuntu-16.04
-#    steps:
-#      -
-#        name: Checkout
-#        uses: actions/checkout@v2.3.1
-#      -
-#        name: Login to ECR
-#        uses: ./
-#        with:
-#          registry: ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
-#          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#
-#  ecr-aws-creds:
-#    runs-on: ${{ matrix.os }}
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        os:
-#          - ubuntu-20.04
-#          - ubuntu-18.04
-#          - ubuntu-16.04
-#    steps:
-#      -
-#        name: Checkout
-#        uses: actions/checkout@v2.3.1
-#      -
-#        name: Configure AWS Credentials
-#        uses: aws-actions/configure-aws-credentials@v1
-#        with:
-#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          aws-region: ${{ secrets.AWS_REGION }}
-#      -
-#        name: Login to ECR
-#        uses: ./
-#        with:
-#          registry: ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+  ecr:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-20.04
+          - ubuntu-18.04
+          - ubuntu-16.04
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Login to ECR
+        uses: ./
+        with:
+          registry: ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  ecr-aws-creds:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-20.04
+          - ubuntu-18.04
+          - ubuntu-16.04
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      -
+        name: Login to ECR
+        uses: ./
+        with:
+          registry: ${{ secrets.AWS_ACCOUNT_NUMBER }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
 
   github-package:
     runs-on: ubuntu-latest
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v2.3.2
+        uses: actions/checkout@v2
       -
         name: Login to GitHub Package Registry
         uses: ./
@@ -95,7 +95,7 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v2.3.2
+        uses: actions/checkout@v2
       -
         name: Login to GitHub Package Registry
         uses: ./
@@ -109,7 +109,7 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v2.3.2
+        uses: actions/checkout@v2
       -
         name: Login to GitLab
         uses: ./
@@ -118,30 +118,30 @@ jobs:
           username: ${{ secrets.GITLAB_USERNAME }}
           password: ${{ secrets.GITLAB_TOKEN }}
 
-#  google-artifact:
-#    runs-on: ubuntu-latest
-#    steps:
-#      -
-#        name: Checkout
-#        uses: actions/checkout@v2.3.2
-#      -
-#        name: Login to Google Artifact Registry
-#        uses: ./
-#        with:
-#          registry: ${{ secrets.GAR_LOCATION }}-docker.pkg.dev
-#          username: _json_key
-#          password: ${{ secrets.GAR_JSON_KEY }}
-#
-#  google-container:
-#    runs-on: ubuntu-latest
-#    steps:
-#      -
-#        name: Checkout
-#        uses: actions/checkout@v2.3.2
-#      -
-#        name: Login to Google Container Registry
-#        uses: ./
-#        with:
-#          registry: gcr.io
-#          username: _json_key
-#          password: ${{ secrets.GCR_JSON_KEY }}
+  google-artifact:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Login to Google Artifact Registry
+        uses: ./
+        with:
+          registry: ${{ secrets.GAR_LOCATION }}-docker.pkg.dev
+          username: _json_key
+          password: ${{ secrets.GAR_JSON_KEY }}
+
+  google-container:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Login to Google Container Registry
+        uses: ./
+        with:
+          registry: gcr.io
+          username: _json_key
+          password: ${{ secrets.GCR_JSON_KEY }}
