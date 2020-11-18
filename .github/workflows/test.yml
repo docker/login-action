@@ -24,7 +24,7 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v2.3.2
+        uses: actions/checkout@v2
       -
         name: Install
         run: yarn install
@@ -33,7 +33,7 @@ jobs:
         run: yarn run test
       -
         name: Upload coverage
-        uses: codecov/codecov-action@v1.0.13
+        uses: codecov/codecov-action@v1
         if: success()
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
