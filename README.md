@@ -339,3 +339,23 @@ updates:
 ## Limitation
 
 This action is only available for Linux [virtual environments](https://help.github.com/en/articles/virtual-environments-for-github-actions#supported-virtual-environments-and-hardware-resources).
+
+Note that if you plan on interacting with a private registry from _within_
+a custom Docker-based action (Docker in Docker) you'll want to set the
+`DOCKER_CONFIG` environment variable accordingly:
+
+```yaml
+jobs:
+  build:
+    runs-on: ...
+    env:
+      DOCKER_CONFIG: $HOME/.docker
+    steps:
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: My cool action with some authenticated DinD commands
+      uses: ./actions/my_cool_action/
+```
