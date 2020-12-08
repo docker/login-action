@@ -9,6 +9,33 @@ on:
       - master
 
 jobs:
+  dind:
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_CONFIG: $HOME/.docker
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Login to GitHub Container Registry
+        uses: ./
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.GHCR_USERNAME }}
+          password: ${{ secrets.GHCR_PAT }}
+      -
+        name: DinD
+        uses: docker://docker
+        with:
+          entrypoint: docker
+          args: pull ghcr.io/docker-ghactiontest/test
+      -
+        name: Pull private image
+        run: |
+          docker image prune -a -f >/dev/null 2>&1
+          docker pull ghcr.io/docker-ghactiontest/test
+
   dockerhub:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -97,7 +124,7 @@ jobs:
         name: Checkout
         uses: actions/checkout@v2
       -
-        name: Login to GitHub Package Registry
+        name: Login to GitHub Container Registry
         uses: ./
         with:
           registry: ghcr.io
