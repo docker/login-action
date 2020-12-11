@@ -30,7 +30,7 @@ export async function loginStandard(registry: string, username: string, password
   if (registry) {
     core.info(`🔑 Logging into ${registry}...`);
   } else {
-    core.info(`🔑 Logging into DockerHub...`);
+    core.info(`🔑 Logging into Docker Hub...`);
   }
   await execm.exec('docker', loginArgs, true, password).then(res => {
     if (res.stderr != '' && !res.success) {
@@ -44,7 +44,12 @@ export async function loginECR(registry: string, username: string, password: str
   const cliPath = await aws.getCLI();
   const cliVersion = await aws.getCLIVersion();
   const region = await aws.getRegion(registry);
-  core.info(`💡 AWS ECR detected with ${region} region`);
+
+  if (await aws.isPubECR(registry)) {
+    core.info(`💡 AWS Public ECR detected with ${region} region`);
+  } else {
+    core.info(`💡 AWS ECR detected with ${region} region`);
+  }
 
   process.env.AWS_ACCESS_KEY_ID = username || process.env.AWS_ACCESS_KEY_ID;
   process.env.AWS_SECRET_ACCESS_KEY = password || process.env.AWS_SECRET_ACCESS_KEY;

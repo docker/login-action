@@ -5,9 +5,21 @@ describe('isECR', () => {
   test.each([
     ['registry.gitlab.com', false],
     ['gcr.io', false],
-    ['012345678901.dkr.ecr.eu-west-3.amazonaws.com', true]
+    ['012345678901.dkr.ecr.eu-west-3.amazonaws.com', true],
+    ['public.ecr.aws', true]
   ])('given registry %p', async (registry, expected) => {
     expect(await aws.isECR(registry)).toEqual(expected);
+  });
+});
+
+describe('isPubECR', () => {
+  test.each([
+    ['registry.gitlab.com', false],
+    ['gcr.io', false],
+    ['012345678901.dkr.ecr.eu-west-3.amazonaws.com', false],
+    ['public.ecr.aws', true]
+  ])('given registry %p', async (registry, expected) => {
+    expect(await aws.isPubECR(registry)).toEqual(expected);
   });
 });
 
@@ -45,10 +57,10 @@ describe('parseCLIVersion', () => {
 });
 
 describe('getRegion', () => {
-  test.each([['012345678901.dkr.ecr.eu-west-3.amazonaws.com', 'eu-west-3']])(
-    'given registry %p',
-    async (registry, expected) => {
-      expect(await aws.getRegion(registry)).toEqual(expected);
-    }
-  );
+  test.each([
+    ['012345678901.dkr.ecr.eu-west-3.amazonaws.com', 'eu-west-3'],
+    ['public.ecr.aws', 'us-east-1']
+  ])('given registry %p', async (registry, expected) => {
+    expect(await aws.getRegion(registry)).toEqual(expected);
+  });
 });

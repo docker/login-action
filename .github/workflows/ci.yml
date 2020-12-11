@@ -50,7 +50,7 @@ jobs:
         name: Checkout
         uses: actions/checkout@v2
       -
-        name: Login to DockerHub
+        name: Login to Docker Hub
         uses: ./
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
