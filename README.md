@@ -18,7 +18,7 @@ GitHub Action to login against a Docker registry.
 ___
 
 * [Usage](#usage)
-  * [DockerHub](#dockerhub)
+  * [Docker Hub](#docker-hub)
   * [GitHub Packages Docker Registry](#github-packages-docker-registry)
   * [GitHub Container Registry](#github-container-registry)
   * [GitLab](#gitlab)
@@ -26,6 +26,7 @@ ___
   * [Google Container Registry (GCR)](#google-container-registry-gcr)
   * [Google Artifact Registry (GAR)](#google-artifact-registry-gar)
   * [AWS Elastic Container Registry (ECR)](#aws-elastic-container-registry-ecr)
+  * [AWS Public Elastic Container Registry (ECR)](#aws-public-elastic-container-registry-ecr)
   * [OCI Oracle Cloud Infrastructure Registry (OCIR)](#oci-oracle-cloud-infrastructure-registry-ocir)
 * [Customizing](#customizing)
   * [inputs](#inputs)
@@ -34,9 +35,9 @@ ___
 
 ## Usage
 
-### DockerHub
+### Docker Hub
 
-To authenticate against [DockerHub](https://hub.docker.com) it's strongly recommended to create a
+To authenticate against [Docker Hub](https://hub.docker.com) it's strongly recommended to create a
 [personal access token](https://docs.docker.com/docker-hub/access-tokens/) as an alternative to your password.
 
 ```yaml
@@ -51,7 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       -
-        name: Login to DockerHub
+        name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -279,6 +280,66 @@ jobs:
 ```
 
 > Replace `<aws-account-number>` and `<region>` with their respective values.
+
+### AWS Public Elastic Container Registry (ECR)
+
+Use an IAM user with the [ability to push to ECR](https://docs.aws.amazon.com/AmazonECR/latest/userguide/ecr_managed_policies.html).
+Then create and download access keys and save `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` [as secrets](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository)
+in your GitHub repo.
+
+```yaml
+name: ci
+
+on:
+  push:
+    branches: master
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Login to Public ECR
+        uses: docker/login-action@v1
+        with:
+          registry: public.ecr.aws
+          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        env:
+          AWS_REGION: <region>
+```
+
+> Replace `<region>` with its respective value (default `us-east-1`).
+
+You can also use the [Configure AWS Credentials](https://github.com/aws-actions/configure-aws-credentials) action in
+combination with this action:
+
+```yaml
+name: ci
+
+on:
+  push:
+    branches: master
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: <region>
+      -
+        name: Login to Public ECR
+        uses: docker/login-action@v1
+        with:
+          registry: public.ecr.aws
+```
+
+> Replace `<region>` with its respective value.
 
 ### OCI Oracle Cloud Infrastructure Registry (OCIR)
 To push into OCIR in specific tenancy the [username](https://www.oracle.com/webfolder/technetwork/tutorials/obe/oci/registry/index.html#LogintoOracleCloudInfrastructureRegistryfromtheDockerCLI)

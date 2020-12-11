@@ -3,10 +3,17 @@ import * as io from '@actions/io';
 import * as execm from './exec';
 
 export const isECR = async (registry: string): Promise<boolean> => {
-  return registry.includes('amazonaws');
+  return registry.includes('amazonaws') || (await isPubECR(registry));
+};
+
+export const isPubECR = async (registry: string): Promise<boolean> => {
+  return registry === 'public.ecr.aws';
 };
 
 export const getRegion = async (registry: string): Promise<string> => {
+  if (await isPubECR(registry)) {
+    return process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || 'us-east-1';
+  }
   return registry.substring(registry.indexOf('ecr.') + 4, registry.indexOf('.amazonaws'));
 };
 
@@ -39,12 +46,13 @@ export const parseCLIVersion = async (stdout: string): Promise<string> => {
 };
 
 export const getDockerLoginCmd = async (cliVersion: string, registry: string, region: string): Promise<string> => {
+  let ecrCmd = (await isPubECR(registry)) ? 'ecr-public' : 'ecr';
   if (semver.satisfies(cliVersion, '>=2.0.0')) {
-    return execCLI(['ecr', 'get-login-password', '--region', region]).then(pwd => {
+    return execCLI([ecrCmd, 'get-login-password', '--region', region]).then(pwd => {
       return `docker login --username AWS --password ${pwd} ${registry}`;
     });
   } else {
-    return execCLI(['ecr', 'get-login', '--region', region, '--no-include-email']).then(dockerLoginCmd => {
+    return execCLI([ecrCmd, 'get-login', '--region', region, '--no-include-email']).then(dockerLoginCmd => {
       return dockerLoginCmd;
     });
   }
