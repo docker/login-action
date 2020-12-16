@@ -3097,13 +3097,20 @@ function loginECR(registry, username, password) {
         process.env.AWS_ACCESS_KEY_ID = username || process.env.AWS_ACCESS_KEY_ID;
         process.env.AWS_SECRET_ACCESS_KEY = password || process.env.AWS_SECRET_ACCESS_KEY;
         core.info(`⬇️ Retrieving docker login command through AWS CLI ${cliVersion} (${cliPath})...`);
-        const loginCmd = yield aws.getDockerLoginCmd(cliVersion, registry, region);
+        const loginCmds = yield aws.getDockerLoginCmds(cliVersion, registry, region);
         core.info(`🔑 Logging into ${registry}...`);
-        execm.exec(loginCmd, [], true).then(res => {
-            if (res.stderr != '' && !res.success) {
-                throw new Error(res.stderr);
-            }
-            core.info('🎉 Login Succeeded!');
+        loginCmds.forEach((loginCmd, index) => {
+            execm.exec(loginCmd, [], true).then(res => {
+                if (res.stderr != '' && !res.success) {
+                    throw new Error(res.stderr);
+                }
+                if (loginCmds.length > 1) {
+                    core.info(`🎉 Login Succeeded! (${index}/${loginCmds.length})`);
+                }
+                else {
+                    core.info('🎉 Login Succeeded!');
+                }
+            });
         });
     });
 }
@@ -4160,7 +4167,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDockerLoginCmd = exports.parseCLIVersion = exports.getCLIVersion = exports.execCLI = exports.getCLI = exports.getRegion = exports.isPubECR = exports.isECR = void 0;
+exports.getDockerLoginCmds = exports.parseCLIVersion = exports.getCLIVersion = exports.execCLI = exports.getCLI = exports.getRegion = exports.isPubECR = exports.isECR = void 0;
 const semver = __importStar(__webpack_require__(383));
 const io = __importStar(__webpack_require__(436));
 const execm = __importStar(__webpack_require__(757));
@@ -4202,16 +4209,20 @@ exports.parseCLIVersion = (stdout) => __awaiter(void 0, void 0, void 0, function
     }
     return semver.clean(matches[1]);
 });
-exports.getDockerLoginCmd = (cliVersion, registry, region) => __awaiter(void 0, void 0, void 0, function* () {
+exports.getDockerLoginCmds = (cliVersion, registry, region) => __awaiter(void 0, void 0, void 0, function* () {
     let ecrCmd = (yield exports.isPubECR(registry)) ? 'ecr-public' : 'ecr';
     if (semver.satisfies(cliVersion, '>=2.0.0')) {
         return exports.execCLI([ecrCmd, 'get-login-password', '--region', region]).then(pwd => {
-            return `docker login --username AWS --password ${pwd} ${registry}`;
+            return [`docker login --username AWS --password ${pwd} ${registry}`];
         });
     }
     else {
-        return exports.execCLI([ecrCmd, 'get-login', '--region', region, '--no-include-email']).then(dockerLoginCmd => {
-            return dockerLoginCmd;
+        let args = [ecrCmd, 'get-login', '--region', region, '--no-include-email'];
+        if (process.env.AWS_ECR_REGISTRY_IDS) {
+            args.push('--registry-ids', process.env.AWS_ECR_REGISTRY_IDS);
+        }
+        return exports.execCLI(args).then(dockerLoginCmds => {
+            return dockerLoginCmds.trim().split(`\n`);
         });
     }
 });
