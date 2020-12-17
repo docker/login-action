@@ -1,6 +1,6 @@
 [![GitHub release](https://img.shields.io/github/release/docker/login-action.svg?style=flat-square)](https://github.com/docker/login-action/releases/latest)
 [![GitHub marketplace](https://img.shields.io/badge/marketplace-docker--login-blue?logo=github&style=flat-square)](https://github.com/marketplace/actions/docker-login)
-[![CI workflow](https://img.shields.io/github/workflow/status/docker/login-action/test?label=ci&logo=github&style=flat-square)](https://github.com/docker/login-action/actions?workflow=ci)
+[![CI workflow](https://img.shields.io/github/workflow/status/docker/login-action/ci?label=ci&logo=github&style=flat-square)](https://github.com/docker/login-action/actions?workflow=ci)
 [![Test workflow](https://img.shields.io/github/workflow/status/docker/login-action/test?label=test&logo=github&style=flat-square)](https://github.com/docker/login-action/actions?workflow=test)
 [![Codecov](https://img.shields.io/codecov/c/github/docker/login-action?logo=codecov&style=flat-square)](https://codecov.io/gh/docker/login-action)
 
