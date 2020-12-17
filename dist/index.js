@@ -4204,7 +4204,7 @@ exports.parseCLIVersion = (stdout) => __awaiter(void 0, void 0, void 0, function
 });
 exports.getDockerLoginCmd = (cliVersion, registry, region) => __awaiter(void 0, void 0, void 0, function* () {
     let ecrCmd = (yield exports.isPubECR(registry)) ? 'ecr-public' : 'ecr';
-    if (semver.satisfies(cliVersion, '>=2.0.0')) {
+    if (semver.satisfies(cliVersion, '>=2.0.0') || (yield exports.isPubECR(registry))) {
         return exports.execCLI([ecrCmd, 'get-login-password', '--region', region]).then(pwd => {
             return `docker login --username AWS --password ${pwd} ${registry}`;
         });

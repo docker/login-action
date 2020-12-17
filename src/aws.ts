@@ -47,7 +47,7 @@ export const parseCLIVersion = async (stdout: string): Promise<string> => {
 
 export const getDockerLoginCmd = async (cliVersion: string, registry: string, region: string): Promise<string> => {
   let ecrCmd = (await isPubECR(registry)) ? 'ecr-public' : 'ecr';
-  if (semver.satisfies(cliVersion, '>=2.0.0')) {
+  if (semver.satisfies(cliVersion, '>=2.0.0') || (await isPubECR(registry))) {
     return execCLI([ecrCmd, 'get-login-password', '--region', region]).then(pwd => {
       return `docker login --username AWS --password ${pwd} ${registry}`;
     });
