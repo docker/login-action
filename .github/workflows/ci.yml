@@ -123,34 +123,6 @@ jobs:
           registry: public.ecr.aws
           username: ${{ secrets.AWS_ACCESS_KEY_ID }}
           password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        env:
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-
-  ecr-public-aws-creds:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-20.04
-          - ubuntu-18.04
-          - ubuntu-16.04
-    steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v2
-      -
-        name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-      -
-        name: Login to Public ECR
-        uses: ./
-        with:
-          registry: public.ecr.aws
 
   github-package:
     runs-on: ubuntu-latest
