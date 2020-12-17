@@ -2,19 +2,40 @@ import * as semver from 'semver';
 import * as io from '@actions/io';
 import * as execm from './exec';
 
-export const isECR = async (registry: string): Promise<boolean> => {
-  return registry.includes('amazonaws') || (await isPubECR(registry));
+const ecrRegistryRegex = /^(([0-9]{12})\.dkr\.ecr\.(.+)\.amazonaws\.com(.cn)?)(\/([^:]+)(:.+)?)?$/;
+
+export const isECR = (registry: string): boolean => {
+  return ecrRegistryRegex.test(registry) || isPubECR(registry);
 };
 
-export const isPubECR = async (registry: string): Promise<boolean> => {
+export const isPubECR = (registry: string): boolean => {
   return registry === 'public.ecr.aws';
 };
 
-export const getRegion = async (registry: string): Promise<string> => {
-  if (await isPubECR(registry)) {
+export const getRegion = (registry: string): string => {
+  if (isPubECR(registry)) {
     return process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || 'us-east-1';
   }
-  return registry.substring(registry.indexOf('ecr.') + 4, registry.indexOf('.amazonaws'));
+  const matches = registry.match(ecrRegistryRegex);
+  if (!matches) {
+    return '';
+  }
+  return matches[3];
+};
+
+export const getAccountIDs = (registry: string): string[] => {
+  if (isPubECR(registry)) {
+    return [];
+  }
+  const matches = registry.match(ecrRegistryRegex);
+  if (!matches) {
+    return [];
+  }
+  let accountIDs: Array<string> = [matches[2]];
+  if (process.env.AWS_ACCOUNT_IDS) {
+    accountIDs.push(...process.env.AWS_ACCOUNT_IDS.split(','));
+  }
+  return accountIDs.filter((item, index) => accountIDs.indexOf(item) === index);
 };
 
 export const getCLI = async (): Promise<string> => {
@@ -45,18 +66,27 @@ export const parseCLIVersion = async (stdout: string): Promise<string> => {
   return semver.clean(matches[1]);
 };
 
-export const getDockerLoginCmds = async (cliVersion: string, registry: string, region: string): Promise<string[]> => {
+export const getDockerLoginCmds = async (
+  cliVersion: string,
+  registry: string,
+  region: string,
+  accountIDs: string[]
+): Promise<string[]> => {
   let ecrCmd = (await isPubECR(registry)) ? 'ecr-public' : 'ecr';
   if (semver.satisfies(cliVersion, '>=2.0.0')) {
     return execCLI([ecrCmd, 'get-login-password', '--region', region]).then(pwd => {
       return [`docker login --username AWS --password ${pwd} ${registry}`];
     });
   } else {
-    let args: Array<string> = [ecrCmd, 'get-login', '--region', region, '--no-include-email'];
-    if (process.env.AWS_ECR_REGISTRY_IDS) {
-      args.push('--registry-ids', process.env.AWS_ECR_REGISTRY_IDS);
-    }
-    return execCLI(args).then(dockerLoginCmds => {
+    return execCLI([
+      ecrCmd,
+      'get-login',
+      '--region',
+      region,
+      '--registry-ids',
+      accountIDs.join(' '),
+      '--no-include-email'
+    ]).then(dockerLoginCmds => {
       return dockerLoginCmds.trim().split(`\n`);
     });
   }
