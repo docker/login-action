@@ -227,7 +227,7 @@ jobs:
 
 ### AWS Elastic Container Registry (ECR)
 
-Use an IAM user with the [ability to push to ECR](https://docs.aws.amazon.com/AmazonECR/latest/userguide/ecr_managed_policies.html).
+Use an IAM user with the ability to [push to ECR with `AmazonEC2ContainerRegistryPowerUser` managed policy for example](https://docs.aws.amazon.com/AmazonECR/latest/userguide/ecr_managed_policies.html#AmazonEC2ContainerRegistryPowerUser).
 Then create and download access keys and save `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` [as secrets](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository)
 in your GitHub repo.
 
@@ -250,6 +250,33 @@ jobs:
           username: ${{ secrets.AWS_ACCESS_KEY_ID }}
           password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 ```
+
+If you need to log in to Amazon ECR registries associated with other accounts, you can use the `AWS_ACCOUNT_IDS`
+environment variable:
+
+```yaml
+name: ci
+
+on:
+  push:
+    branches: master
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Login to ECR
+        uses: docker/login-action@v1
+        with:
+          registry: <aws-account-number>.dkr.ecr.<region>.amazonaws.com
+          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        env:
+          AWS_ACCOUNT_IDS: 012345678910,023456789012
+```
+
+> Only available with [AWS CLI version 1](https://docs.aws.amazon.com/cli/latest/reference/ecr/get-login.html)
 
 You can also use the [Configure AWS Credentials](https://github.com/aws-actions/configure-aws-credentials) action in
 combination with this action:
@@ -283,7 +310,7 @@ jobs:
 
 ### AWS Public Elastic Container Registry (ECR)
 
-Use an IAM user with the [ability to push to ECR](https://docs.aws.amazon.com/AmazonECR/latest/userguide/ecr_managed_policies.html).
+Use an IAM user with the ability to [push to ECR Public with `AmazonElasticContainerRegistryPublicPowerUser` managed policy for example](https://docs.aws.amazon.com/AmazonECR/latest/public/public-ecr-managed-policies.html#AmazonElasticContainerRegistryPublicPowerUser).
 Then create and download access keys and save `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` [as secrets](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository)
 in your GitHub repo.
 
@@ -311,41 +338,15 @@ jobs:
 
 > Replace `<region>` with its respective value (default `us-east-1`).
 
-You can also use the [Configure AWS Credentials](https://github.com/aws-actions/configure-aws-credentials) action in
-combination with this action:
-
-```yaml
-name: ci
-
-on:
-  push:
-    branches: master
-
-jobs:
-  login:
-    runs-on: ubuntu-latest
-    steps:
-      -
-        name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: <region>
-      -
-        name: Login to Public ECR
-        uses: docker/login-action@v1
-        with:
-          registry: public.ecr.aws
-```
-
-> Replace `<region>` with its respective value.
-
 ### OCI Oracle Cloud Infrastructure Registry (OCIR)
+
 To push into OCIR in specific tenancy the [username](https://www.oracle.com/webfolder/technetwork/tutorials/obe/oci/registry/index.html#LogintoOracleCloudInfrastructureRegistryfromtheDockerCLI)
-must be placed in format `<tenancy>/<username>` (in case of federated tenancy use the format `<tenancy-namespace>/oracleidentitycloudservice/<username>`). 
-For password [create an auth token](https://www.oracle.com/webfolder/technetwork/tutorials/obe/oci/registry/index.html#GetanAuthToken). Save username and token
- [as a secrets](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository) in your GitHub repo. 
+must be placed in format `<tenancy>/<username>` (in case of federated tenancy use the format
+`<tenancy-namespace>/oracleidentitycloudservice/<username>`).
+
+For password [create an auth token](https://www.oracle.com/webfolder/technetwork/tutorials/obe/oci/registry/index.html#GetanAuthToken).
+Save username and token [as a secrets](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository)
+in your GitHub repo. 
 
 ```yaml
 name: ci
@@ -366,6 +367,7 @@ jobs:
           username: ${{ secrets.OCI_USERNAME }}
           password: ${{ secrets.OCI_TOKEN }}
 ```
+
 > Replace `<region>` with their respective values from [availability regions](https://docs.cloud.oracle.com/iaas/Content/Registry/Concepts/registryprerequisites.htm#Availab)
 
 ## Customizing

@@ -44,6 +44,7 @@ export async function loginECR(registry: string, username: string, password: str
   const cliPath = await aws.getCLI();
   const cliVersion = await aws.getCLIVersion();
   const region = await aws.getRegion(registry);
+  const accountIDs = await aws.getAccountIDs(registry);
 
   if (await aws.isPubECR(registry)) {
     core.info(`💡 AWS Public ECR detected with ${region} region`);
@@ -55,13 +56,19 @@ export async function loginECR(registry: string, username: string, password: str
   process.env.AWS_SECRET_ACCESS_KEY = password || process.env.AWS_SECRET_ACCESS_KEY;
 
   core.info(`⬇️ Retrieving docker login command through AWS CLI ${cliVersion} (${cliPath})...`);
-  const loginCmd = await aws.getDockerLoginCmd(cliVersion, registry, region);
+  const loginCmds = await aws.getDockerLoginCmds(cliVersion, registry, region, accountIDs);
 
   core.info(`🔑 Logging into ${registry}...`);
-  execm.exec(loginCmd, [], true).then(res => {
-    if (res.stderr != '' && !res.success) {
-      throw new Error(res.stderr);
-    }
-    core.info('🎉 Login Succeeded!');
+  loginCmds.forEach((loginCmd, index) => {
+    execm.exec(loginCmd, [], true).then(res => {
+      if (res.stderr != '' && !res.success) {
+        throw new Error(res.stderr);
+      }
+      if (loginCmds.length > 1) {
+        core.info(`🎉 Login Succeeded! (${index}/${loginCmds.length})`);
+      } else {
+        core.info('🎉 Login Succeeded!');
+      }
+    });
   });
 }

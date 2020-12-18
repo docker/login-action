@@ -3088,6 +3088,7 @@ function loginECR(registry, username, password) {
         const cliPath = yield aws.getCLI();
         const cliVersion = yield aws.getCLIVersion();
         const region = yield aws.getRegion(registry);
+        const accountIDs = yield aws.getAccountIDs(registry);
         if (yield aws.isPubECR(registry)) {
             core.info(`💡 AWS Public ECR detected with ${region} region`);
         }
@@ -3097,13 +3098,20 @@ function loginECR(registry, username, password) {
         process.env.AWS_ACCESS_KEY_ID = username || process.env.AWS_ACCESS_KEY_ID;
         process.env.AWS_SECRET_ACCESS_KEY = password || process.env.AWS_SECRET_ACCESS_KEY;
         core.info(`⬇️ Retrieving docker login command through AWS CLI ${cliVersion} (${cliPath})...`);
-        const loginCmd = yield aws.getDockerLoginCmd(cliVersion, registry, region);
+        const loginCmds = yield aws.getDockerLoginCmds(cliVersion, registry, region, accountIDs);
         core.info(`🔑 Logging into ${registry}...`);
-        execm.exec(loginCmd, [], true).then(res => {
-            if (res.stderr != '' && !res.success) {
-                throw new Error(res.stderr);
-            }
-            core.info('🎉 Login Succeeded!');
+        loginCmds.forEach((loginCmd, index) => {
+            execm.exec(loginCmd, [], true).then(res => {
+                if (res.stderr != '' && !res.success) {
+                    throw new Error(res.stderr);
+                }
+                if (loginCmds.length > 1) {
+                    core.info(`🎉 Login Succeeded! (${index}/${loginCmds.length})`);
+                }
+                else {
+                    core.info('🎉 Login Succeeded!');
+                }
+            });
         });
     });
 }
@@ -4160,22 +4168,41 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDockerLoginCmd = exports.parseCLIVersion = exports.getCLIVersion = exports.execCLI = exports.getCLI = exports.getRegion = exports.isPubECR = exports.isECR = void 0;
+exports.getDockerLoginCmds = exports.parseCLIVersion = exports.getCLIVersion = exports.execCLI = exports.getCLI = exports.getAccountIDs = exports.getRegion = exports.isPubECR = exports.isECR = void 0;
 const semver = __importStar(__webpack_require__(383));
 const io = __importStar(__webpack_require__(436));
 const execm = __importStar(__webpack_require__(757));
-exports.isECR = (registry) => __awaiter(void 0, void 0, void 0, function* () {
-    return registry.includes('amazonaws') || (yield exports.isPubECR(registry));
-});
-exports.isPubECR = (registry) => __awaiter(void 0, void 0, void 0, function* () {
+const ecrRegistryRegex = /^(([0-9]{12})\.dkr\.ecr\.(.+)\.amazonaws\.com(.cn)?)(\/([^:]+)(:.+)?)?$/;
+exports.isECR = (registry) => {
+    return ecrRegistryRegex.test(registry) || exports.isPubECR(registry);
+};
+exports.isPubECR = (registry) => {
     return registry === 'public.ecr.aws';
-});
-exports.getRegion = (registry) => __awaiter(void 0, void 0, void 0, function* () {
-    if (yield exports.isPubECR(registry)) {
+};
+exports.getRegion = (registry) => {
+    if (exports.isPubECR(registry)) {
         return process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || 'us-east-1';
     }
-    return registry.substring(registry.indexOf('ecr.') + 4, registry.indexOf('.amazonaws'));
-});
+    const matches = registry.match(ecrRegistryRegex);
+    if (!matches) {
+        return '';
+    }
+    return matches[3];
+};
+exports.getAccountIDs = (registry) => {
+    if (exports.isPubECR(registry)) {
+        return [];
+    }
+    const matches = registry.match(ecrRegistryRegex);
+    if (!matches) {
+        return [];
+    }
+    let accountIDs = [matches[2]];
+    if (process.env.AWS_ACCOUNT_IDS) {
+        accountIDs.push(...process.env.AWS_ACCOUNT_IDS.split(','));
+    }
+    return accountIDs.filter((item, index) => accountIDs.indexOf(item) === index);
+};
 exports.getCLI = () => __awaiter(void 0, void 0, void 0, function* () {
     return io.which('aws', true);
 });
@@ -4202,16 +4229,24 @@ exports.parseCLIVersion = (stdout) => __awaiter(void 0, void 0, void 0, function
     }
     return semver.clean(matches[1]);
 });
-exports.getDockerLoginCmd = (cliVersion, registry, region) => __awaiter(void 0, void 0, void 0, function* () {
+exports.getDockerLoginCmds = (cliVersion, registry, region, accountIDs) => __awaiter(void 0, void 0, void 0, function* () {
     let ecrCmd = (yield exports.isPubECR(registry)) ? 'ecr-public' : 'ecr';
     if (semver.satisfies(cliVersion, '>=2.0.0') || (yield exports.isPubECR(registry))) {
         return exports.execCLI([ecrCmd, 'get-login-password', '--region', region]).then(pwd => {
-            return `docker login --username AWS --password ${pwd} ${registry}`;
+            return [`docker login --username AWS --password ${pwd} ${registry}`];
         });
     }
     else {
-        return exports.execCLI([ecrCmd, 'get-login', '--region', region, '--no-include-email']).then(dockerLoginCmd => {
-            return dockerLoginCmd;
+        return exports.execCLI([
+            ecrCmd,
+            'get-login',
+            '--region',
+            region,
+            '--registry-ids',
+            accountIDs.join(' '),
+            '--no-include-email'
+        ]).then(dockerLoginCmds => {
+            return dockerLoginCmds.trim().split(`\n`);
         });
     }
 });

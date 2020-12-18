@@ -6,6 +6,8 @@ describe('isECR', () => {
     ['registry.gitlab.com', false],
     ['gcr.io', false],
     ['012345678901.dkr.ecr.eu-west-3.amazonaws.com', true],
+    ['876820548815.dkr.ecr.cn-north-1.amazonaws.com.cn', true],
+    ['390948362332.dkr.ecr.cn-northwest-1.amazonaws.com.cn', true],
     ['public.ecr.aws', true]
   ])('given registry %p', async (registry, expected) => {
     expect(await aws.isECR(registry)).toEqual(expected);
@@ -17,6 +19,8 @@ describe('isPubECR', () => {
     ['registry.gitlab.com', false],
     ['gcr.io', false],
     ['012345678901.dkr.ecr.eu-west-3.amazonaws.com', false],
+    ['876820548815.dkr.ecr.cn-north-1.amazonaws.com.cn', false],
+    ['390948362332.dkr.ecr.cn-northwest-1.amazonaws.com.cn', false],
     ['public.ecr.aws', true]
   ])('given registry %p', async (registry, expected) => {
     expect(await aws.isPubECR(registry)).toEqual(expected);
@@ -59,8 +63,37 @@ describe('parseCLIVersion', () => {
 describe('getRegion', () => {
   test.each([
     ['012345678901.dkr.ecr.eu-west-3.amazonaws.com', 'eu-west-3'],
+    ['876820548815.dkr.ecr.cn-north-1.amazonaws.com.cn', 'cn-north-1'],
+    ['390948362332.dkr.ecr.cn-northwest-1.amazonaws.com.cn', 'cn-northwest-1'],
     ['public.ecr.aws', 'us-east-1']
   ])('given registry %p', async (registry, expected) => {
     expect(await aws.getRegion(registry)).toEqual(expected);
+  });
+});
+
+describe('getAccountIDs', () => {
+  test.each([
+    ['012345678901.dkr.ecr.eu-west-3.amazonaws.com', undefined, ['012345678901']],
+    [
+      '012345678901.dkr.ecr.eu-west-3.amazonaws.com',
+      '012345678910,023456789012',
+      ['012345678901', '012345678910', '023456789012']
+    ],
+    [
+      '012345678901.dkr.ecr.eu-west-3.amazonaws.com',
+      '012345678901,012345678910,023456789012',
+      ['012345678901', '012345678910', '023456789012']
+    ],
+    [
+      '390948362332.dkr.ecr.cn-northwest-1.amazonaws.com.cn',
+      '012345678910,023456789012',
+      ['390948362332', '012345678910', '023456789012']
+    ],
+    ['public.ecr.aws', undefined, []]
+  ])('given registry %p', async (registry, accountIDsEnv, expected) => {
+    if (accountIDsEnv) {
+      process.env.AWS_ACCOUNT_IDS = accountIDsEnv;
+    }
+    expect(await aws.getAccountIDs(registry)).toEqual(expected);
   });
 });
