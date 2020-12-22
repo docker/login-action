@@ -179,17 +179,17 @@ jobs:
 #          registry: ${{ secrets.GAR_LOCATION }}-docker.pkg.dev
 #          username: _json_key
 #          password: ${{ secrets.GAR_JSON_KEY }}
-#
-#  google-container:
-#    runs-on: ubuntu-latest
-#    steps:
-#      -
-#        name: Checkout
-#        uses: actions/checkout@v2
-#      -
-#        name: Login to Google Container Registry
-#        uses: ./
-#        with:
-#          registry: gcr.io
-#          username: _json_key
-#          password: ${{ secrets.GCR_JSON_KEY }}
+
+  google-container:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Login to Google Container Registry
+        uses: ./
+        with:
+          registry: gcr.io
+          username: _json_key
+          password: ${{ secrets.GCR_JSON_KEY }}
