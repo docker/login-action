@@ -10,6 +10,9 @@ inputs:
   registry:
     description: 'Server address of Docker registry. If not set then will default to Docker Hub'
     required: false
+  isECR:
+    description: 'Specifies whethre the given registry is ECR. Uses regex by default to detect automatically'
+    required: false
   username:
     description: 'Username used to log against the Docker registry'
     required: false
