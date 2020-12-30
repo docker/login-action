@@ -10,10 +10,10 @@ export async function run(): Promise<void> {
       throw new Error('Only supported on linux platform');
     }
 
-    const {registry, username, password, logout} = getInputs();
+    const {registry, isECR, username, password, logout} = getInputs();
     stateHelper.setRegistry(registry);
     stateHelper.setLogout(logout);
-    await docker.login(registry, username, password);
+    await docker.login(registry, username, password, isECR);
   } catch (error) {
     core.setFailed(error.message);
   }
