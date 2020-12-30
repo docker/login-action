@@ -3,7 +3,7 @@ import * as aws from './aws';
 import * as execm from './exec';
 
 export async function login(registry: string, username: string, password: string, isECR?: boolean): Promise<void> {
-  if (await aws.isECR(registry)) {
+  if (isECR == true || (isECR == undefined && await aws.isECR(registry))) {
     await loginECR(registry, username, password);
   } else {
     await loginStandard(registry, username, password);
