@@ -90,7 +90,8 @@ jobs:
 ### GitHub Container Registry
 
 To authenticate against the [GitHub Container Registry](https://docs.github.com/en/packages/getting-started-with-github-container-registry),
-you will need to create a new [personal access token (PAT)](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)
+you will need to [enable it for your user or organization account](https://docs.github.com/en/packages/guides/enabling-improved-container-support)
+and create a new [personal access token (PAT)](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)
 with the [appropriate scopes](https://docs.github.com/en/packages/getting-started-with-github-container-registry/migrating-to-github-container-registry-for-docker-images#authenticating-with-the-container-registry).
 
 ```yaml
