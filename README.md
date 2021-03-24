@@ -89,10 +89,12 @@ jobs:
 
 ### GitHub Container Registry
 
-To authenticate against the [GitHub Container Registry](https://docs.github.com/en/packages/getting-started-with-github-container-registry),
-you will need to [enable it for your user or organization account](https://docs.github.com/en/packages/guides/enabling-improved-container-support)
-and create a new [personal access token (PAT)](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)
-with the [appropriate scopes](https://docs.github.com/en/packages/getting-started-with-github-container-registry/migrating-to-github-container-registry-for-docker-images#authenticating-with-the-container-registry).
+To use the [GitHub Container Registry](https://docs.github.com/en/packages/getting-started-with-github-container-registry),
+you need to [enable this feature for your personal or organization account](https://docs.github.com/en/packages/guides/enabling-improved-container-support).
+
+To [authenticate against it](https://docs.github.com/en/packages/guides/migrating-to-github-container-registry-for-docker-images#authenticating-with-the-container-registry),
+use the [`GITHUB_TOKEN`](https://docs.github.com/en/actions/reference/authentication-in-a-workflow) for the best
+security and experience.
 
 ```yaml
 name: ci
@@ -111,8 +113,15 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
-          password: ${{ secrets.CR_PAT }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 ```
+
+You may need to manage write and read access of GitHub Actions for repositories in the container settings:
+
+![Manage Actions access](.github/ghcr-manage-actions-access.gif)
+
+You can also use a [personal access token (PAT)](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)
+with the [appropriate scopes](https://docs.github.com/en/packages/getting-started-with-github-container-registry/migrating-to-github-container-registry-for-docker-images#authenticating-with-the-container-registry).
 
 ### GitLab
 

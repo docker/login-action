@@ -149,8 +149,8 @@ jobs:
         uses: ./
         with:
           registry: ghcr.io
-          username: ${{ secrets.GHCR_USERNAME }}
-          password: ${{ secrets.GHCR_PAT }}
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
   gitlab:
     runs-on: ubuntu-latest
