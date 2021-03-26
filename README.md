@@ -28,6 +28,7 @@ ___
   * [AWS Elastic Container Registry (ECR)](#aws-elastic-container-registry-ecr)
   * [AWS Public Elastic Container Registry (ECR)](#aws-public-elastic-container-registry-ecr)
   * [OCI Oracle Cloud Infrastructure Registry (OCIR)](#oci-oracle-cloud-infrastructure-registry-ocir)
+  * [Quay.io](#quayio)
 * [Customizing](#customizing)
   * [inputs](#inputs)
 * [Keep up-to-date with GitHub Dependabot](#keep-up-to-date-with-github-dependabot)
