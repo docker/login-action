@@ -380,6 +380,30 @@ jobs:
 
 > Replace `<region>` with their respective values from [availability regions](https://docs.cloud.oracle.com/iaas/Content/Registry/Concepts/registryprerequisites.htm#Availab)
 
+### Quay.io
+
+Use a [Robot account](https://docs.quay.io/glossary/robot-accounts.html) with the ability to push to a public/private Quay.io repository.
+
+```yaml
+name: ci
+
+on:
+  push:
+    branches: master
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Login to Quay.io
+        uses: docker/login-action@v1
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_ROBOT_TOKEN }}
+```
+
 ## Customizing
 
 ### inputs
