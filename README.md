@@ -28,6 +28,7 @@ ___
   * [AWS Elastic Container Registry (ECR)](#aws-elastic-container-registry-ecr)
   * [AWS Public Elastic Container Registry (ECR)](#aws-public-elastic-container-registry-ecr)
   * [OCI Oracle Cloud Infrastructure Registry (OCIR)](#oci-oracle-cloud-infrastructure-registry-ocir)
+  * [Quay.io](#quayio)
 * [Customizing](#customizing)
   * [inputs](#inputs)
 * [Keep up-to-date with GitHub Dependabot](#keep-up-to-date-with-github-dependabot)
@@ -379,6 +380,30 @@ jobs:
 ```
 
 > Replace `<region>` with their respective values from [availability regions](https://docs.cloud.oracle.com/iaas/Content/Registry/Concepts/registryprerequisites.htm#Availab)
+
+### Quay.io
+
+Use a [Robot account](https://docs.quay.io/glossary/robot-accounts.html) with the ability to push to a public/private Quay.io repository.
+
+```yaml
+name: ci
+
+on:
+  push:
+    branches: master
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Login to Quay.io
+        uses: docker/login-action@v1
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_ROBOT_TOKEN }}
+```
 
 ## Customizing
 
