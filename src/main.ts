@@ -7,7 +7,7 @@ import * as stateHelper from './state-helper';
 export async function run(): Promise<void> {
   try {
     if (os.platform() !== 'linux') {
-      throw new Error('Only supported on linux platform');
+      core.warning('This action is intented for linux platform. You may experience problems.');
     }
 
     const {registry, username, password, logout} = getInputs();
