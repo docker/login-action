@@ -28,15 +28,15 @@ export async function loginStandard(registry: string, username: string, password
   loginArgs.push(registry);
 
   if (registry) {
-    core.info(`🔑 Logging into ${registry}...`);
+    core.info(`Logging into ${registry}...`);
   } else {
-    core.info(`🔑 Logging into Docker Hub...`);
+    core.info(`Logging into Docker Hub...`);
   }
   await execm.exec('docker', loginArgs, true, password).then(res => {
     if (res.stderr != '' && !res.success) {
       throw new Error(res.stderr);
     }
-    core.info('🎉 Login Succeeded!');
+    core.info(`Login Succeeded!`);
   });
 }
 
@@ -47,27 +47,27 @@ export async function loginECR(registry: string, username: string, password: str
   const accountIDs = await aws.getAccountIDs(registry);
 
   if (await aws.isPubECR(registry)) {
-    core.info(`💡 AWS Public ECR detected with ${region} region`);
+    core.info(`AWS Public ECR detected with ${region} region`);
   } else {
-    core.info(`💡 AWS ECR detected with ${region} region`);
+    core.info(`AWS ECR detected with ${region} region`);
   }
 
   process.env.AWS_ACCESS_KEY_ID = username || process.env.AWS_ACCESS_KEY_ID;
   process.env.AWS_SECRET_ACCESS_KEY = password || process.env.AWS_SECRET_ACCESS_KEY;
 
-  core.info(`⬇️ Retrieving docker login command through AWS CLI ${cliVersion} (${cliPath})...`);
+  core.info(`Retrieving docker login command through AWS CLI ${cliVersion} (${cliPath})...`);
   const loginCmds = await aws.getDockerLoginCmds(cliVersion, registry, region, accountIDs);
 
-  core.info(`🔑 Logging into ${registry}...`);
+  core.info(`Logging into ${registry}...`);
   loginCmds.forEach((loginCmd, index) => {
     execm.exec(loginCmd, [], true).then(res => {
       if (res.stderr != '' && !res.success) {
         throw new Error(res.stderr);
       }
       if (loginCmds.length > 1) {
-        core.info(`🎉 Login Succeeded! (${index}/${loginCmds.length})`);
+        core.info(`Login Succeeded! (${index}/${loginCmds.length})`);
       } else {
-        core.info('🎉 Login Succeeded!');
+        core.info('Login Succeeded!');
       }
     });
   });

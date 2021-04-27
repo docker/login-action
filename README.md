@@ -8,11 +8,6 @@
 
 GitHub Action to login against a Docker registry.
 
-> :bulb: See also:
-> * [setup-buildx](https://github.com/docker/setup-buildx-action) action
-> * [setup-qemu](https://github.com/docker/setup-qemu-action) action
-> * [build-push](https://github.com/docker/build-push-action) action
-
 ![Screenshot](.github/docker-login.png)
 
 ___
@@ -32,7 +27,6 @@ ___
 * [Customizing](#customizing)
   * [inputs](#inputs)
 * [Keep up-to-date with GitHub Dependabot](#keep-up-to-date-with-github-dependabot)
-* [Limitation](#limitation)
 
 ## Usage
 
@@ -433,7 +427,3 @@ updates:
     schedule:
       interval: "daily"
 ```
-
-## Limitation
-
-This action is only available for Linux [virtual environments](https://help.github.com/en/articles/virtual-environments-for-github-actions#supported-virtual-environments-and-hardware-resources).
