@@ -497,18 +497,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = void 0;
-const os = __importStar(__webpack_require__(87));
 const core = __importStar(__webpack_require__(186));
-const context_1 = __webpack_require__(842);
+const context = __importStar(__webpack_require__(842));
 const docker = __importStar(__webpack_require__(758));
 const stateHelper = __importStar(__webpack_require__(647));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            if (os.platform() !== 'linux') {
-                throw new Error('Only supported on linux platform');
-            }
-            const { registry, username, password, logout } = context_1.getInputs();
+            const { registry, username, password, logout } = context.getInputs();
             stateHelper.setRegistry(registry);
             stateHelper.setLogout(logout);
             yield docker.login(registry, username, password);
@@ -3069,16 +3065,16 @@ function loginStandard(registry, username, password) {
         loginArgs.push('--username', username);
         loginArgs.push(registry);
         if (registry) {
-            core.info(`🔑 Logging into ${registry}...`);
+            core.info(`Logging into ${registry}...`);
         }
         else {
-            core.info(`🔑 Logging into Docker Hub...`);
+            core.info(`Logging into Docker Hub...`);
         }
         yield execm.exec('docker', loginArgs, true, password).then(res => {
             if (res.stderr != '' && !res.success) {
                 throw new Error(res.stderr);
             }
-            core.info('🎉 Login Succeeded!');
+            core.info(`Login Succeeded!`);
         });
     });
 }
@@ -3090,26 +3086,26 @@ function loginECR(registry, username, password) {
         const region = yield aws.getRegion(registry);
         const accountIDs = yield aws.getAccountIDs(registry);
         if (yield aws.isPubECR(registry)) {
-            core.info(`💡 AWS Public ECR detected with ${region} region`);
+            core.info(`AWS Public ECR detected with ${region} region`);
         }
         else {
-            core.info(`💡 AWS ECR detected with ${region} region`);
+            core.info(`AWS ECR detected with ${region} region`);
         }
         process.env.AWS_ACCESS_KEY_ID = username || process.env.AWS_ACCESS_KEY_ID;
         process.env.AWS_SECRET_ACCESS_KEY = password || process.env.AWS_SECRET_ACCESS_KEY;
-        core.info(`⬇️ Retrieving docker login command through AWS CLI ${cliVersion} (${cliPath})...`);
+        core.info(`Retrieving docker login command through AWS CLI ${cliVersion} (${cliPath})...`);
         const loginCmds = yield aws.getDockerLoginCmds(cliVersion, registry, region, accountIDs);
-        core.info(`🔑 Logging into ${registry}...`);
+        core.info(`Logging into ${registry}...`);
         loginCmds.forEach((loginCmd, index) => {
             execm.exec(loginCmd, [], true).then(res => {
                 if (res.stderr != '' && !res.success) {
                     throw new Error(res.stderr);
                 }
                 if (loginCmds.length > 1) {
-                    core.info(`🎉 Login Succeeded! (${index}/${loginCmds.length})`);
+                    core.info(`Login Succeeded! (${index}/${loginCmds.length})`);
                 }
                 else {
-                    core.info('🎉 Login Succeeded!');
+                    core.info('Login Succeeded!');
                 }
             });
         });
