@@ -29,7 +29,7 @@
   "dependencies": {
     "@actions/core": "^1.2.6",
     "@actions/exec": "^1.0.4",
-    "@actions/io": "^1.0.2",
+    "@actions/io": "^1.1.0",
     "semver": "^7.3.5"
   },
   "devDependencies": {
