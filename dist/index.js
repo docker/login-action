@@ -3947,69 +3947,6 @@ module.exports = require("fs");
 
 /***/ }),
 
-/***/ 757:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.exec = void 0;
-const actionsExec = __importStar(__webpack_require__(514));
-exports.exec = (command, args = [], silent, stdin) => __awaiter(void 0, void 0, void 0, function* () {
-    let stdout = '';
-    let stderr = '';
-    const options = {
-        silent: silent,
-        ignoreReturnCode: true,
-        input: Buffer.from(stdin || '')
-    };
-    options.listeners = {
-        stdout: (data) => {
-            stdout += data.toString();
-        },
-        stderr: (data) => {
-            stderr += data.toString();
-        }
-    };
-    const returnCode = yield actionsExec.exec(command, args, options);
-    return {
-        success: returnCode === 0,
-        stdout: stdout.trim(),
-        stderr: stderr.trim()
-    };
-});
-//# sourceMappingURL=exec.js.map
-
-/***/ }),
-
 /***/ 758:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -4045,9 +3982,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.loginECR = exports.loginStandard = exports.logout = exports.login = void 0;
-const core = __importStar(__webpack_require__(186));
 const aws = __importStar(__webpack_require__(981));
-const execm = __importStar(__webpack_require__(757));
+const core = __importStar(__webpack_require__(186));
+const exec = __importStar(__webpack_require__(514));
 function login(registry, username, password) {
     return __awaiter(this, void 0, void 0, function* () {
         if (yield aws.isECR(registry)) {
@@ -4061,9 +3998,13 @@ function login(registry, username, password) {
 exports.login = login;
 function logout(registry) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield execm.exec('docker', ['logout', registry], false).then(res => {
-            if (res.stderr != '' && !res.success) {
-                core.warning(res.stderr);
+        yield exec
+            .getExecOutput('docker', ['logout', registry], {
+            ignoreReturnCode: true
+        })
+            .then(res => {
+            if (res.stderr.length > 0 && res.exitCode != 0) {
+                core.warning(res.stderr.trim());
             }
         });
     });
@@ -4083,9 +4024,15 @@ function loginStandard(registry, username, password) {
         else {
             core.info(`Logging into Docker Hub...`);
         }
-        yield execm.exec('docker', loginArgs, true, password).then(res => {
-            if (res.stderr != '' && !res.success) {
-                throw new Error(res.stderr);
+        yield exec
+            .getExecOutput('docker', loginArgs, {
+            ignoreReturnCode: true,
+            silent: true,
+            input: Buffer.from(password)
+        })
+            .then(res => {
+            if (res.stderr.length > 0 && res.exitCode != 0) {
+                throw new Error(res.stderr.trim());
             }
             core.info(`Login Succeeded!`);
         });
@@ -4110,9 +4057,14 @@ function loginECR(registry, username, password) {
         const loginCmds = yield aws.getDockerLoginCmds(cliVersion, registry, region, accountIDs);
         core.info(`Logging into ${registry}...`);
         loginCmds.forEach((loginCmd, index) => {
-            execm.exec(loginCmd, [], true).then(res => {
-                if (res.stderr != '' && !res.success) {
-                    throw new Error(res.stderr);
+            exec
+                .getExecOutput(loginCmd, [], {
+                ignoreReturnCode: true,
+                silent: true
+            })
+                .then(res => {
+                if (res.stderr.length > 0 && res.exitCode != 0) {
+                    throw new Error(res.stderr.trim());
                 }
                 if (loginCmds.length > 1) {
                     core.info(`Login Succeeded! (${index}/${loginCmds.length})`);
@@ -5289,8 +5241,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getDockerLoginCmds = exports.parseCLIVersion = exports.getCLIVersion = exports.execCLI = exports.getCLI = exports.getAccountIDs = exports.getRegion = exports.isPubECR = exports.isECR = void 0;
 const semver = __importStar(__webpack_require__(383));
+const exec = __importStar(__webpack_require__(514));
 const io = __importStar(__webpack_require__(436));
-const execm = __importStar(__webpack_require__(757));
 const ecrRegistryRegex = /^(([0-9]{12})\.dkr\.ecr\.(.+)\.amazonaws\.com(.cn)?)(\/([^:]+)(:.+)?)?$/;
 exports.isECR = (registry) => {
     return ecrRegistryRegex.test(registry) || exports.isPubECR(registry);
@@ -5326,11 +5278,16 @@ exports.getCLI = () => __awaiter(void 0, void 0, void 0, function* () {
     return io.which('aws', true);
 });
 exports.execCLI = (args) => __awaiter(void 0, void 0, void 0, function* () {
-    return execm.exec(yield exports.getCLI(), args, true).then(res => {
-        if (res.stderr != '' && !res.success) {
-            throw new Error(res.stderr);
+    return exec
+        .getExecOutput(yield exports.getCLI(), args, {
+        ignoreReturnCode: true,
+        silent: true
+    })
+        .then(res => {
+        if (res.stderr.length > 0 && res.exitCode != 0) {
+            throw new Error(res.stderr.trim());
         }
-        else if (res.stderr != '') {
+        else if (res.stderr.length > 0) {
             return res.stderr.trim();
         }
         else {

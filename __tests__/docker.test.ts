@@ -7,9 +7,14 @@ import * as exec from '@actions/exec';
 process.env['RUNNER_TEMP'] = path.join(__dirname, 'runner');
 
 test('loginStandard calls exec', async () => {
-  const execSpy: jest.SpyInstance = jest.spyOn(exec, 'exec');
-  // don't let exec try to actually run the commands
-  execSpy.mockImplementation(() => {});
+  const execSpy: jest.SpyInstance = jest.spyOn(exec, 'getExecOutput');
+  execSpy.mockImplementation(() =>
+    Promise.resolve({
+      exitCode: expect.any(Number),
+      stdout: expect.any(Function),
+      stderr: expect.any(Function)
+    })
+  );
 
   const username: string = 'dbowie';
   const password: string = 'groundcontrol';
@@ -20,30 +25,25 @@ test('loginStandard calls exec', async () => {
   expect(execSpy).toHaveBeenCalledWith(`docker`, ['login', '--password-stdin', '--username', username, registry], {
     input: Buffer.from(password),
     silent: true,
-    ignoreReturnCode: true,
-    listeners: expect.objectContaining({
-      stdout: expect.any(Function),
-      stderr: expect.any(Function)
-    })
+    ignoreReturnCode: true
   });
 });
 
 test('logout calls exec', async () => {
-  const execSpy: jest.SpyInstance = jest.spyOn(exec, 'exec');
-  // don't let exec try to actually run the commands
-  execSpy.mockImplementation(() => {});
+  const execSpy: jest.SpyInstance = jest.spyOn(exec, 'getExecOutput');
+  execSpy.mockImplementation(() =>
+    Promise.resolve({
+      exitCode: expect.any(Number),
+      stdout: expect.any(Function),
+      stderr: expect.any(Function)
+    })
+  );
 
   const registry: string = 'https://ghcr.io';
 
   await logout(registry);
 
   expect(execSpy).toHaveBeenCalledWith(`docker`, ['logout', registry], {
-    silent: false,
-    ignoreReturnCode: true,
-    input: Buffer.from(''),
-    listeners: expect.objectContaining({
-      stdout: expect.any(Function),
-      stderr: expect.any(Function)
-    })
+    ignoreReturnCode: true
   });
 });
