@@ -14,7 +14,6 @@ ___
 
 * [Usage](#usage)
   * [Docker Hub](#docker-hub)
-  * [GitHub Packages Docker Registry](#github-packages-docker-registry)
   * [GitHub Container Registry](#github-container-registry)
   * [GitLab](#gitlab)
   * [Azure Container Registry (ACR)](#azure-container-registry-acr)
@@ -52,34 +51,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-```
-
-### GitHub Packages Docker Registry
-
-> :warning: GitHub Packages Docker Registry (aka `docker.pkg.github.com`) **is deprecated** and will sunset early next
-> year. It's strongly advised to [migrate to GitHub Container Registry](https://docs.github.com/en/packages/getting-started-with-github-container-registry/migrating-to-github-container-registry-for-docker-images)
-> instead.
-
-You can configure the Docker client to use [GitHub Packages to publish and retrieve docker images](https://docs.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages).
-
-```yaml
-name: ci
-
-on:
-  push:
-    branches: master
-
-jobs:
-  login:
-    runs-on: ubuntu-latest
-    steps:
-      -
-        name: Login to GitHub Packages Docker Registry
-        uses: docker/login-action@v1
-        with:
-          registry: docker.pkg.github.com
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ### GitHub Container Registry
