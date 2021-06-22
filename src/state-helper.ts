@@ -8,7 +8,7 @@ export function setRegistry(registry: string) {
   core.saveState('registry', registry);
 }
 
-export function setLogout(logout: string) {
+export function setLogout(logout: boolean) {
   core.saveState('logout', logout);
 }
 

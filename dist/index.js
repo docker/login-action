@@ -4737,7 +4737,7 @@ function getInputs() {
         registry: core.getInput('registry'),
         username: core.getInput('username'),
         password: core.getInput('password'),
-        logout: core.getInput('logout')
+        logout: core.getBooleanInput('logout')
     };
 }
 exports.getInputs = getInputs;

@@ -10,6 +10,8 @@ test('errors without username and password', async () => {
   const platSpy = jest.spyOn(osm, 'platform');
   platSpy.mockImplementation(() => 'linux');
 
+  process.env['INPUT_LOGOUT'] = 'true'; // default value
+
   const coreSpy: jest.SpyInstance = jest.spyOn(core, 'setFailed');
 
   await run();
@@ -32,10 +34,13 @@ test('successful with username and password', async () => {
   const password: string = 'groundcontrol';
   process.env[`INPUT_PASSWORD`] = password;
 
+  const logout: boolean = false;
+  process.env['INPUT_LOGOUT'] = String(logout);
+
   await run();
 
   expect(setRegistrySpy).toHaveBeenCalledWith('');
-  expect(setLogoutSpy).toHaveBeenCalledWith('');
+  expect(setLogoutSpy).toHaveBeenCalledWith(logout);
   expect(dockerSpy).toHaveBeenCalledWith('', username, password);
 });
 
@@ -57,8 +62,8 @@ test('calls docker login', async () => {
   const registry: string = 'ghcr.io';
   process.env[`INPUT_REGISTRY`] = registry;
 
-  const logout: string = 'true';
-  process.env['INPUT_LOGOUT'] = logout;
+  const logout: boolean = true;
+  process.env['INPUT_LOGOUT'] = String(logout);
 
   await run();
 
