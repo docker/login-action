@@ -55,10 +55,7 @@ jobs:
 
 ### GitHub Container Registry
 
-To use the [GitHub Container Registry](https://docs.github.com/en/packages/getting-started-with-github-container-registry),
-you need to [enable this feature for your personal or organization account](https://docs.github.com/en/packages/guides/enabling-improved-container-support).
-
-To [authenticate against it](https://docs.github.com/en/packages/guides/migrating-to-github-container-registry-for-docker-images#authenticating-with-the-container-registry),
+To authenticate against the [GitHub Container Registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry),
 use the [`GITHUB_TOKEN`](https://docs.github.com/en/actions/reference/authentication-in-a-workflow) for the best
 security and experience.
 
@@ -78,7 +75,7 @@ jobs:
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
-          username: ${{ github.repository_owner }}
+          username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 ```
 
