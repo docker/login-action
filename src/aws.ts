@@ -71,27 +71,14 @@ export const parseCLIVersion = async (stdout: string): Promise<string> => {
   return semver.clean(matches[1]);
 };
 
-export const getDockerLoginCmds = async (
-  cliVersion: string,
-  registry: string,
-  region: string,
-  accountIDs: string[]
-): Promise<string[]> => {
+export const getDockerLoginCmds = async (cliVersion: string, registry: string, region: string, accountIDs: string[]): Promise<string[]> => {
   let ecrCmd = (await isPubECR(registry)) ? 'ecr-public' : 'ecr';
   if (semver.satisfies(cliVersion, '>=2.0.0') || (await isPubECR(registry))) {
     return execCLI([ecrCmd, 'get-login-password', '--region', region]).then(pwd => {
       return [`docker login --username AWS --password ${pwd} ${registry}`];
     });
   } else {
-    return execCLI([
-      ecrCmd,
-      'get-login',
-      '--region',
-      region,
-      '--registry-ids',
-      accountIDs.join(' '),
-      '--no-include-email'
-    ]).then(dockerLoginCmds => {
+    return execCLI([ecrCmd, 'get-login', '--region', region, '--registry-ids', accountIDs.join(' '), '--no-include-email']).then(dockerLoginCmds => {
       return dockerLoginCmds.trim().split(`\n`);
     });
   }
