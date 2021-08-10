@@ -79,9 +79,8 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-You may need to manage write and read access of GitHub Actions for repositories in the container settings:
-
-![Manage Actions access](.github/ghcr-manage-actions-access.gif)
+You may need to [manage write and read access of GitHub Actions](https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#upgrading-a-workflow-that-accesses-ghcrio)
+for repositories in the container settings.
 
 You can also use a [personal access token (PAT)](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)
 with the [appropriate scopes](https://docs.github.com/en/packages/getting-started-with-github-container-registry/migrating-to-github-container-registry-for-docker-images#authenticating-with-the-container-registry).
