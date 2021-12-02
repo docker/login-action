@@ -39,7 +39,7 @@ name: ci
 
 on:
   push:
-    branches: master
+    branches: main
 
 jobs:
   login:
@@ -64,7 +64,7 @@ name: ci
 
 on:
   push:
-    branches: master
+    branches: main
 
 jobs:
   login:
@@ -92,7 +92,7 @@ name: ci
 
 on:
   push:
-    branches: master
+    branches: main
 
 jobs:
   login:
@@ -118,7 +118,7 @@ name: ci
 
 on:
   push:
-    branches: master
+    branches: main
 
 jobs:
   login:
@@ -142,6 +142,45 @@ jobs:
 > Google Container Registry, use the information [on this page](https://cloud.google.com/artifact-registry/docs/transition/transition-from-gcr)
 > to learn about transitioning to Google Artifact Registry. 
 
+You can use either workload identity federation based keyless authentication or service account based authentication.
+
+#### Workload identity federation based authentication
+
+Configure the workload identity federation for github actions in gcloud (for steps, [refer here](https://github.com/google-github-actions/auth#setting-up-workload-identity-federation)). In the steps, your service account should the ability to push to GCR. Then use google-github-actions/auth action for authentication using workload identity like below:
+
+```yaml
+name: ci
+
+on:
+  push:
+    branches: main
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+    - id: 'auth'
+      name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v0'
+      with:
+        token_format: 'access_token'
+        workload_identity_provider: '<workload_identity_provider>'
+        service_account: '<service_account>'
+
+    - name: Login to GCR
+      uses: docker/login-action@v1
+      with:
+        registry: gcr.io
+        username: oauth2accesstoken
+        password: ${{ steps.auth.outputs.access_token }}
+```
+
+> Replace `<workload_identity_provider>` with configured workload identity provider. For steps to configure, [refer here](https://github.com/google-github-actions/auth#setting-up-workload-identity-federation).
+
+> Replace `<service_account>` with configured service account in workload identity provider which has access to push to GCR
+
+#### Service account based authentication
+
 Use a service account with the ability to push to GCR and [configure access control](https://cloud.google.com/container-registry/docs/access-control).
 Then create and download the JSON key for this service account and save content of `.json` file
 [as a secret](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository)
@@ -152,7 +191,7 @@ name: ci
 
 on:
   push:
-    branches: master
+    branches: main
 
 jobs:
   login:
@@ -169,6 +208,47 @@ jobs:
 
 ### Google Artifact Registry (GAR)
 
+You can use either workload identity federation based keyless authentication or  service account based authentication.
+
+#### Workload identity federation based authentication
+
+Configure the workload identity federation for github actions in gcloud (for steps, [refer here](https://github.com/google-github-actions/auth#setting-up-workload-identity-federation)). In the steps, your service account should the ability to push to GAR. Then use google-github-actions/auth action for authentication using workload identity like below:
+
+```yaml
+name: ci
+
+on:
+  push:
+    branches: main
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          token_format: 'access_token'
+          workload_identity_provider: '<workload_identity_provider>'
+          service_account: '<service_account>'
+      
+      - name: Login to GAR
+        uses: docker/login-action@v1
+        with:
+          registry: <location>-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
+```
+> Replace `<workload_identity_provider>` with configured workload identity provider
+
+> Replace `<service_account>` with configured service account in workload identity provider which has access to push to GCR
+
+> Replace `<location>` with the regional or multi-regional [location](https://cloud.google.com/artifact-registry/docs/repo-organize#locations)
+> of the repository where the image is stored.
+
+#### Service account based authentication
+
 Use a service account with the ability to push to GAR and [configure access control](https://cloud.google.com/artifact-registry/docs/access-control).
 Then create and download the JSON key for this service account and save content of `.json` file
 [as a secret](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository)
@@ -179,7 +259,7 @@ name: ci
 
 on:
   push:
-    branches: master
+    branches: main
 
 jobs:
   login:
@@ -208,7 +288,7 @@ name: ci
 
 on:
   push:
-    branches: master
+    branches: main
 
 jobs:
   login:
@@ -231,7 +311,7 @@ name: ci
 
 on:
   push:
-    branches: master
+    branches: main
 
 jobs:
   login:
@@ -258,7 +338,7 @@ name: ci
 
 on:
   push:
-    branches: master
+    branches: main
 
 jobs:
   login:
@@ -291,7 +371,7 @@ name: ci
 
 on:
   push:
-    branches: master
+    branches: main
 
 jobs:
   login:
@@ -325,7 +405,7 @@ name: ci
 
 on:
   push:
-    branches: master
+    branches: main
 
 jobs:
   login:
@@ -351,7 +431,7 @@ name: ci
 
 on:
   push:
-    branches: master
+    branches: main
 
 jobs:
   login:
