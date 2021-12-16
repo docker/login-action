@@ -62,8 +62,12 @@ export async function loginECR(registry: string, username: string, password: str
     core.info(`AWS ECR detected with ${region} region`);
   }
 
-  process.env.AWS_ACCESS_KEY_ID = username || process.env.AWS_ACCESS_KEY_ID;
-  process.env.AWS_SECRET_ACCESS_KEY = password || process.env.AWS_SECRET_ACCESS_KEY;
+  if (username) {
+    process.env.AWS_ACCESS_KEY_ID = username;
+  }
+  if (password) {
+    process.env.AWS_SECRET_ACCESS_KEY = password;
+  }
 
   core.info(`Retrieving docker login command through AWS CLI ${cliVersion} (${cliPath})...`);
   const loginCmds = await aws.getDockerLoginCmds(cliVersion, registry, region, accountIDs);
