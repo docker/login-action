@@ -145,7 +145,7 @@ jobs:
 Use a service account with the ability to push to GCR and [configure access control](https://cloud.google.com/container-registry/docs/access-control).
 Then create and download the JSON key for this service account and save content of `.json` file
 [as a secret](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository)
-called `GCR_JSON_KEY` in your GitHub repo. Ensure you set the username to `_json_key`.
+called `GCR_JSON_KEY` in your GitHub repo. Ensure you set the username to `_json_key`, or `_json_key_base64` if you base64-encoded the key.
 
 ```yaml
 name: ci
@@ -172,7 +172,7 @@ jobs:
 Use a service account with the ability to push to GAR and [configure access control](https://cloud.google.com/artifact-registry/docs/access-control).
 Then create and download the JSON key for this service account and save content of `.json` file
 [as a secret](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository)
-called `GAR_JSON_KEY` in your GitHub repo. Ensure you set the username to `_json_key`.
+called `GAR_JSON_KEY` in your GitHub repo. Ensure you set the username to `_json_key`, or `_json_key_base64` if you base64-encoded the key.
 
 ```yaml
 name: ci
