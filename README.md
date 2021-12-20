@@ -379,6 +379,7 @@ Following inputs can be used as `step.with` keys
 | `registry`       | String  |                             | Server address of Docker registry. If not set then will default to Docker Hub |
 | `username`       | String  |                             | Username used to log against the Docker registry |
 | `password`       | String  |                             | Password or personal access token used to log against the Docker registry |
+| `ecr`            | String  | `auto`                      | Specifies whether the given registry is ECR (`auto`, `true` or `false`) |
 | `logout`         | Bool    | `true`                      | Log out from the Docker registry at the end of a job |
 
 ## Keep up-to-date with GitHub Dependabot
