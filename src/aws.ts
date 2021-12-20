@@ -1,5 +1,6 @@
 import * as core from '@actions/core';
-import * as aws from 'aws-sdk';
+import {ECR} from '@aws-sdk/client-ecr';
+import {ECRPUBLIC} from '@aws-sdk/client-ecr-public';
 
 const ecrRegistryRegex = /^(([0-9]{12})\.dkr\.ecr\.(.+)\.amazonaws\.com(.cn)?)(\/([^:]+)(:.+)?)?$/;
 
@@ -53,15 +54,22 @@ export const getRegistriesData = async (registry: string, username?: string, pas
     authTokenRequest['registryIds'] = accountIDs;
   }
 
+  const credentials =
+    username && password
+      ? {
+          accessKeyId: username,
+          secretAccessKey: password
+        }
+      : undefined;
+
   if (isPubECR(registry)) {
     core.info(`AWS Public ECR detected with ${region} region`);
-    const ecrPublic = new aws.ECRPUBLIC({
+    const ecrPublic = new ECRPUBLIC({
       customUserAgent: 'docker-login-action',
-      accessKeyId: username || process.env.AWS_ACCESS_KEY_ID || '',
-      secretAccessKey: password || process.env.AWS_SECRET_ACCESS_KEY || '',
+      credentials,
       region: region
     });
-    const authTokenResponse = await ecrPublic.getAuthorizationToken(authTokenRequest).promise();
+    const authTokenResponse = await ecrPublic.getAuthorizationToken(authTokenRequest);
     if (!authTokenResponse.authorizationData || !authTokenResponse.authorizationData.authorizationToken) {
       throw new Error('Could not retrieve an authorization token from AWS Public ECR');
     }
@@ -76,13 +84,12 @@ export const getRegistriesData = async (registry: string, username?: string, pas
     ];
   } else {
     core.info(`AWS ECR detected with ${region} region`);
-    const ecr = new aws.ECR({
+    const ecr = new ECR({
       customUserAgent: 'docker-login-action',
-      accessKeyId: username || process.env.AWS_ACCESS_KEY_ID || '',
-      secretAccessKey: password || process.env.AWS_SECRET_ACCESS_KEY || '',
+      credentials,
       region: region
     });
-    const authTokenResponse = await ecr.getAuthorizationToken(authTokenRequest).promise();
+    const authTokenResponse = await ecr.getAuthorizationToken(authTokenRequest);
     if (!Array.isArray(authTokenResponse.authorizationData) || !authTokenResponse.authorizationData.length) {
       throw new Error('Could not retrieve an authorization token from AWS ECR');
     }
