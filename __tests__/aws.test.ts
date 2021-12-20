@@ -1,5 +1,5 @@
+import {AuthorizationData} from '@aws-sdk/client-ecr';
 import * as aws from '../src/aws';
-import {AuthorizationData} from 'aws-sdk/clients/ecr';
 
 describe('isECR', () => {
   test.each([
@@ -55,11 +55,15 @@ describe('getAccountIDs', () => {
 
 const mockEcrGetAuthToken = jest.fn();
 const mockEcrPublicGetAuthToken = jest.fn();
-jest.mock('aws-sdk', () => {
+jest.mock('@aws-sdk/client-ecr', () => {
   return {
     ECR: jest.fn(() => ({
       getAuthorizationToken: mockEcrGetAuthToken
-    })),
+    }))
+  };
+});
+jest.mock('@aws-sdk/client-ecr-public', () => {
+  return {
     ECRPUBLIC: jest.fn(() => ({
       getAuthorizationToken: mockEcrPublicGetAuthToken
     }))
@@ -126,15 +130,11 @@ describe('getRegistriesData', () => {
     const authData: AuthorizationData[] = [];
     if (accountIDs.length == 0) {
       mockEcrPublicGetAuthToken.mockImplementation(() => {
-        return {
-          promise() {
-            return Promise.resolve({
-              authorizationData: {
-                authorizationToken: Buffer.from(`AWS:world`).toString('base64'),
-              }
-            });
+        return Promise.resolve({
+          authorizationData: {
+            authorizationToken: Buffer.from(`AWS:world`).toString('base64'),
           }
-        };
+        });
       });
     } else {
       aws.getAccountIDs(registry).forEach(accountID => {
@@ -144,13 +144,9 @@ describe('getRegistriesData', () => {
         });
       });
       mockEcrGetAuthToken.mockImplementation(() => {
-        return {
-          promise() {
-            return Promise.resolve({
-              authorizationData: authData
-            });
-          }
-        };
+        return Promise.resolve({
+          authorizationData: authData
+        });
       });
     }
     const regData = await aws.getRegistriesData(registry);
