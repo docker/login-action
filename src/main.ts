@@ -5,10 +5,10 @@ import * as stateHelper from './state-helper';
 
 export async function run(): Promise<void> {
   try {
-    const {registry, username, password, logout} = context.getInputs();
-    stateHelper.setRegistry(registry);
-    stateHelper.setLogout(logout);
-    await docker.login(registry, username, password);
+    const input: context.Inputs = context.getInputs();
+    stateHelper.setRegistry(input.registry);
+    stateHelper.setLogout(input.logout);
+    await docker.login(input.registry, input.username, input.password, input.ecr);
   } catch (error) {
     core.setFailed(error.message);
   }

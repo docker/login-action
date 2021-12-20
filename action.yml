@@ -16,6 +16,10 @@ inputs:
   password:
     description: 'Password or personal access token used to log against the Docker registry'
     required: false
+  ecr:
+    description: 'Specifies whether the given registry is ECR (auto, true or false)'
+    default: 'auto'
+    required: false
   logout:
     description: 'Log out from the Docker registry at the end of a job'
     default: 'true'

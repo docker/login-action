@@ -34,6 +34,9 @@ test('successful with username and password', async () => {
   const password: string = 'groundcontrol';
   process.env[`INPUT_PASSWORD`] = password;
 
+  const ecr: string = 'auto';
+  process.env['INPUT_ECR'] = ecr;
+
   const logout: boolean = false;
   process.env['INPUT_LOGOUT'] = String(logout);
 
@@ -41,7 +44,7 @@ test('successful with username and password', async () => {
 
   expect(setRegistrySpy).toHaveBeenCalledWith('');
   expect(setLogoutSpy).toHaveBeenCalledWith(logout);
-  expect(dockerSpy).toHaveBeenCalledWith('', username, password);
+  expect(dockerSpy).toHaveBeenCalledWith('', username, password, ecr);
 });
 
 test('calls docker login', async () => {
@@ -62,6 +65,9 @@ test('calls docker login', async () => {
   const registry: string = 'ghcr.io';
   process.env[`INPUT_REGISTRY`] = registry;
 
+  const ecr: string = 'auto';
+  process.env['INPUT_ECR'] = ecr;
+
   const logout: boolean = true;
   process.env['INPUT_LOGOUT'] = String(logout);
 
@@ -69,5 +75,5 @@ test('calls docker login', async () => {
 
   expect(setRegistrySpy).toHaveBeenCalledWith(registry);
   expect(setLogoutSpy).toHaveBeenCalledWith(logout);
-  expect(dockerSpy).toHaveBeenCalledWith(registry, username, password);
+  expect(dockerSpy).toHaveBeenCalledWith(registry, username, password, ecr);
 });
