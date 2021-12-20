@@ -1,5 +1,5 @@
-import * as semver from 'semver';
 import * as aws from '../src/aws';
+import {AuthorizationData} from 'aws-sdk/clients/ecr';
 
 describe('isECR', () => {
   test.each([
@@ -10,7 +10,7 @@ describe('isECR', () => {
     ['390948362332.dkr.ecr.cn-northwest-1.amazonaws.com.cn', true],
     ['public.ecr.aws', true]
   ])('given registry %p', async (registry, expected) => {
-    expect(await aws.isECR(registry)).toEqual(expected);
+    expect(aws.isECR(registry)).toEqual(expected);
   });
 });
 
@@ -23,40 +23,7 @@ describe('isPubECR', () => {
     ['390948362332.dkr.ecr.cn-northwest-1.amazonaws.com.cn', false],
     ['public.ecr.aws', true]
   ])('given registry %p', async (registry, expected) => {
-    expect(await aws.isPubECR(registry)).toEqual(expected);
-  });
-});
-
-describe('getCLI', () => {
-  it('exists', async () => {
-    const awsPath = await aws.getCLI();
-    console.log(`awsPath: ${awsPath}`);
-    expect(awsPath).not.toEqual('');
-  });
-});
-
-describe('execCLI', () => {
-  it('--version not empty', async () => {
-    const cliCmdOutput = await aws.execCLI(['--version']);
-    console.log(`cliCmdOutput: ${cliCmdOutput}`);
-    expect(cliCmdOutput).not.toEqual('');
-  }, 100000);
-});
-
-describe('getCLIVersion', () => {
-  it('valid', async () => {
-    const cliVersion = await aws.getCLIVersion();
-    console.log(`cliVersion: ${cliVersion}`);
-    expect(semver.valid(cliVersion)).not.toBeNull();
-  }, 100000);
-});
-
-describe('parseCLIVersion', () => {
-  test.each([
-    ['v1', 'aws-cli/1.18.120 Python/2.7.17 Linux/5.3.0-1034-azure botocore/1.17.43', '1.18.120'],
-    ['v2', 'aws-cli/2.0.41 Python/3.7.3 Linux/4.19.104-microsoft-standard exe/x86_64.ubuntu.18', '2.0.41']
-  ])('given aws %p', async (version, stdout, expected) => {
-    expect(await aws.parseCLIVersion(stdout)).toEqual(expected);
+    expect(aws.isPubECR(registry)).toEqual(expected);
   });
 });
 
@@ -67,7 +34,7 @@ describe('getRegion', () => {
     ['390948362332.dkr.ecr.cn-northwest-1.amazonaws.com.cn', 'cn-northwest-1'],
     ['public.ecr.aws', 'us-east-1']
   ])('given registry %p', async (registry, expected) => {
-    expect(await aws.getRegion(registry)).toEqual(expected);
+    expect(aws.getRegion(registry)).toEqual(expected);
   });
 });
 
@@ -82,6 +49,111 @@ describe('getAccountIDs', () => {
     if (accountIDsEnv) {
       process.env.AWS_ACCOUNT_IDS = accountIDsEnv;
     }
-    expect(await aws.getAccountIDs(registry)).toEqual(expected);
+    expect(aws.getAccountIDs(registry)).toEqual(expected);
+  });
+});
+
+const mockEcrGetAuthToken = jest.fn();
+const mockEcrPublicGetAuthToken = jest.fn();
+jest.mock('aws-sdk', () => {
+  return {
+    ECR: jest.fn(() => ({
+      getAuthorizationToken: mockEcrGetAuthToken
+    })),
+    ECRPUBLIC: jest.fn(() => ({
+      getAuthorizationToken: mockEcrPublicGetAuthToken
+    }))
+  };
+});
+
+describe('getRegistriesData', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    delete process.env.AWS_ACCOUNT_IDS;
+  });
+  // prettier-ignore
+  test.each([
+    [
+      '012345678901.dkr.ecr.aws-region-1.amazonaws.com',
+      'dkr.ecr.aws-region-1.amazonaws.com', undefined,
+      [
+        {
+          registry: '012345678901.dkr.ecr.aws-region-1.amazonaws.com',
+          username: '012345678901',
+          password: 'world'
+        }
+      ]
+    ],
+    [
+      '012345678901.dkr.ecr.eu-west-3.amazonaws.com',
+      'dkr.ecr.eu-west-3.amazonaws.com',
+      '012345678910,023456789012',
+      [
+        {
+          registry: '012345678901.dkr.ecr.eu-west-3.amazonaws.com',
+          username: '012345678901',
+          password: 'world'
+        },
+        {
+          registry: '012345678910.dkr.ecr.eu-west-3.amazonaws.com',
+          username: '012345678910',
+          password: 'world'
+        },
+        {
+          registry: '023456789012.dkr.ecr.eu-west-3.amazonaws.com',
+          username: '023456789012',
+          password: 'world'
+        }
+      ]
+    ],
+    [
+      'public.ecr.aws',
+      undefined,
+      undefined,
+      [
+        {
+          registry: 'public.ecr.aws',
+          username: 'AWS',
+          password: 'world'
+        }
+      ]
+    ]
+  ])('given registry %p', async (registry, fqdn, accountIDsEnv, expected: aws.RegistryData[]) => {
+    if (accountIDsEnv) {
+      process.env.AWS_ACCOUNT_IDS = accountIDsEnv;
+    }
+    const accountIDs = aws.getAccountIDs(registry);
+    const authData: AuthorizationData[] = [];
+    if (accountIDs.length == 0) {
+      mockEcrPublicGetAuthToken.mockImplementation(() => {
+        return {
+          promise() {
+            return Promise.resolve({
+              authorizationData: {
+                authorizationToken: Buffer.from(`AWS:world`).toString('base64'),
+              }
+            });
+          }
+        };
+      });
+    } else {
+      aws.getAccountIDs(registry).forEach(accountID => {
+        authData.push({
+          authorizationToken: Buffer.from(`${accountID}:world`).toString('base64'),
+          proxyEndpoint: `${accountID}.${fqdn}`
+        });
+      });
+      mockEcrGetAuthToken.mockImplementation(() => {
+        return {
+          promise() {
+            return Promise.resolve({
+              authorizationData: authData
+            });
+          }
+        };
+      });
+    }
+    const regData = await aws.getRegistriesData(registry);
+    expect(regData).toEqual(expected);
   });
 });

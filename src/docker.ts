@@ -3,7 +3,7 @@ import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 
 export async function login(registry: string, username: string, password: string): Promise<void> {
-  if (await aws.isECR(registry)) {
+  if (aws.isECR(registry)) {
     await loginECR(registry, username, password);
   } else {
     await loginStandard(registry, username, password);
@@ -51,43 +51,21 @@ export async function loginStandard(registry: string, username: string, password
 }
 
 export async function loginECR(registry: string, username: string, password: string): Promise<void> {
-  const cliPath = await aws.getCLI();
-  const cliVersion = await aws.getCLIVersion();
-  const region = await aws.getRegion(registry);
-  const accountIDs = await aws.getAccountIDs(registry);
-
-  if (await aws.isPubECR(registry)) {
-    core.info(`AWS Public ECR detected with ${region} region`);
-  } else {
-    core.info(`AWS ECR detected with ${region} region`);
-  }
-
-  if (username) {
-    process.env.AWS_ACCESS_KEY_ID = username;
-  }
-  if (password) {
-    process.env.AWS_SECRET_ACCESS_KEY = password;
-  }
-
-  core.info(`Retrieving docker login command through AWS CLI ${cliVersion} (${cliPath})...`);
-  const loginCmds = await aws.getDockerLoginCmds(cliVersion, registry, region, accountIDs);
-
-  core.info(`Logging into ${registry}...`);
-  loginCmds.forEach((loginCmd, index) => {
-    exec
-      .getExecOutput(loginCmd, [], {
+  core.info(`Retrieving registries data through AWS SDK...`);
+  const regDatas = await aws.getRegistriesData(registry, username, password);
+  for (const regData of regDatas) {
+    core.info(`Logging into ${regData.registry}...`);
+    await exec
+      .getExecOutput('docker', ['login', '--password-stdin', '--username', regData.username, regData.registry], {
         ignoreReturnCode: true,
-        silent: true
+        silent: true,
+        input: Buffer.from(regData.password)
       })
       .then(res => {
         if (res.stderr.length > 0 && res.exitCode != 0) {
           throw new Error(res.stderr.trim());
         }
-        if (loginCmds.length > 1) {
-          core.info(`Login Succeeded! (${index}/${loginCmds.length})`);
-        } else {
-          core.info('Login Succeeded!');
-        }
+        core.info('Login Succeeded!');
       });
-  });
+  }
 }
