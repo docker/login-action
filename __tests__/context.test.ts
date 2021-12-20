@@ -1,5 +1,3 @@
-import osm = require('os');
-
 import {getInputs} from '../src/context';
 
 test('with password and username getInputs does not throw error', async () => {

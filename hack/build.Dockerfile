@@ -66,18 +66,6 @@ FROM docker:${DOCKER_VERSION} as docker
 FROM docker/buildx-bin:${BUILDX_VERSION} as buildx
 
 FROM deps AS test
-RUN apk add --no-cache binutils curl unzip
-ENV GLIBC_VER=2.31-r0
-RUN curl -sL "https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub" -o "/etc/apk/keys/sgerrand.rsa.pub" \
-  && curl -sLO "https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VER}/glibc-${GLIBC_VER}.apk" \
-  && curl -sLO "https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VER}/glibc-bin-${GLIBC_VER}.apk" \
-  && apk add --no-cache \
-    glibc-${GLIBC_VER}.apk \
-    glibc-bin-${GLIBC_VER}.apk \
-  && curl -sL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
-  && unzip -qq "awscliv2.zip" \
-  && ./aws/install \
-  && aws --version
 ENV RUNNER_TEMP=/tmp/github_runner
 ENV RUNNER_TOOL_CACHE=/tmp/github_tool_cache
 RUN --mount=type=bind,target=.,rw \

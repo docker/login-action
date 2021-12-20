@@ -30,7 +30,7 @@
     "@actions/core": "^1.6.0",
     "@actions/exec": "^1.1.0",
     "@actions/io": "^1.1.1",
-    "semver": "^7.3.5"
+    "aws-sdk": "^2.1046.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.23",
