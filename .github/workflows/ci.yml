@@ -76,6 +76,20 @@ jobs:
           docker image prune -a -f >/dev/null 2>&1
           docker pull ghcr.io/docker-ghactiontest/test
 
+  acr:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Login to ACR
+        uses: ./
+        with:
+          registry: ${{ secrets.AZURE_REGISTRY_NAME }}.azurecr.io
+          username: ${{ secrets.AZURE_CLIENT_ID }}
+          password: ${{ secrets.AZURE_CLIENT_SECRET }}
+
   dockerhub:
     runs-on: ${{ matrix.os }}
     strategy:
