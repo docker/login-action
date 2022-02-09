@@ -30,7 +30,7 @@
     "@actions/core": "^1.6.0",
     "@actions/exec": "^1.1.0",
     "@actions/io": "^1.1.1",
-    "@aws-sdk/client-ecr": "^3.45.0",
+    "@aws-sdk/client-ecr": "^3.50.0",
     "@aws-sdk/client-ecr-public": "^3.45.0"
   },
   "devDependencies": {
