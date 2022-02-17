@@ -1,6 +1,8 @@
 import * as core from '@actions/core';
 import {ECR} from '@aws-sdk/client-ecr';
 import {ECRPUBLIC} from '@aws-sdk/client-ecr-public';
+import {NodeHttpHandler} from '@aws-sdk/node-http-handler';
+import ProxyAgent from 'proxy-agent';
 
 const ecrRegistryRegex = /^(([0-9]{12})\.dkr\.ecr\.(.+)\.amazonaws\.com(.cn)?)(\/([^:]+)(:.+)?)?$/;
 
@@ -54,6 +56,20 @@ export const getRegistriesData = async (registry: string, username?: string, pas
     authTokenRequest['registryIds'] = accountIDs;
   }
 
+  let httpProxyAgent: any = null;
+  const httpProxy = process.env.http_proxy || process.env.HTTP_PROXY || '';
+  if (httpProxy) {
+    core.debug(`Using http proxy ${httpProxy}`);
+    httpProxyAgent = new ProxyAgent(httpProxy);
+  }
+
+  let httpsProxyAgent: any = null;
+  const httpsProxy = process.env.https_proxy || process.env.HTTPS_PROXY || '';
+  if (httpsProxy) {
+    core.debug(`Using https proxy ${httpsProxy}`);
+    httpsProxyAgent = new ProxyAgent(httpsProxy);
+  }
+
   const credentials =
     username && password
       ? {
@@ -67,7 +83,11 @@ export const getRegistriesData = async (registry: string, username?: string, pas
     const ecrPublic = new ECRPUBLIC({
       customUserAgent: 'docker-login-action',
       credentials,
-      region: region
+      region: region,
+      requestHandler: new NodeHttpHandler({
+        httpAgent: httpProxyAgent,
+        httpsAgent: httpsProxyAgent
+      })
     });
     const authTokenResponse = await ecrPublic.getAuthorizationToken(authTokenRequest);
     if (!authTokenResponse.authorizationData || !authTokenResponse.authorizationData.authorizationToken) {
@@ -87,7 +107,11 @@ export const getRegistriesData = async (registry: string, username?: string, pas
     const ecr = new ECR({
       customUserAgent: 'docker-login-action',
       credentials,
-      region: region
+      region: region,
+      requestHandler: new NodeHttpHandler({
+        httpAgent: httpProxyAgent,
+        httpsAgent: httpsProxyAgent
+      })
     });
     const authTokenResponse = await ecr.getAuthorizationToken(authTokenRequest);
     if (!Array.isArray(authTokenResponse.authorizationData) || !authTokenResponse.authorizationData.length) {
