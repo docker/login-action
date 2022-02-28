@@ -1,5 +1,5 @@
 variable "NODE_VERSION" {
-  default = "12"
+  default = "16"
 }
 
 target "node-version" {

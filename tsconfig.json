@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "esnext",
     "module": "commonjs",
-    "lib": [
-      "es6",
-      "dom"
-    ],
     "newLine": "lf",
     "outDir": "./lib",
     "rootDir": "./src",
