@@ -9,7 +9,7 @@ export async function run(): Promise<void> {
     stateHelper.setRegistry(input.registry);
     stateHelper.setLogout(input.logout);
     await docker.login(input.registry, input.username, input.password, input.ecr);
-  } catch (error) {
+  } catch (error: any) {
     core.setFailed(error.message);
   }
 }

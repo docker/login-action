@@ -2,7 +2,8 @@ import * as core from '@actions/core';
 import {ECR} from '@aws-sdk/client-ecr';
 import {ECRPUBLIC} from '@aws-sdk/client-ecr-public';
 import {NodeHttpHandler} from '@aws-sdk/node-http-handler';
-import ProxyAgent from 'proxy-agent';
+import {HttpProxyAgent} from 'http-proxy-agent';
+import {HttpsProxyAgent} from 'https-proxy-agent';
 
 const ecrRegistryRegex = /^(([0-9]{12})\.dkr\.ecr\.(.+)\.amazonaws\.com(.cn)?)(\/([^:]+)(:.+)?)?$/;
 
@@ -60,14 +61,14 @@ export const getRegistriesData = async (registry: string, username?: string, pas
   const httpProxy = process.env.http_proxy || process.env.HTTP_PROXY || '';
   if (httpProxy) {
     core.debug(`Using http proxy ${httpProxy}`);
-    httpProxyAgent = new ProxyAgent(httpProxy);
+    httpProxyAgent = new HttpProxyAgent(httpProxy);
   }
 
   let httpsProxyAgent: any = null;
   const httpsProxy = process.env.https_proxy || process.env.HTTPS_PROXY || '';
   if (httpsProxy) {
     core.debug(`Using https proxy ${httpsProxy}`);
-    httpsProxyAgent = new ProxyAgent(httpsProxy);
+    httpsProxyAgent = new HttpsProxyAgent(httpsProxy);
   }
 
   const credentials =

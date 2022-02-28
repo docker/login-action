@@ -1,3 +1,4 @@
+import {expect, jest, test} from '@jest/globals';
 import osm = require('os');
 
 import {run} from '../src/main';
@@ -7,26 +8,20 @@ import * as stateHelper from '../src/state-helper';
 import * as core from '@actions/core';
 
 test('errors without username and password', async () => {
-  const platSpy = jest.spyOn(osm, 'platform');
-  platSpy.mockImplementation(() => 'linux');
+  const platSpy = jest.spyOn(osm, 'platform').mockImplementation(() => 'linux');
 
   process.env['INPUT_LOGOUT'] = 'true'; // default value
-
-  const coreSpy: jest.SpyInstance = jest.spyOn(core, 'setFailed');
+  const coreSpy = jest.spyOn(core, 'setFailed');
 
   await run();
-
   expect(coreSpy).toHaveBeenCalledWith('Username and password required');
 });
 
 test('successful with username and password', async () => {
-  const platSpy = jest.spyOn(osm, 'platform');
-  platSpy.mockImplementation(() => 'linux');
-
-  const setRegistrySpy: jest.SpyInstance = jest.spyOn(stateHelper, 'setRegistry');
-  const setLogoutSpy: jest.SpyInstance = jest.spyOn(stateHelper, 'setLogout');
-  const dockerSpy: jest.SpyInstance = jest.spyOn(docker, 'login');
-  dockerSpy.mockImplementation(() => {});
+  const platSpy = jest.spyOn(osm, 'platform').mockImplementation(() => 'linux');
+  const setRegistrySpy = jest.spyOn(stateHelper, 'setRegistry');
+  const setLogoutSpy = jest.spyOn(stateHelper, 'setLogout');
+  const dockerSpy = jest.spyOn(docker, 'login').mockImplementation(jest.fn());
 
   const username: string = 'dbowie';
   process.env[`INPUT_USERNAME`] = username;
@@ -48,13 +43,11 @@ test('successful with username and password', async () => {
 });
 
 test('calls docker login', async () => {
-  const platSpy = jest.spyOn(osm, 'platform');
-  platSpy.mockImplementation(() => 'linux');
-
-  const setRegistrySpy: jest.SpyInstance = jest.spyOn(stateHelper, 'setRegistry');
-  const setLogoutSpy: jest.SpyInstance = jest.spyOn(stateHelper, 'setLogout');
-  const dockerSpy: jest.SpyInstance = jest.spyOn(docker, 'login');
-  dockerSpy.mockImplementation(() => {});
+  const platSpy = jest.spyOn(osm, 'platform').mockImplementation(() => 'linux');
+  const setRegistrySpy = jest.spyOn(stateHelper, 'setRegistry');
+  const setLogoutSpy = jest.spyOn(stateHelper, 'setLogout');
+  const dockerSpy = jest.spyOn(docker, 'login');
+  dockerSpy.mockImplementation(jest.fn());
 
   const username: string = 'dbowie';
   process.env[`INPUT_USERNAME`] = username;
