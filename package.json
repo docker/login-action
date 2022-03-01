@@ -13,9 +13,6 @@
     "type": "git",
     "url": "git+https://github.com/docker/login-action.git"
   },
-  "engines": {
-    "node": "^16"
-  },
   "keywords": [
     "actions",
     "docker",
