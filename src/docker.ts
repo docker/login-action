@@ -43,8 +43,12 @@ export async function loginStandard(registry: string, username: string, password
       input: Buffer.from(password)
     })
     .then(res => {
-      if (res.stderr.length > 0 && res.exitCode != 0) {
-        throw new Error(res.stderr.trim());
+      if (res.stderr.length > 0) {
+        if (res.exitCode != 0) {
+          throw new Error(res.stderr.trim());
+        } else {
+          core.warning(res.stderr);
+        }
       }
       core.info(`Login Succeeded!`);
     });
