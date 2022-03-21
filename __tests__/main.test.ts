@@ -8,8 +8,7 @@ import * as stateHelper from '../src/state-helper';
 import * as core from '@actions/core';
 
 test('errors without username and password', async () => {
-  const platSpy = jest.spyOn(osm, 'platform').mockImplementation(() => 'linux');
-
+  jest.spyOn(osm, 'platform').mockImplementation(() => 'linux');
   process.env['INPUT_LOGOUT'] = 'true'; // default value
   const coreSpy = jest.spyOn(core, 'setFailed');
 
@@ -18,21 +17,21 @@ test('errors without username and password', async () => {
 });
 
 test('successful with username and password', async () => {
-  const platSpy = jest.spyOn(osm, 'platform').mockImplementation(() => 'linux');
+  jest.spyOn(osm, 'platform').mockImplementation(() => 'linux');
   const setRegistrySpy = jest.spyOn(stateHelper, 'setRegistry');
   const setLogoutSpy = jest.spyOn(stateHelper, 'setLogout');
   const dockerSpy = jest.spyOn(docker, 'login').mockImplementation(jest.fn());
 
-  const username: string = 'dbowie';
+  const username = 'dbowie';
   process.env[`INPUT_USERNAME`] = username;
 
-  const password: string = 'groundcontrol';
+  const password = 'groundcontrol';
   process.env[`INPUT_PASSWORD`] = password;
 
-  const ecr: string = 'auto';
+  const ecr = 'auto';
   process.env['INPUT_ECR'] = ecr;
 
-  const logout: boolean = false;
+  const logout = false;
   process.env['INPUT_LOGOUT'] = String(logout);
 
   await run();
@@ -43,25 +42,25 @@ test('successful with username and password', async () => {
 });
 
 test('calls docker login', async () => {
-  const platSpy = jest.spyOn(osm, 'platform').mockImplementation(() => 'linux');
+  jest.spyOn(osm, 'platform').mockImplementation(() => 'linux');
   const setRegistrySpy = jest.spyOn(stateHelper, 'setRegistry');
   const setLogoutSpy = jest.spyOn(stateHelper, 'setLogout');
   const dockerSpy = jest.spyOn(docker, 'login');
   dockerSpy.mockImplementation(jest.fn());
 
-  const username: string = 'dbowie';
+  const username = 'dbowie';
   process.env[`INPUT_USERNAME`] = username;
 
-  const password: string = 'groundcontrol';
+  const password = 'groundcontrol';
   process.env[`INPUT_PASSWORD`] = password;
 
-  const registry: string = 'ghcr.io';
+  const registry = 'ghcr.io';
   process.env[`INPUT_REGISTRY`] = registry;
 
-  const ecr: string = 'auto';
+  const ecr = 'auto';
   process.env['INPUT_ECR'] = ecr;
 
-  const logout: boolean = true;
+  const logout = true;
   process.env['INPUT_LOGOUT'] = String(logout);
 
   await run();

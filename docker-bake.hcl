@@ -7,7 +7,7 @@ group "pre-checkin" {
 }
 
 group "validate" {
-  targets = ["format-validate", "build-validate", "vendor-validate"]
+  targets = ["lint", "build-validate", "vendor-validate"]
 }
 
 target "build" {
@@ -28,9 +28,9 @@ target "format" {
   output = ["."]
 }
 
-target "format-validate" {
+target "lint" {
   dockerfile = "dev.Dockerfile"
-  target = "format-validate"
+  target = "lint"
   output = ["type=cacheonly"]
 }
 

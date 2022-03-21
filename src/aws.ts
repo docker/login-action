@@ -34,7 +34,7 @@ export const getAccountIDs = (registry: string): string[] => {
   if (!matches) {
     return [];
   }
-  let accountIDs: Array<string> = [matches[2]];
+  const accountIDs: Array<string> = [matches[2]];
   if (process.env.AWS_ACCOUNT_IDS) {
     accountIDs.push(...process.env.AWS_ACCOUNT_IDS.split(','));
   }
@@ -57,14 +57,14 @@ export const getRegistriesData = async (registry: string, username?: string, pas
     authTokenRequest['registryIds'] = accountIDs;
   }
 
-  let httpProxyAgent: any = null;
+  let httpProxyAgent;
   const httpProxy = process.env.http_proxy || process.env.HTTP_PROXY || '';
   if (httpProxy) {
     core.debug(`Using http proxy ${httpProxy}`);
     httpProxyAgent = new HttpProxyAgent(httpProxy);
   }
 
-  let httpsProxyAgent: any = null;
+  let httpsProxyAgent;
   const httpsProxy = process.env.https_proxy || process.env.HTTPS_PROXY || '';
   if (httpsProxy) {
     core.debug(`Using https proxy ${httpsProxy}`);
