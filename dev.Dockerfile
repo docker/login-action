@@ -1,8 +1,8 @@
-# syntax=docker/dockerfile:1.3-labs
+# syntax=docker/dockerfile:1
 
 ARG NODE_VERSION=12
-ARG DOCKER_VERSION=20.10.10
-ARG BUILDX_VERSION=0.7.0
+ARG DOCKER_VERSION=20.10.13
+ARG BUILDX_VERSION=0.8.1
 
 FROM node:${NODE_VERSION}-alpine AS base
 RUN apk add --no-cache cpio findutils git
