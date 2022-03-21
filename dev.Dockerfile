@@ -57,10 +57,10 @@ RUN --mount=type=bind,target=.,rw \
 FROM scratch AS format-update
 COPY --from=format /out /
 
-FROM deps AS format-validate
+FROM deps AS lint
 RUN --mount=type=bind,target=.,rw \
   --mount=type=cache,target=/src/node_modules \
-  yarn run format-check
+  yarn run lint
 
 FROM docker:${DOCKER_VERSION} as docker
 FROM docker/buildx-bin:${BUILDX_VERSION} as buildx

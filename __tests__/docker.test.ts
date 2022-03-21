@@ -6,6 +6,7 @@ import * as exec from '@actions/exec';
 process.env['RUNNER_TEMP'] = path.join(__dirname, 'runner');
 
 test('loginStandard calls exec', async () => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const execSpy = jest.spyOn(exec, 'getExecOutput').mockImplementation(async () => {
     return {
@@ -15,9 +16,9 @@ test('loginStandard calls exec', async () => {
     };
   });
 
-  const username: string = 'dbowie';
-  const password: string = 'groundcontrol';
-  const registry: string = 'https://ghcr.io';
+  const username = 'dbowie';
+  const password = 'groundcontrol';
+  const registry = 'https://ghcr.io';
 
   await loginStandard(registry, username, password);
 
@@ -29,6 +30,7 @@ test('loginStandard calls exec', async () => {
 });
 
 test('logout calls exec', async () => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const execSpy = jest.spyOn(exec, 'getExecOutput').mockImplementation(async () => {
     return {
@@ -38,7 +40,7 @@ test('logout calls exec', async () => {
     };
   });
 
-  const registry: string = 'https://ghcr.io';
+  const registry = 'https://ghcr.io';
 
   await logout(registry);
 

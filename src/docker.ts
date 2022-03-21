@@ -27,7 +27,7 @@ export async function loginStandard(registry: string, username: string, password
     throw new Error('Username and password required');
   }
 
-  let loginArgs: Array<string> = ['login', '--password-stdin'];
+  const loginArgs: Array<string> = ['login', '--password-stdin'];
   loginArgs.push('--username', username);
   loginArgs.push(registry);
 
