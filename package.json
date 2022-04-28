@@ -33,7 +33,7 @@
     "@aws-sdk/client-ecr": "^3.53.0",
     "@aws-sdk/client-ecr-public": "^3.53.0",
     "http-proxy-agent": "^5.0.0",
-    "https-proxy-agent": "^5.0.0"
+    "https-proxy-agent": "^5.0.1"
   },
   "devDependencies": {
     "@types/node": "^16.11.26",
