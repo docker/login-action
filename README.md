@@ -47,7 +47,7 @@ jobs:
     steps:
       -
         name: Login to Docker Hub
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -72,7 +72,7 @@ jobs:
     steps:
       -
         name: Login to GitHub Container Registry
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -100,7 +100,7 @@ jobs:
     steps:
       -
         name: Login to GitLab
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           registry: registry.gitlab.com
           username: ${{ secrets.GITLAB_USERNAME }}
@@ -126,7 +126,7 @@ jobs:
     steps:
       -
         name: Login to ACR
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           registry: <registry-name>.azurecr.io
           username: ${{ secrets.AZURE_CLIENT_ID }}
@@ -168,7 +168,7 @@ jobs:
         service_account: '<service_account>'
 
     - name: Login to GCR
-      uses: docker/login-action@v1
+      uses: docker/login-action@v2
       with:
         registry: gcr.io
         username: oauth2accesstoken
@@ -200,7 +200,7 @@ jobs:
     steps:
       -
         name: Login to GCR
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           registry: gcr.io
           username: _json_key
@@ -235,7 +235,7 @@ jobs:
           service_account: '<service_account>'
       
       - name: Login to GAR
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           registry: <location>-docker.pkg.dev
           username: oauth2accesstoken
@@ -269,7 +269,7 @@ jobs:
     steps:
       -
         name: Login to GAR
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           registry: <location>-docker.pkg.dev
           username: _json_key
@@ -298,7 +298,7 @@ jobs:
     steps:
       -
         name: Login to ECR
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           registry: <aws-account-number>.dkr.ecr.<region>.amazonaws.com
           username: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -321,7 +321,7 @@ jobs:
     steps:
       -
         name: Login to ECR
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           registry: <aws-account-number>.dkr.ecr.<region>.amazonaws.com
           username: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -355,7 +355,7 @@ jobs:
           aws-region: <region>
       -
         name: Login to ECR
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           registry: <aws-account-number>.dkr.ecr.<region>.amazonaws.com
 ```
@@ -381,7 +381,7 @@ jobs:
     steps:
       -
         name: Login to Public ECR
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           registry: public.ecr.aws
           username: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -415,7 +415,7 @@ jobs:
     steps:
       -
         name: Login to OCIR
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           registry: <region>.ocir.io
           username: ${{ secrets.OCI_USERNAME }}
@@ -441,7 +441,7 @@ jobs:
     steps:
       -
         name: Login to Quay.io
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           registry: quay.io
           username: ${{ secrets.QUAY_USERNAME }}
