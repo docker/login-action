@@ -1,3 +1,4 @@
+import {expect, jest, test} from '@jest/globals';
 import osm = require('os');
 
 import {run} from '../src/main';
@@ -6,74 +7,65 @@ import * as stateHelper from '../src/state-helper';
 
 import * as core from '@actions/core';
 
-test('errors when not run on linux platform', async () => {
-  const platSpy = jest.spyOn(osm, 'platform');
-  platSpy.mockImplementation(() => 'netbsd');
-
-  const coreSpy: jest.SpyInstance = jest.spyOn(core, 'setFailed');
-
-  await run();
-
-  expect(coreSpy).toHaveBeenCalledWith('Only supported on linux platform');
-});
-
 test('errors without username and password', async () => {
-  const platSpy = jest.spyOn(osm, 'platform');
-  platSpy.mockImplementation(() => 'linux');
-
-  const coreSpy: jest.SpyInstance = jest.spyOn(core, 'setFailed');
+  jest.spyOn(osm, 'platform').mockImplementation(() => 'linux');
+  process.env['INPUT_LOGOUT'] = 'true'; // default value
+  const coreSpy = jest.spyOn(core, 'setFailed');
 
   await run();
-
   expect(coreSpy).toHaveBeenCalledWith('Username and password required');
 });
 
 test('successful with username and password', async () => {
-  const platSpy = jest.spyOn(osm, 'platform');
-  platSpy.mockImplementation(() => 'linux');
+  jest.spyOn(osm, 'platform').mockImplementation(() => 'linux');
+  const setRegistrySpy = jest.spyOn(stateHelper, 'setRegistry');
+  const setLogoutSpy = jest.spyOn(stateHelper, 'setLogout');
+  const dockerSpy = jest.spyOn(docker, 'login').mockImplementation(jest.fn());
 
-  const setRegistrySpy: jest.SpyInstance = jest.spyOn(stateHelper, 'setRegistry');
-  const setLogoutSpy: jest.SpyInstance = jest.spyOn(stateHelper, 'setLogout');
-  const dockerSpy: jest.SpyInstance = jest.spyOn(docker, 'login');
-  dockerSpy.mockImplementation(() => {});
-
-  const username: string = 'dbowie';
+  const username = 'dbowie';
   process.env[`INPUT_USERNAME`] = username;
 
-  const password: string = 'groundcontrol';
+  const password = 'groundcontrol';
   process.env[`INPUT_PASSWORD`] = password;
+
+  const ecr = 'auto';
+  process.env['INPUT_ECR'] = ecr;
+
+  const logout = false;
+  process.env['INPUT_LOGOUT'] = String(logout);
 
   await run();
 
   expect(setRegistrySpy).toHaveBeenCalledWith('');
-  expect(setLogoutSpy).toHaveBeenCalledWith('');
-  expect(dockerSpy).toHaveBeenCalledWith('', username, password);
+  expect(setLogoutSpy).toHaveBeenCalledWith(logout);
+  expect(dockerSpy).toHaveBeenCalledWith('', username, password, ecr);
 });
 
 test('calls docker login', async () => {
-  const platSpy = jest.spyOn(osm, 'platform');
-  platSpy.mockImplementation(() => 'linux');
+  jest.spyOn(osm, 'platform').mockImplementation(() => 'linux');
+  const setRegistrySpy = jest.spyOn(stateHelper, 'setRegistry');
+  const setLogoutSpy = jest.spyOn(stateHelper, 'setLogout');
+  const dockerSpy = jest.spyOn(docker, 'login');
+  dockerSpy.mockImplementation(jest.fn());
 
-  const setRegistrySpy: jest.SpyInstance = jest.spyOn(stateHelper, 'setRegistry');
-  const setLogoutSpy: jest.SpyInstance = jest.spyOn(stateHelper, 'setLogout');
-  const dockerSpy: jest.SpyInstance = jest.spyOn(docker, 'login');
-  dockerSpy.mockImplementation(() => {});
-
-  const username: string = 'dbowie';
+  const username = 'dbowie';
   process.env[`INPUT_USERNAME`] = username;
 
-  const password: string = 'groundcontrol';
+  const password = 'groundcontrol';
   process.env[`INPUT_PASSWORD`] = password;
 
-  const registry: string = 'ghcr.io';
+  const registry = 'ghcr.io';
   process.env[`INPUT_REGISTRY`] = registry;
 
-  const logout: string = 'true';
-  process.env['INPUT_LOGOUT'] = logout;
+  const ecr = 'auto';
+  process.env['INPUT_ECR'] = ecr;
+
+  const logout = true;
+  process.env['INPUT_LOGOUT'] = String(logout);
 
   await run();
 
   expect(setRegistrySpy).toHaveBeenCalledWith(registry);
   expect(setLogoutSpy).toHaveBeenCalledWith(logout);
-  expect(dockerSpy).toHaveBeenCalledWith(registry, username, password);
+  expect(dockerSpy).toHaveBeenCalledWith(registry, username, password, ecr);
 });

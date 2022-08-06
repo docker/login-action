@@ -4,7 +4,8 @@ export interface Inputs {
   registry: string;
   username: string;
   password: string;
-  logout: string;
+  ecr: string;
+  logout: boolean;
 }
 
 export function getInputs(): Inputs {
@@ -12,6 +13,7 @@ export function getInputs(): Inputs {
     registry: core.getInput('registry'),
     username: core.getInput('username'),
     password: core.getInput('password'),
-    logout: core.getInput('logout')
+    ecr: core.getInput('ecr'),
+    logout: core.getBooleanInput('logout')
   };
 }
