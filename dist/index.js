@@ -185,7 +185,9 @@ function getInputs() {
         username: core.getInput('username'),
         password: core.getInput('password'),
         ecr: core.getInput('ecr'),
-        logout: core.getBooleanInput('logout')
+        logout: core.getBooleanInput('logout'),
+        retryErrorPattern: core.getInput('retryErrorPattern'),
+        retries: core.getInput('retries')
     };
 }
 exports.getInputs = getInputs;
@@ -329,7 +331,23 @@ async function run() {
         const input = context.getInputs();
         stateHelper.setRegistry(input.registry);
         stateHelper.setLogout(input.logout);
-        await docker.login(input.registry, input.username, input.password, input.ecr);
+        let retryErrorPattern = input.retryErrorPattern;
+        let attemptCount = parseInt(input.retries);
+        if (isNaN(attemptCount))
+            attemptCount = 3;
+        attemptCount = Math.min(attemptCount, 50);
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+            try {
+                await docker.login(input.registry, input.username, input.password, input.ecr);
+                break;
+            }
+            catch (error) {
+                if (!retryErrorPattern || !RegExp(retryErrorPattern).test(error.message) || --attemptCount <= 0)
+                    throw error;
+                core.warning(`Error <<<${error.message}>>> is recoverable, retrying...`);
+            }
+        }
     }
     catch (error) {
         core.setFailed(error.message);

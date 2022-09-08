@@ -70,3 +70,23 @@ test('calls docker login', async () => {
   expect(setLogoutSpy).toHaveBeenCalledWith(logout);
   expect(dockerSpy).toHaveBeenCalledWith(registry, username, password, ecr);
 });
+
+test('retried error without username and password', async () => {
+  const platSpy = jest.spyOn(osm, 'platform').mockImplementation(() => 'linux');
+
+  const setFailedSpy = jest.spyOn(core, 'setFailed');
+  const warningSpy = jest.spyOn(core, 'warning');
+  const dockerSpy = jest.spyOn(docker, 'login');
+  dockerSpy.mockImplementation(() => {
+    throw Error('Username and password required');
+  });
+
+  process.env['INPUT_LOGOUT'] = 'true'; // default value
+  process.env['INPUT_RETRYERRORPATTERN'] = '.*and password.*';
+  process.env['INPUT_RETRIES'] = '5';
+
+  await run();
+  expect(warningSpy).toHaveBeenCalledWith('Error <<<Username and password required>>> is recoverable, retrying...');
+  expect(warningSpy).toBeCalledTimes(4);
+  expect(setFailedSpy).toHaveBeenCalledWith('Username and password required');
+});

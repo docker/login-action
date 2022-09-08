@@ -6,6 +6,8 @@ export interface Inputs {
   password: string;
   ecr: string;
   logout: boolean;
+  retryErrorPattern: string;
+  retries: string;
 }
 
 export function getInputs(): Inputs {
@@ -14,6 +16,8 @@ export function getInputs(): Inputs {
     username: core.getInput('username'),
     password: core.getInput('password'),
     ecr: core.getInput('ecr'),
-    logout: core.getBooleanInput('logout')
+    logout: core.getBooleanInput('logout'),
+    retryErrorPattern: core.getInput('retryErrorPattern'),
+    retries: core.getInput('retries')
   };
 }

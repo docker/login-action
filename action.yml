@@ -24,6 +24,13 @@ inputs:
     description: 'Log out from the Docker registry at the end of a job'
     default: 'true'
     required: false
+  retryErrorPattern:
+    description: "Regexp to match error message"
+    required: false
+  retries:
+    description: "Maximum retries in case of errors (limit of 50 hardcoded)"
+    default: "3"
+    required: false
 
 runs:
   using: 'node12'

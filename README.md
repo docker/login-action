@@ -454,13 +454,15 @@ jobs:
 
 Following inputs can be used as `step.with` keys
 
-| Name             | Type    | Default                     | Description                        |
-|------------------|---------|-----------------------------|------------------------------------|
-| `registry`       | String  |                             | Server address of Docker registry. If not set then will default to Docker Hub |
-| `username`       | String  |                             | Username used to log against the Docker registry |
-| `password`       | String  |                             | Password or personal access token used to log against the Docker registry |
-| `ecr`            | String  | `auto`                      | Specifies whether the given registry is ECR (`auto`, `true` or `false`) |
-| `logout`         | Bool    | `true`                      | Log out from the Docker registry at the end of a job |
+| Name                | Type   | Default | Description                        |
+|------------ --------|--------|---------|------------------------------------|
+| `registry`          | String |         | Server address of Docker registry. If not set then will default to Docker Hub |
+| `username`          | String |         | Username used to log against the Docker registry |
+| `password`          | String |         | Password or personal access token used to log against the Docker registry |
+| `ecr`               | String | `auto`  | Specifies whether the given registry is ECR (`auto`, `true` or `false`) |
+| `logout`            | Bool   | `true`  | Log out from the Docker registry at the end of a job |
+| `retries`           | String | `3`     | Maximum retries in case of errors (limit of 50 hardcoded) |
+| `retryErrorPattern` | String |         | Regexp to match error message |
 
 ## Keep up-to-date with GitHub Dependabot
 
