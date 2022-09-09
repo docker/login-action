@@ -96,6 +96,8 @@ export const getRegistriesData = async (registry: string, username?: string, pas
     }
     const authToken = Buffer.from(authTokenResponse.authorizationData.authorizationToken, 'base64').toString('utf-8');
     const creds = authToken.split(':', 2);
+    core.setSecret(creds[0]); // redacted in workflow logs
+    core.setSecret(creds[1]); // redacted in workflow logs
     return [
       {
         registry: 'public.ecr.aws',
@@ -122,6 +124,8 @@ export const getRegistriesData = async (registry: string, username?: string, pas
     for (const authData of authTokenResponse.authorizationData) {
       const authToken = Buffer.from(authData.authorizationToken || '', 'base64').toString('utf-8');
       const creds = authToken.split(':', 2);
+      core.setSecret(creds[0]); // redacted in workflow logs
+      core.setSecret(creds[1]); // redacted in workflow logs
       regDatas.push({
         registry: authData.proxyEndpoint || '',
         username: creds[0],
