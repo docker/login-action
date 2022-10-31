@@ -30,7 +30,7 @@
     "@actions/core": "^1.10.0",
     "@actions/exec": "^1.1.1",
     "@actions/io": "^1.1.2",
-    "@aws-sdk/client-ecr": "^3.186.0",
+    "@aws-sdk/client-ecr": "^3.199.0",
     "@aws-sdk/client-ecr-public": "^3.186.0",
     "http-proxy-agent": "^5.0.0",
     "https-proxy-agent": "^5.0.1"
