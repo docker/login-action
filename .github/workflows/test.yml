@@ -6,9 +6,6 @@ on:
       - 'master'
       - 'releases/v*'
   pull_request:
-    branches:
-      - 'master'
-      - 'releases/v*'
 
 jobs:
   test:
@@ -17,11 +14,6 @@ jobs:
       -
         name: Checkout
         uses: actions/checkout@v3
-      -
-        name: Validate
-        uses: docker/bake-action@v2
-        with:
-          targets: validate
       -
         name: Test
         uses: docker/bake-action@v2
