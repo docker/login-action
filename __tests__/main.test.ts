@@ -1,19 +1,14 @@
 import {expect, jest, test} from '@jest/globals';
 import osm = require('os');
 
-import {run} from '../src/main';
+import {main} from '../src/main';
 import * as docker from '../src/docker';
 import * as stateHelper from '../src/state-helper';
-
-import * as core from '@actions/core';
 
 test('errors without username and password', async () => {
   jest.spyOn(osm, 'platform').mockImplementation(() => 'linux');
   process.env['INPUT_LOGOUT'] = 'true'; // default value
-  const coreSpy = jest.spyOn(core, 'setFailed');
-
-  await run();
-  expect(coreSpy).toHaveBeenCalledWith('Username and password required');
+  await expect(main()).rejects.toThrowError(new Error('Username and password required'));
 });
 
 test('successful with username and password', async () => {
@@ -34,7 +29,7 @@ test('successful with username and password', async () => {
   const logout = false;
   process.env['INPUT_LOGOUT'] = String(logout);
 
-  await run();
+  await main();
 
   expect(setRegistrySpy).toHaveBeenCalledWith('');
   expect(setLogoutSpy).toHaveBeenCalledWith(logout);
@@ -63,7 +58,7 @@ test('calls docker login', async () => {
   const logout = true;
   process.env['INPUT_LOGOUT'] = String(logout);
 
-  await run();
+  await main();
 
   expect(setRegistrySpy).toHaveBeenCalledWith(registry);
   expect(setLogoutSpy).toHaveBeenCalledWith(logout);

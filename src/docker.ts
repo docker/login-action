@@ -1,6 +1,6 @@
 import * as aws from './aws';
 import * as core from '@actions/core';
-import * as exec from '@actions/exec';
+import {Exec} from '@docker/actions-toolkit/lib/exec';
 
 export async function login(registry: string, username: string, password: string, ecr: string): Promise<void> {
   if (/true/i.test(ecr) || (ecr == 'auto' && aws.isECR(registry))) {
@@ -11,15 +11,13 @@ export async function login(registry: string, username: string, password: string
 }
 
 export async function logout(registry: string): Promise<void> {
-  await exec
-    .getExecOutput('docker', ['logout', registry], {
-      ignoreReturnCode: true
-    })
-    .then(res => {
-      if (res.stderr.length > 0 && res.exitCode != 0) {
-        core.warning(res.stderr.trim());
-      }
-    });
+  await Exec.getExecOutput('docker', ['logout', registry], {
+    ignoreReturnCode: true
+  }).then(res => {
+    if (res.stderr.length > 0 && res.exitCode != 0) {
+      core.warning(res.stderr.trim());
+    }
+  });
 }
 
 export async function loginStandard(registry: string, username: string, password: string): Promise<void> {
@@ -36,18 +34,16 @@ export async function loginStandard(registry: string, username: string, password
   } else {
     core.info(`Logging into Docker Hub...`);
   }
-  await exec
-    .getExecOutput('docker', loginArgs, {
-      ignoreReturnCode: true,
-      silent: true,
-      input: Buffer.from(password)
-    })
-    .then(res => {
-      if (res.stderr.length > 0 && res.exitCode != 0) {
-        throw new Error(res.stderr.trim());
-      }
-      core.info(`Login Succeeded!`);
-    });
+  await Exec.getExecOutput('docker', loginArgs, {
+    ignoreReturnCode: true,
+    silent: true,
+    input: Buffer.from(password)
+  }).then(res => {
+    if (res.stderr.length > 0 && res.exitCode != 0) {
+      throw new Error(res.stderr.trim());
+    }
+    core.info(`Login Succeeded!`);
+  });
 }
 
 export async function loginECR(registry: string, username: string, password: string): Promise<void> {
@@ -55,17 +51,15 @@ export async function loginECR(registry: string, username: string, password: str
   const regDatas = await aws.getRegistriesData(registry, username, password);
   for (const regData of regDatas) {
     core.info(`Logging into ${regData.registry}...`);
-    await exec
-      .getExecOutput('docker', ['login', '--password-stdin', '--username', regData.username, regData.registry], {
-        ignoreReturnCode: true,
-        silent: true,
-        input: Buffer.from(regData.password)
-      })
-      .then(res => {
-        if (res.stderr.length > 0 && res.exitCode != 0) {
-          throw new Error(res.stderr.trim());
-        }
-        core.info('Login Succeeded!');
-      });
+    await Exec.getExecOutput('docker', ['login', '--password-stdin', '--username', regData.username, regData.registry], {
+      ignoreReturnCode: true,
+      silent: true,
+      input: Buffer.from(regData.password)
+    }).then(res => {
+      if (res.stderr.length > 0 && res.exitCode != 0) {
+        throw new Error(res.stderr.trim());
+      }
+      core.info('Login Succeeded!');
+    });
   }
 }
