@@ -7,5 +7,5 @@ test('with password and username getInputs does not throw error', async () => {
   process.env['INPUT_LOGOUT'] = 'true';
   expect(() => {
     getInputs();
-  }).not.toThrowError();
+  }).not.toThrow();
 });
