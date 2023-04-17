@@ -8,14 +8,14 @@ import * as stateHelper from '../src/state-helper';
 test('errors without username and password', async () => {
   jest.spyOn(osm, 'platform').mockImplementation(() => 'linux');
   process.env['INPUT_LOGOUT'] = 'true'; // default value
-  await expect(main()).rejects.toThrowError(new Error('Username and password required'));
+  await expect(main()).rejects.toThrow(new Error('Username and password required'));
 });
 
 test('successful with username and password', async () => {
   jest.spyOn(osm, 'platform').mockImplementation(() => 'linux');
   const setRegistrySpy = jest.spyOn(stateHelper, 'setRegistry');
   const setLogoutSpy = jest.spyOn(stateHelper, 'setLogout');
-  const dockerSpy = jest.spyOn(docker, 'login').mockImplementation(jest.fn());
+  const dockerSpy = jest.spyOn(docker, 'login').mockImplementation(() => Promise.resolve());
 
   const username = 'dbowie';
   process.env[`INPUT_USERNAME`] = username;
@@ -40,8 +40,7 @@ test('calls docker login', async () => {
   jest.spyOn(osm, 'platform').mockImplementation(() => 'linux');
   const setRegistrySpy = jest.spyOn(stateHelper, 'setRegistry');
   const setLogoutSpy = jest.spyOn(stateHelper, 'setLogout');
-  const dockerSpy = jest.spyOn(docker, 'login');
-  dockerSpy.mockImplementation(jest.fn());
+  const dockerSpy = jest.spyOn(docker, 'login').mockImplementation(() => Promise.resolve());
 
   const username = 'dbowie';
   process.env[`INPUT_USERNAME`] = username;
