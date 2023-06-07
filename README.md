@@ -107,6 +107,8 @@ jobs:
           password: ${{ secrets.GITLAB_PASSWORD }}
 ```
 
+If you have [Two-Factor Authentication](https://gitlab.com/help/user/profile/account/two_factor_authentication) enabled, use a [Personal Access Token](https://gitlab.com/help/user/profile/personal_access_tokens) instead of a password.
+
 ### Azure Container Registry (ACR)
 
 [Create a service principal](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-auth-service-principal#create-a-service-principal)
