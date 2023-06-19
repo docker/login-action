@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: login-action
+  description: |
+    GitHub Action to login against a Docker registry
+  annotations:
+    github.com/project-slug: Tradeshift/login-action
+  tags:
+    - github-action
+    - nodejs
+    - fork
+spec:
+  type: library
+  owner: sre
+  lifecycle: production
