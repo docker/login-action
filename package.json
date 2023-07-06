@@ -28,8 +28,8 @@
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.10.0",
-    "@aws-sdk/client-ecr": "^3.347.1",
-    "@aws-sdk/client-ecr-public": "^3.347.1",
+    "@aws-sdk/client-ecr": "^3.363.0",
+    "@aws-sdk/client-ecr-public": "^3.363.0",
     "@docker/actions-toolkit": "^0.6.0",
     "http-proxy-agent": "^7.0.0",
     "https-proxy-agent": "^7.0.0"
