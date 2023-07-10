@@ -11,6 +11,13 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    groups:
+      aws-sdk-dependencies:
+        patterns:
+          - "*aws-sdk*"
+      proxy-agent-dependencies:
+        patterns:
+          - "*-proxy-agent"
     allow:
       - dependency-type: "production"
     labels:
