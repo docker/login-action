@@ -1,7 +1,7 @@
 import * as core from '@actions/core';
 import {ECR} from '@aws-sdk/client-ecr';
 import {ECRPUBLIC} from '@aws-sdk/client-ecr-public';
-import {NodeHttpHandler} from '@aws-sdk/node-http-handler';
+import {NodeHttpHandler} from '@smithy/node-http-handler';
 import {HttpProxyAgent} from 'http-proxy-agent';
 import {HttpsProxyAgent} from 'https-proxy-agent';
 
