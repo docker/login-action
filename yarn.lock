@@ -1188,10 +1188,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@docker/actions-toolkit@^0.7.0":
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/@docker/actions-toolkit/-/actions-toolkit-0.7.0.tgz#44dc2b3fda0f38d9722f69eb23c5b4c8f3fb993e"
-  integrity sha512-flwi3z2BT6r8pperog7PlHfBe/G5FWElTIWp4JI4AZNFHYkQEiPWMcumL/ygk3JE0T6x6Dn84doO3pHxMvv8Sw==
+"@docker/actions-toolkit@^0.7.1":
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/@docker/actions-toolkit/-/actions-toolkit-0.7.1.tgz#6eea91570d325a4f37d0c31b4d77648909e20a46"
+  integrity sha512-airhdNQeMVX+zCXu0aQwWJKeptmrHo8VYuzajLLiMhd8QW2sOiF53sA4vp1wiI2coRr6OXHZ9y1HC1IgKmzKfw==
   dependencies:
     "@actions/cache" "^3.2.1"
     "@actions/core" "^1.10.0"
@@ -1205,7 +1205,7 @@
     csv-parse "^5.4.0"
     handlebars "^4.7.7"
     jwt-decode "^3.1.2"
-    semver "^7.5.3"
+    semver "^7.5.4"
     tmp "^0.2.1"
 
 "@eslint-community/eslint-utils@^4.2.0":
@@ -4258,7 +4258,7 @@ sax@>=0.6.0:
   resolved "https://registry.yarnpkg.com/sax/-/sax-1.2.4.tgz#2816234e2378bddc4e5354fab5caa895df7100d9"
   integrity sha512-NqVDv9TpANUjFm0N8uM5GxL36UgKi9/atZw+x7YFnQ8ckwFGKrl4xX4yWtrey3UJm5nP1kUbnYgLopqWNSRhWw==
 
-semver@7.x, semver@^7.3.5, semver@^7.3.7, semver@^7.5.3:
+semver@7.x, semver@^7.3.5, semver@^7.3.7, semver@^7.5.4:
   version "7.5.4"
   resolved "https://registry.yarnpkg.com/semver/-/semver-7.5.4.tgz#483986ec4ed38e1c6c48c34894a9182dbff68a6e"
   integrity sha512-1bCSESV6Pv+i21Hvpxp3Dx+pSD8lIPt8uVjRrxAUt/nbswYc+tK6Y2btiULjd4+fnq15PX+nqQDC7Oft7WkwcA==
