@@ -15,6 +15,7 @@ process.env = Object.assign({}, process.env, {
 
 module.exports = {
   clearMocks: true,
+  testEnvironment: 'node',
   moduleFileExtensions: ['js', 'ts'],
   testMatch: ['**/*.test.ts'],
   transform: {
