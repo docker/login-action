@@ -1,4 +1,5 @@
 import {expect, test} from '@jest/globals';
+
 import {getInputs} from '../src/context';
 
 test('with password and username getInputs does not throw error', async () => {
