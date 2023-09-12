@@ -31,8 +31,9 @@ ___
 
 ### Docker Hub
 
-To authenticate against [Docker Hub](https://hub.docker.com) it's strongly recommended to create a
-[personal access token](https://docs.docker.com/docker-hub/access-tokens/) as an alternative to your password.
+When authenticating to [Docker Hub](https://hub.docker.com) with GitHub Actions,
+use a [personal access token](https://docs.docker.com/docker-hub/access-tokens/).
+Don't use your account password.
 
 ```yaml
 name: ci
@@ -47,7 +48,7 @@ jobs:
     steps:
       -
         name: Login to Docker Hub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -55,9 +56,9 @@ jobs:
 
 ### GitHub Container Registry
 
-To authenticate against the [GitHub Container Registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry),
-use the [`GITHUB_TOKEN`](https://docs.github.com/en/actions/reference/authentication-in-a-workflow) for the best
-security and experience.
+To authenticate to the [GitHub Container Registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry),
+use the [`GITHUB_TOKEN`](https://docs.github.com/en/actions/reference/authentication-in-a-workflow)
+secret.
 
 ```yaml
 name: ci
@@ -72,7 +73,7 @@ jobs:
     steps:
       -
         name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -100,20 +101,23 @@ jobs:
     steps:
       -
         name: Login to GitLab
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: registry.gitlab.com
           username: ${{ secrets.GITLAB_USERNAME }}
           password: ${{ secrets.GITLAB_PASSWORD }}
 ```
 
-If you have [Two-Factor Authentication](https://gitlab.com/help/user/profile/account/two_factor_authentication) enabled, use a [Personal Access Token](https://gitlab.com/help/user/profile/personal_access_tokens) instead of a password.
+If you have [Two-Factor Authentication](https://gitlab.com/help/user/profile/account/two_factor_authentication)
+enabled, use a [Personal Access Token](https://gitlab.com/help/user/profile/personal_access_tokens)
+instead of a password.
 
 ### Azure Container Registry (ACR)
 
 [Create a service principal](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-auth-service-principal#create-a-service-principal)
 with access to your container registry through the [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
-and take note of the generated service principal's ID (also called _client ID_) and password (also called _client secret_).
+and take note of the generated service principal's ID (also called _client ID_)
+and password (also called _client secret_).
 
 ```yaml
 name: ci
@@ -128,7 +132,7 @@ jobs:
     steps:
       -
         name: Login to ACR
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: <registry-name>.azurecr.io
           username: ${{ secrets.AZURE_CLIENT_ID }}
@@ -139,16 +143,21 @@ jobs:
 
 ### Google Container Registry (GCR)
 
-> [Google Artifact Registry](#google-artifact-registry-gar) is the evolution of Google Container Registry. As a
-> fully-managed service with support for both container images and non-container artifacts. If you currently use
-> Google Container Registry, use the information [on this page](https://cloud.google.com/artifact-registry/docs/transition/transition-from-gcr)
+> [Google Artifact Registry](#google-artifact-registry-gar) is the evolution of
+> Google Container Registry. As a fully-managed service with support for both
+> container images and non-container artifacts. If you currently use Google
+> Container Registry, use the information [on this page](https://cloud.google.com/artifact-registry/docs/transition/transition-from-gcr)
 > to learn about transitioning to Google Artifact Registry. 
 
-You can use either workload identity federation based keyless authentication or service account based authentication.
+You can authenticate with workload identity federation or a service account.
 
-#### Workload identity federation based authentication
+#### Workload identity federation
 
-Configure the workload identity federation for github actions in gcloud (for steps, [refer here](https://github.com/google-github-actions/auth#setting-up-workload-identity-federation)). In the steps, your service account should the ability to push to GCR. Then use google-github-actions/auth action for authentication using workload identity like below:
+Configure the workload identity federation for GitHub Actions in Google Cloud,
+[see here](https://github.com/google-github-actions/auth#setting-up-workload-identity-federation).
+Your service account must have permission to push to GCR. Use the
+`google-github-actions/auth` action to authenticate using workload identity as
+shown in the following example:
 
 ```yaml
 name: ci
@@ -161,32 +170,35 @@ jobs:
   login:
     runs-on: ubuntu-latest
     steps:
-    - id: 'auth'
-      name: 'Authenticate to Google Cloud'
-      uses: 'google-github-actions/auth@v0'
+    -
+      name: Authenticate to Google Cloud
+      id: auth
+      uses: google-github-actions/auth@v1
       with:
-        token_format: 'access_token'
-        workload_identity_provider: '<workload_identity_provider>'
-        service_account: '<service_account>'
-
-    - name: Login to GCR
-      uses: docker/login-action@v2
+        token_format: access_token
+        workload_identity_provider: <workload_identity_provider>
+        service_account: <service_account>
+    -
+      name: Login to GCR
+      uses: docker/login-action@v3
       with:
         registry: gcr.io
         username: oauth2accesstoken
         password: ${{ steps.auth.outputs.access_token }}
 ```
 
-> Replace `<workload_identity_provider>` with configured workload identity provider. For steps to configure, [refer here](https://github.com/google-github-actions/auth#setting-up-workload-identity-federation).
+> Replace `<workload_identity_provider>` with configured workload identity
+> provider. For steps to configure, [see here](https://github.com/google-github-actions/auth#setting-up-workload-identity-federation).
 
-> Replace `<service_account>` with configured service account in workload identity provider which has access to push to GCR
+> Replace `<service_account>` with configured service account in workload
+> identity provider which has access to push to GCR
 
 #### Service account based authentication
 
-Use a service account with the ability to push to GCR and [configure access control](https://cloud.google.com/container-registry/docs/access-control).
-Then create and download the JSON key for this service account and save content of `.json` file
-[as a secret](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository)
-called `GCR_JSON_KEY` in your GitHub repo. Ensure you set the username to `_json_key`,
+Use a service account with permission to push to GCR and [configure access control](https://cloud.google.com/container-registry/docs/access-control).
+Download the key for the service account as a JSON file. Save the contents of
+the file [as a secret](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository)
+named `GCR_JSON_KEY` in your GitHub repository. Set the username to `_json_key`,
 or `_json_key_base64` if you use a base64-encoded key.
 
 ```yaml
@@ -202,7 +214,7 @@ jobs:
     steps:
       -
         name: Login to GCR
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: gcr.io
           username: _json_key
@@ -211,11 +223,14 @@ jobs:
 
 ### Google Artifact Registry (GAR)
 
-You can use either workload identity federation based keyless authentication or  service account based authentication.
+You can authenticate with workload identity federation or a service account.
 
-#### Workload identity federation based authentication
+#### Workload identity federation
 
-Configure the workload identity federation for github actions in gcloud (for steps, [refer here](https://github.com/google-github-actions/auth#setting-up-workload-identity-federation)). In the steps, your service account should the ability to push to GAR. Then use google-github-actions/auth action for authentication using workload identity like below:
+Download the key for the service account as a JSON file. Save the contents of
+the file [as a secret](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository)
+named `GCR_JSON_KEY` in your GitHub repository. Set the username to `_json_key`,
+or `_json_key_base64` if you use a base64-encoded key.
 
 ```yaml
 name: ci
@@ -228,34 +243,38 @@ jobs:
   login:
     runs-on: ubuntu-latest
     steps:
-      - id: 'auth'
-        name: 'Authenticate to Google Cloud'
-        uses: 'google-github-actions/auth@v0'
+      -
+        name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v1
         with:
-          token_format: 'access_token'
-          workload_identity_provider: '<workload_identity_provider>'
-          service_account: '<service_account>'
-      
-      - name: Login to GAR
-        uses: docker/login-action@v2
+          token_format: access_token
+          workload_identity_provider: <workload_identity_provider>
+          service_account: <service_account>
+      -
+        name: Login to GAR
+        uses: docker/login-action@v3
         with:
           registry: <location>-docker.pkg.dev
           username: oauth2accesstoken
           password: ${{ steps.auth.outputs.access_token }}
 ```
-> Replace `<workload_identity_provider>` with configured workload identity provider
 
-> Replace `<service_account>` with configured service account in workload identity provider which has access to push to GCR
+> Replace `<workload_identity_provider>` with configured workload identity
+> provider
+
+> Replace `<service_account>` with configured service account in workload
+> identity provider which has access to push to GCR
 
 > Replace `<location>` with the regional or multi-regional [location](https://cloud.google.com/artifact-registry/docs/repo-organize#locations)
 > of the repository where the image is stored.
 
 #### Service account based authentication
 
-Use a service account with the ability to push to GAR and [configure access control](https://cloud.google.com/artifact-registry/docs/access-control).
-Then create and download the JSON key for this service account and save content of `.json` file
-[as a secret](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository)
-called `GAR_JSON_KEY` in your GitHub repo. Ensure you set the username to `_json_key`,
+Use a service account with permission to push to GAR and [configure access control](https://cloud.google.com/artifact-registry/docs/access-control).
+Download the key for the service account as a JSON file. Save the contents of
+the file [as a secret](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository)
+named `GCR_JSON_KEY` in your GitHub repository. Set the username to `_json_key`,
 or `_json_key_base64` if you use a base64-encoded key.
 
 ```yaml
@@ -271,7 +290,7 @@ jobs:
     steps:
       -
         name: Login to GAR
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: <location>-docker.pkg.dev
           username: _json_key
@@ -284,7 +303,7 @@ jobs:
 ### AWS Elastic Container Registry (ECR)
 
 Use an IAM user with the ability to [push to ECR with `AmazonEC2ContainerRegistryPowerUser` managed policy for example](https://docs.aws.amazon.com/AmazonECR/latest/userguide/ecr_managed_policies.html#AmazonEC2ContainerRegistryPowerUser).
-Then create and download access keys and save `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` [as secrets](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository)
+Download the access keys and save them as `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` [as secrets](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository)
 in your GitHub repo.
 
 ```yaml
@@ -300,15 +319,15 @@ jobs:
     steps:
       -
         name: Login to ECR
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: <aws-account-number>.dkr.ecr.<region>.amazonaws.com
           username: ${{ secrets.AWS_ACCESS_KEY_ID }}
           password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 ```
 
-If you need to log in to Amazon ECR registries associated with other accounts, you can use the `AWS_ACCOUNT_IDS`
-environment variable:
+If you need to log in to Amazon ECR registries associated with other accounts,
+you can use the `AWS_ACCOUNT_IDS` environment variable:
 
 ```yaml
 name: ci
@@ -323,7 +342,7 @@ jobs:
     steps:
       -
         name: Login to ECR
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: <aws-account-number>.dkr.ecr.<region>.amazonaws.com
           username: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -334,8 +353,8 @@ jobs:
 
 > Only available with [AWS CLI version 1](https://docs.aws.amazon.com/cli/latest/reference/ecr/get-login.html)
 
-You can also use the [Configure AWS Credentials](https://github.com/aws-actions/configure-aws-credentials) action in
-combination with this action:
+You can also use the [Configure AWS Credentials](https://github.com/aws-actions/configure-aws-credentials)
+action in combination with this action:
 
 ```yaml
 name: ci
@@ -350,14 +369,14 @@ jobs:
     steps:
       -
         name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: <region>
       -
         name: Login to ECR
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: <aws-account-number>.dkr.ecr.<region>.amazonaws.com
 ```
@@ -366,9 +385,10 @@ jobs:
 
 ### AWS Public Elastic Container Registry (ECR)
 
-Use an IAM user with the ability to [push to ECR Public with `AmazonElasticContainerRegistryPublicPowerUser` managed policy for example](https://docs.aws.amazon.com/AmazonECR/latest/public/public-ecr-managed-policies.html#AmazonElasticContainerRegistryPublicPowerUser).
-Then create and download access keys and save `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` [as secrets](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository)
-in your GitHub repo.
+Use an IAM user with permission to push to ECR Public, for example using [managed policies](https://docs.aws.amazon.com/AmazonECR/latest/userguide/security-iam-awsmanpol.html#security-iam-awsmanpol-AmazonEC2ContainerRegistryPowerUser).
+Download the access keys and save them as `AWS_ACCESS_KEY_ID` and
+`AWS_SECRET_ACCESS_KEY` [secrets](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository)
+in your GitHub repository.
 
 ```yaml
 name: ci
@@ -383,7 +403,7 @@ jobs:
     steps:
       -
         name: Login to Public ECR
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: public.ecr.aws
           username: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -417,7 +437,7 @@ jobs:
     steps:
       -
         name: Login to OCIR
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: <region>.ocir.io
           username: ${{ secrets.OCI_USERNAME }}
@@ -428,7 +448,8 @@ jobs:
 
 ### Quay.io
 
-Use a [Robot account](https://docs.quay.io/glossary/robot-accounts.html) with the ability to push to a public/private Quay.io repository.
+Use a [Robot account](https://docs.quay.io/glossary/robot-accounts.html) with
+permission to push to a Quay.io repository.
 
 ```yaml
 name: ci
@@ -443,7 +464,7 @@ jobs:
     steps:
       -
         name: Login to Quay.io
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: quay.io
           username: ${{ secrets.QUAY_USERNAME }}
@@ -454,15 +475,15 @@ jobs:
 
 ### inputs
 
-Following inputs can be used as `step.with` keys
+The following inputs can be used as `step.with` keys:
 
-| Name             | Type    | Default                     | Description                        |
-|------------------|---------|-----------------------------|------------------------------------|
-| `registry`       | String  |                             | Server address of Docker registry. If not set then will default to Docker Hub |
-| `username`       | String  |                             | Username used to log against the Docker registry |
-| `password`       | String  |                             | Password or personal access token used to log against the Docker registry |
-| `ecr`            | String  | `auto`                      | Specifies whether the given registry is ECR (`auto`, `true` or `false`) |
-| `logout`         | Bool    | `true`                      | Log out from the Docker registry at the end of a job |
+| Name       | Type   | Default | Description                                                                   |
+|------------|--------|---------|-------------------------------------------------------------------------------|
+| `registry` | String |         | Server address of Docker registry. If not set then will default to Docker Hub |
+| `username` | String |         | Username for authenticating to the Docker registry                            |
+| `password` | String |         | Password or personal access token for authenticating the Docker registry      |
+| `ecr`      | String | `auto`  | Specifies whether the given registry is ECR (`auto`, `true` or `false`)       |
+| `logout`   | Bool   | `true`  | Log out from the Docker registry at the end of a job                          |
 
 ## Keep up-to-date with GitHub Dependabot
 
