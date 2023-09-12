@@ -30,7 +30,7 @@
     "@aws-sdk/client-ecr-public": "^3.398.0",
     "@docker/actions-toolkit": "^0.12.0",
     "http-proxy-agent": "^7.0.0",
-    "https-proxy-agent": "^7.0.1"
+    "https-proxy-agent": "^7.0.2"
   },
   "devDependencies": {
     "@types/node": "^20.5.9",
