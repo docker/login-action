@@ -1233,10 +1233,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@docker/actions-toolkit@^0.13.0":
-  version "0.13.0"
-  resolved "https://registry.yarnpkg.com/@docker/actions-toolkit/-/actions-toolkit-0.13.0.tgz#9317755109b92ff4d439c739be1688eb8a0e9d02"
-  integrity sha512-pmEHFXnxF/7Rr04LxW0pGt0fcrxu1rt81wFF5g0lrJsG5zKszBf67obpDwhomgvE2mgcz6+RX+L16RoQXA66Aw==
+"@docker/actions-toolkit@^0.14.0":
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/@docker/actions-toolkit/-/actions-toolkit-0.14.0.tgz#1cc7108aa1da0df708fb65915cc927d0cc420584"
+  integrity sha512-5PZ49FgZLcS421Py60Zm5CGzQt1OyGVVx2CHZbjr2S0Vm6Rqks4diB3io/nt4EkccUb3EgwClZPopICOPzyIPw==
   dependencies:
     "@actions/cache" "^3.2.2"
     "@actions/core" "^1.10.1"
@@ -1246,12 +1246,12 @@
     "@actions/io" "^1.1.3"
     "@actions/tool-cache" "^2.0.1"
     "@octokit/core" "^5.0.1"
-    "@octokit/plugin-rest-endpoint-methods" "^10.0.1"
+    "@octokit/plugin-rest-endpoint-methods" "^10.1.5"
     async-retry "^1.3.3"
     csv-parse "^5.5.2"
     handlebars "^4.7.8"
     js-yaml "^4.1.0"
-    jwt-decode "^3.1.2"
+    jwt-decode "^4.0.0"
     semver "^7.5.4"
     tmp "^0.2.1"
 
@@ -1676,6 +1676,11 @@
   resolved "https://registry.yarnpkg.com/@octokit/openapi-types/-/openapi-types-19.0.1.tgz#b83bd8ef1a6e1a2d88072c87747fa130348ef8fe"
   integrity sha512-zC+73r2HIoRb9rWW5S3Y759hrpadlD5pNnya/QfZv0JZE7mvMu+FUa7nxHqTadi2hZc4BPZjJ8veDTuJnh8+8g==
 
+"@octokit/openapi-types@^19.0.2":
+  version "19.0.2"
+  resolved "https://registry.yarnpkg.com/@octokit/openapi-types/-/openapi-types-19.0.2.tgz#d72778fe2f6151314b6f0201fbc771bb741276fc"
+  integrity sha512-8li32fUDUeml/ACRp/njCWTsk5t17cfTM1jp9n08pBrqs5cDFJubtjsSnuz56r5Tad6jdEPJld7LxNp9dNcyjQ==
+
 "@octokit/plugin-paginate-rest@^9.0.0":
   version "9.1.0"
   resolved "https://registry.yarnpkg.com/@octokit/plugin-paginate-rest/-/plugin-paginate-rest-9.1.0.tgz#215040a2e9d93497b46d7f88c8566f958c97e1c4"
@@ -1683,12 +1688,12 @@
   dependencies:
     "@octokit/types" "^12.1.0"
 
-"@octokit/plugin-rest-endpoint-methods@^10.0.0", "@octokit/plugin-rest-endpoint-methods@^10.0.1":
-  version "10.1.0"
-  resolved "https://registry.yarnpkg.com/@octokit/plugin-rest-endpoint-methods/-/plugin-rest-endpoint-methods-10.1.0.tgz#0633ba7da42b9333444dd0880ab383a0860662fb"
-  integrity sha512-SnVot2WFI61LYkTeSCkKNfvfqw7FdgtqvaC8nMUwYiHA8UTKoGDjL+R5pCaCEvoLu3O55pUOtNaTIyo7ngJySQ==
+"@octokit/plugin-rest-endpoint-methods@^10.0.0", "@octokit/plugin-rest-endpoint-methods@^10.1.5":
+  version "10.1.5"
+  resolved "https://registry.yarnpkg.com/@octokit/plugin-rest-endpoint-methods/-/plugin-rest-endpoint-methods-10.1.5.tgz#b03559e439f951a484c0cfb69ceac86a7eb92358"
+  integrity sha512-LMEdsMV8TTMjMTqVoqMzV95XTbv0ZsWxCxQtjAunQOCdwoDH4BVF/Ke5JMSZEVCWGI2kzxnUNbFnK/MxwV7NjA==
   dependencies:
-    "@octokit/types" "^12.1.0"
+    "@octokit/types" "^12.3.0"
 
 "@octokit/request-error@^5.0.0":
   version "5.0.1"
@@ -1716,6 +1721,13 @@
   integrity sha512-JmjQr5ZbOnpnOLX5drI2O2I1N9suOYZAgINHXTlVVg4lRtUifMv2JssT+RhmNxQwXH153Pc8HaCMdTRkqI1oVQ==
   dependencies:
     "@octokit/openapi-types" "^19.0.1"
+
+"@octokit/types@^12.3.0":
+  version "12.3.0"
+  resolved "https://registry.yarnpkg.com/@octokit/types/-/types-12.3.0.tgz#e3f8bc53f65ef551e19cc1a0fea15adadec17d2d"
+  integrity sha512-nJ8X2HRr234q3w/FcovDlA+ttUU4m1eJAourvfUUtwAWeqL8AsyRqfnLvVnYn3NFbUnsmzQCzLNdFerPwdmcDQ==
+  dependencies:
+    "@octokit/openapi-types" "^19.0.2"
 
 "@opentelemetry/api@^1.0.1":
   version "1.4.1"
@@ -4063,10 +4075,10 @@ json5@^2.1.2, json5@^2.2.2, json5@^2.2.3:
   resolved "https://registry.yarnpkg.com/json5/-/json5-2.2.3.tgz#78cd6f1a19bdc12b73db5ad0c61efd66c1e29283"
   integrity sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==
 
-jwt-decode@^3.1.2:
-  version "3.1.2"
-  resolved "https://registry.yarnpkg.com/jwt-decode/-/jwt-decode-3.1.2.tgz#3fb319f3675a2df0c2895c8f5e9fa4b67b04ed59"
-  integrity sha512-UfpWE/VZn0iP50d8cz9NrZLM9lSWhcJ+0Gt/nm4by88UL+J1SiKN8/5dkjMmbEzwL2CAe+67GsegCbIKtbp75A==
+jwt-decode@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/jwt-decode/-/jwt-decode-4.0.0.tgz#2270352425fd413785b2faf11f6e755c5151bd4b"
+  integrity sha512-+KJGIyHgkGuIq3IEBNftfhW/LfWhXUIY6OmyVWjliu5KH1y0fw7VQ8YndE2O4qZdMSd9SqbnC8GOcZEy0Om7sA==
 
 kleur@^3.0.3:
   version "3.0.3"
