@@ -23,6 +23,7 @@ ___
   * [AWS Public Elastic Container Registry (ECR)](#aws-public-elastic-container-registry-ecr)
   * [OCI Oracle Cloud Infrastructure Registry (OCIR)](#oci-oracle-cloud-infrastructure-registry-ocir)
   * [Quay.io](#quayio)
+  * [DigitalOcean](#digitalocean-container-registry)
 * [Customizing](#customizing)
   * [inputs](#inputs)
 * [Keep up-to-date with GitHub Dependabot](#keep-up-to-date-with-github-dependabot)
@@ -469,6 +470,30 @@ jobs:
           registry: quay.io
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_ROBOT_TOKEN }}
+```
+
+### DigitalOcean Container Registry
+
+Use your DigitalOcean registered email address and an API access token to authenticate.
+
+```yaml
+name: ci
+
+on:
+  push:
+    branches: main
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Login to DigitalOcean Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: registry.digitalocean.com
+          username: ${{ secrets.DIGITALOCEAN_USERNAME }}
+          password: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 ```
 
 ## Customizing
