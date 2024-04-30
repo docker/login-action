@@ -21,8 +21,14 @@ export async function logout(registry: string): Promise<void> {
 }
 
 export async function loginStandard(registry: string, username: string, password: string): Promise<void> {
-  if (!username || !password) {
+  if (!username && !password) {
     throw new Error('Username and password required');
+  }
+  if (!username) {
+    throw new Error('Username required');
+  }
+  if (!password) {
+    throw new Error('Password required');
   }
 
   const loginArgs: Array<string> = ['login', '--password-stdin'];
