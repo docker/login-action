@@ -228,10 +228,9 @@ You can authenticate with workload identity federation or a service account.
 
 #### Workload identity federation
 
-Download the key for the service account as a JSON file. Save the contents of
-the file [as a secret](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository)
-named `GCR_JSON_KEY` in your GitHub repository. Set the username to `_json_key`,
-or `_json_key_base64` if you use a base64-encoded key.
+Your service account must have permission to push to GAR. Use the
+`google-github-actions/auth` action to authenticate using workload identity as
+shown in the following example:
 
 ```yaml
 name: ci
@@ -275,7 +274,7 @@ jobs:
 Use a service account with permission to push to GAR and [configure access control](https://cloud.google.com/artifact-registry/docs/access-control).
 Download the key for the service account as a JSON file. Save the contents of
 the file [as a secret](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository)
-named `GCR_JSON_KEY` in your GitHub repository. Set the username to `_json_key`,
+named `GAR_JSON_KEY` in your GitHub repository. Set the username to `_json_key`,
 or `_json_key_base64` if you use a base64-encoded key.
 
 ```yaml
