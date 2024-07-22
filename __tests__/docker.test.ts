@@ -2,14 +2,15 @@ import {expect, jest, test} from '@jest/globals';
 import * as path from 'path';
 
 import {loginStandard, logout} from '../src/docker';
-import {Exec} from '@docker/actions-toolkit/lib/exec';
+
+import {Docker} from '@docker/actions-toolkit/lib/docker/docker';
 
 process.env['RUNNER_TEMP'] = path.join(__dirname, 'runner');
 
 test('loginStandard calls exec', async () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  const execSpy = jest.spyOn(Exec, 'getExecOutput').mockImplementation(async () => {
+  const execSpy = jest.spyOn(Docker, 'getExecOutput').mockImplementation(async () => {
     return {
       exitCode: expect.any(Number),
       stdout: expect.any(Function),
@@ -23,7 +24,13 @@ test('loginStandard calls exec', async () => {
 
   await loginStandard(registry, username, password);
 
-  expect(execSpy).toHaveBeenCalledWith(`docker`, ['login', '--password-stdin', '--username', username, registry], {
+  expect(execSpy).toHaveBeenCalledTimes(1);
+  const callfunc = execSpy.mock.calls[0];
+  if (callfunc && callfunc[1]) {
+    // we don't want to check env opt
+    callfunc[1].env = undefined;
+  }
+  expect(execSpy).toHaveBeenCalledWith(['login', '--password-stdin', '--username', username, registry], {
     input: Buffer.from(password),
     silent: true,
     ignoreReturnCode: true
@@ -33,7 +40,7 @@ test('loginStandard calls exec', async () => {
 test('logout calls exec', async () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  const execSpy = jest.spyOn(Exec, 'getExecOutput').mockImplementation(async () => {
+  const execSpy = jest.spyOn(Docker, 'getExecOutput').mockImplementation(async () => {
     return {
       exitCode: expect.any(Number),
       stdout: expect.any(Function),
@@ -45,7 +52,13 @@ test('logout calls exec', async () => {
 
   await logout(registry);
 
-  expect(execSpy).toHaveBeenCalledWith(`docker`, ['logout', registry], {
+  expect(execSpy).toHaveBeenCalledTimes(1);
+  const callfunc = execSpy.mock.calls[0];
+  if (callfunc && callfunc[1]) {
+    // we don't want to check env opt
+    callfunc[1].env = undefined;
+  }
+  expect(execSpy).toHaveBeenCalledWith(['logout', registry], {
     ignoreReturnCode: true
   });
 });
