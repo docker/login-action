@@ -51,7 +51,7 @@ jobs:
         name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 ```
 
@@ -105,7 +105,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: registry.gitlab.com
-          username: ${{ secrets.GITLAB_USERNAME }}
+          username: ${{ vars.GITLAB_USERNAME }}
           password: ${{ secrets.GITLAB_PASSWORD }}
 ```
 
@@ -136,7 +136,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: <registry-name>.azurecr.io
-          username: ${{ secrets.AZURE_CLIENT_ID }}
+          username: ${{ vars.AZURE_CLIENT_ID }}
           password: ${{ secrets.AZURE_CLIENT_SECRET }}
 ```
 
@@ -199,8 +199,7 @@ jobs:
 Use a service account with permission to push to GCR and [configure access control](https://cloud.google.com/container-registry/docs/access-control).
 Download the key for the service account as a JSON file. Save the contents of
 the file [as a secret](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository)
-named `GCR_JSON_KEY` in your GitHub repository. Set the username to `_json_key`,
-or `_json_key_base64` if you use a base64-encoded key.
+named `GCR_JSON_KEY` in your GitHub repository. Set the username to `_json_key`.
 
 ```yaml
 name: ci
@@ -322,7 +321,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: <aws-account-number>.dkr.ecr.<region>.amazonaws.com
-          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          username: ${{ vars.AWS_ACCESS_KEY_ID }}
           password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 ```
 
@@ -345,7 +344,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: <aws-account-number>.dkr.ecr.<region>.amazonaws.com
-          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          username: ${{ vars.AWS_ACCESS_KEY_ID }}
           password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         env:
           AWS_ACCOUNT_IDS: 012345678910,023456789012
@@ -371,7 +370,7 @@ jobs:
         name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-access-key-id: ${{ vars.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: <region>
       -
@@ -406,7 +405,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: public.ecr.aws
-          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          username: ${{ vars.AWS_ACCESS_KEY_ID }}
           password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         env:
           AWS_REGION: <region>
@@ -440,7 +439,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: <region>.ocir.io
-          username: ${{ secrets.OCI_USERNAME }}
+          username: ${{ vars.OCI_USERNAME }}
           password: ${{ secrets.OCI_TOKEN }}
 ```
 
@@ -467,7 +466,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: quay.io
-          username: ${{ secrets.QUAY_USERNAME }}
+          username: ${{ vars.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_ROBOT_TOKEN }}
 ```
 
@@ -491,7 +490,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: registry.digitalocean.com
-          username: ${{ secrets.DIGITALOCEAN_USERNAME }}
+          username: ${{ vars.DIGITALOCEAN_USERNAME }}
           password: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 ```
 
