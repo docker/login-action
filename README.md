@@ -199,8 +199,7 @@ jobs:
 Use a service account with permission to push to GCR and [configure access control](https://cloud.google.com/container-registry/docs/access-control).
 Download the key for the service account as a JSON file. Save the contents of
 the file [as a secret](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository)
-named `GCR_JSON_KEY` in your GitHub repository. Set the username to `_json_key`,
-or `_json_key_base64` if you use a base64-encoded key.
+named `GCR_JSON_KEY` in your GitHub repository. Set the username to `_json_key`.
 
 ```yaml
 name: ci
