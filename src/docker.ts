@@ -51,7 +51,7 @@ export async function loginStandard(registry: string, username: string, password
     }).then(res => {
       if (res.stderr.length > 0 && res.exitCode != 0) {
         let isRetriable: boolean
-        isRetriable = res.stderr.endsWith("502 Bad Gateway")
+        isRetriable = res.stderr.trim().endsWith("502 Bad Gateway")
         if (!isRetriable || (attempt >= attempts) {
           throw new Error(res.stderr.trim());
         }
