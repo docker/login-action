@@ -33,11 +33,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@actions/cache@npm:^3.2.4":
-  version: 3.2.4
-  resolution: "@actions/cache@npm:3.2.4"
+"@actions/cache@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "@actions/cache@npm:3.3.0"
   dependencies:
-    "@actions/core": ^1.10.0
+    "@actions/core": ^1.11.1
     "@actions/exec": ^1.0.1
     "@actions/glob": ^0.1.0
     "@actions/http-client": ^2.1.1
@@ -46,8 +46,7 @@ __metadata:
     "@azure/ms-rest-js": ^2.6.0
     "@azure/storage-blob": ^12.13.0
     semver: ^6.3.1
-    uuid: ^3.3.3
-  checksum: 5bf5f7541bea4906b553440a9ffee5699e11dfb729365c6cb0bbd37e147a1a0993369fdad16bfa3e2b01ec7fa57dac66276278bfd4a389009246a75ea953e61d
+  checksum: f0761b1491b7706a80b44d68ed52eb48c04653fc939525a7c7b606e9d9251c40c7e4ac20846ab92ac32db6869e1a6f0f574bd6b7fec1ab9378c8e199c5acc9c9
   languageName: node
   linkType: hard
 
@@ -1667,12 +1666,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@docker/actions-toolkit@npm:^0.42.0":
-  version: 0.42.0
-  resolution: "@docker/actions-toolkit@npm:0.42.0"
+"@docker/actions-toolkit@npm:^0.43.0":
+  version: 0.43.0
+  resolution: "@docker/actions-toolkit@npm:0.43.0"
   dependencies:
     "@actions/artifact": ^2.1.11
-    "@actions/cache": ^3.2.4
+    "@actions/cache": ^3.3.0
     "@actions/core": ^1.11.1
     "@actions/exec": ^1.1.1
     "@actions/github": ^6.0.0
@@ -1692,7 +1691,7 @@ __metadata:
     semver: ^7.6.3
     tar-stream: ^3.1.7
     tmp: ^0.2.3
-  checksum: b657f9de956d0a6038d436124ad62aa25166385c4983b8e244706a93ee3bd5fc84e96c8f05e212470835832f739988a9cfd41dc77d89db5040c5a004ef1a844a
+  checksum: 2bd64d8f1a8709225329d1f93daf650f5f30a5f8d83c24a325effdf49d4dfa39f7a1aa896abf788428e2d811f2698781b783c13a5937b7d3d48844addec94f65
   languageName: node
   linkType: hard
 
@@ -4246,7 +4245,7 @@ __metadata:
     "@actions/core": ^1.11.1
     "@aws-sdk/client-ecr": ^3.664.0
     "@aws-sdk/client-ecr-public": ^3.664.0
-    "@docker/actions-toolkit": ^0.42.0
+    "@docker/actions-toolkit": ^0.43.0
     "@types/node": ^20.12.12
     "@typescript-eslint/eslint-plugin": ^7.9.0
     "@typescript-eslint/parser": ^7.9.0
@@ -7735,7 +7734,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^3.3.2, uuid@npm:^3.3.3":
+"uuid@npm:^3.3.2":
   version: 3.4.0
   resolution: "uuid@npm:3.4.0"
   bin:
