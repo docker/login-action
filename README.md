@@ -24,7 +24,7 @@ ___
   * [OCI Oracle Cloud Infrastructure Registry (OCIR)](#oci-oracle-cloud-infrastructure-registry-ocir)
   * [Quay.io](#quayio)
   * [DigitalOcean](#digitalocean-container-registry)
-  * [Buildkite Packages](#Buildkite-Packages-Registry)
+  * [Buildkite Packages](#buildkite-package-registry)
 * [Customizing](#customizing)
   * [inputs](#inputs)
 * [Contributing](#contributing)
