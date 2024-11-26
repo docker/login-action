@@ -497,7 +497,7 @@ jobs:
 
 ### Buildkite Package Registry
 
-Use your Buildkite registered email address and an API access token to authenticate.
+Use your Buildkite registered email address to generate an API access token to authenticate. U
 
 ```yaml
 name: ci
@@ -515,10 +515,17 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: packages.buildkite.com
-          username: buildkite #All usernames to buildkite packages is "buildkite". Ref https://buildkite.com/docs/package-registries
+          username: buildkite #All usernames to buildkite packages is "buildkite". 
           password: ${{ secrets.BUILDKITE_ACCESS_TOKEN }}
 ```
-Scope required:
+**Useful references:**
+[Buildkite package Registry](https://buildkite.com/docs/package-registries)
+
+Go to your Buildkite Org/Buildkite Package registry to generate a token
+
+**Working pipeline example:** [https://gist.github.com/kleeadrian/f096878f76b5fb759976adce9550c9a5](https://gist.github.com/kleeadrian/f096878f76b5fb759976adce9550c9a5)
+
+**Scope required:**
 ```
 read_registries
 write_registries
