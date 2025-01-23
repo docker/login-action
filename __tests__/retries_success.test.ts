@@ -4,12 +4,7 @@ import { login } from '../src/docker';
 import { Docker } from '@docker/actions-toolkit/lib/docker/docker';
 
 test('login retries success function', async () => {
-  // let stderr_strings: string[] = []
-  let stderr_strings: string[] = [
-    'mock error, failed with status: 408 Request Timeout',
-    'mock error, failed with status: 502 Request Timeout',
-    'mock error, failed with status: 400 Request Timeout',
-  ]
+  let stderr_strings: string[] = []
   let call_count: number = -1
 
   Docker.getExecOutput = jest.fn(async () => {
@@ -33,12 +28,9 @@ test('login retries success function', async () => {
   const password = 'groundcontrol';
   const registry = 'https://ghcr.io';
 
-  // stderr_strings = []
+  stderr_strings = []
   call_count = -1
-  await expect(async () => {
-    await login(registry, username, password, 'false', ['408', '502', '400'], 5, 0.1);
-  })
-    .resolves;
+  await login(registry, username, password, 'false', ['408', '502', '400'], 5, 0.1);
   expect(Docker.getExecOutput).toHaveBeenCalledTimes(1);
 
   stderr_strings = [
@@ -47,9 +39,6 @@ test('login retries success function', async () => {
     'mock error, failed with status: 400 Request Timeout',
   ]
   call_count = -1
-  await expect(async () => {
-    await login(registry, username, password, 'false', ['408', '502', '400'], 5, 0.1);
-  })
-    .resolves;
-  expect(Docker.getExecOutput).toHaveBeenCalledTimes(0);
+  await login(registry, username, password, 'false', ['408', '502', '400'], 5, 0.1);
+  expect(Docker.getExecOutput).toHaveBeenCalledTimes(1 + 4);
 });
