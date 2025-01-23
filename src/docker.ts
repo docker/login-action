@@ -14,11 +14,11 @@ export async function login(registry: string, username: string, password: string
       }
       succeeded = true;
     } catch (error) {
-      if (attempt < max_attempts && isRetriableError(error, http_errors_to_retry)) {
+      if (attempt < max_attempts && isRetriableError(error.message, http_errors_to_retry)) {
         core.info(`Attempt ${attempt} out of ${max_attempts} failed, retrying after ${retry_timeout} seconds`);
         await new Promise(r => setTimeout(r, retry_timeout * 1000));
       } else {
-        throw new Error(error);
+        throw error;
       }
     }
   }
@@ -35,7 +35,7 @@ export async function logout(registry: string): Promise<void> {
 }
 
 function isRetriableError(error_message: string, http_errors_to_retry: string[]): boolean {
-  for (const err_code in http_errors_to_retry) {
+  for (const err_code of http_errors_to_retry) {
     if (error_message.includes('failed with status: ' + err_code)) {
       return true;
     }
