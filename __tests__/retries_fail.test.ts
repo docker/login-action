@@ -1,7 +1,5 @@
 import {expect, jest, test} from '@jest/globals';
 
-// import * as dockerModule from '../src/docker';
-
 import {login} from '../src/docker';
 import {Docker} from '@docker/actions-toolkit/lib/docker/docker';
 
