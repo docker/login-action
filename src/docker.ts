@@ -5,15 +5,16 @@ import {Docker} from '@docker/actions-toolkit/lib/docker/docker';
 
 export async function login(registry: string, username: string, password: string, ecr: string, http_errors_to_retry: string[], max_attempts: number, retry_timeout: number): Promise<void> {
   let succeeded: boolean = false;
-  for (let attempt = 1; (attempt <= max_attempts) && (!succeeded); attempt++) {
+  for (let attempt = 1; attempt <= max_attempts && !succeeded; attempt++) {
     try {
       if (/true/i.test(ecr) || (ecr == 'auto' && aws.isECR(registry))) {
         await loginECR(registry, username, password);
       } else {
         await loginStandard(registry, username, password);
       }
+      succeeded = true;
     } catch (error) {
-      if ((attempt < max_attempts) && (isRetriableError(error, http_errors_to_retry))) {
+      if (attempt < max_attempts && isRetriableError(error, http_errors_to_retry)) {
         core.info(`Attempt ${attempt} out of ${max_attempts} failed, retrying after ${retry_timeout} seconds`);
         await new Promise(r => setTimeout(r, retry_timeout * 1000));
       } else {
@@ -33,10 +34,9 @@ export async function logout(registry: string): Promise<void> {
   });
 }
 
-function isRetriableError(stderr: string, http_errors_to_retry: string[]): boolean {
-  const trimmedError = stderr.trim();
+function isRetriableError(error_message: string, http_errors_to_retry: string[]): boolean {
   for (const err_code in http_errors_to_retry) {
-    if (trimmedError.includes("failed with status: " + err_code)) {
+    if (error_message.includes('failed with status: ' + err_code)) {
       return true;
     }
   }
