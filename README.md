@@ -507,7 +507,7 @@ The following inputs can be used as `step.with` keys:
 | `password` | String |         | Password or personal access token for authenticating the Docker registry      |
 | `ecr`      | String | `auto`  | Specifies whether the given registry is ECR (`auto`, `true` or `false`)       |
 | `logout`   | Bool   | `true`  | Log out from the Docker registry at the end of a job                          |
-| `http_errors_to_retry` | String | `408,500,502,504` | Comma separated list of HTTP error codes we want to retry |
+| `http_codes_to_retry` | String | `408,500,502,504` | Comma separated list of HTTP error codes we want to retry |
 | `max_attempts` | String | `1` | Overall maximum number of attempts we will make trying to login (1 means no retries) |
 | `retry_timeout` | String | `15` | Timeout between retries, in seconds |
 
