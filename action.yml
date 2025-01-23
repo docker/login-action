@@ -24,6 +24,17 @@ inputs:
     description: 'Log out from the Docker registry at the end of a job'
     default: 'true'
     required: false
+  http_errors_to_retry:
+    description: 'Comma separated list of HTTP error codes we want to retry'
+    default: '408,500,502,504'
+  max_attempts:
+    description: 'Overall maximum number of attempts we will make trying to login'
+    default: '1'
+    required: false
+  retry_timeout:
+    description: 'Timeout between retries, in seconds'
+    default: '15'
+    required: false
 
 runs:
   using: 'node20'
