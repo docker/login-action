@@ -37,11 +37,11 @@ export async function logout(registry: string): Promise<void> {
 function isRetriableError(error_message: string, http_codes_to_retry: string[]): boolean {
   for (const err_code of http_codes_to_retry) {
     if (error_message.includes('failed with status: ' + err_code)) {
-      console.log(error_message + 'match the code' + err_code);
+      core.info(`Retryable match found in ${error_message} for retryable code: ${err_code}`);
       return true;
     }
   }
-  console.log('no matches for ' + error_message);
+  core.info(`No matches in ${error_message} when lookging for retryable codes: ${http_codes_to_retry}`);
   return false;
 }
 
