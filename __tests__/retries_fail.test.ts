@@ -9,7 +9,8 @@ test('login retries function', async () => {
   let stderr_strings: string[] = [];
   let call_count: number = -1;
 
-  // const execSpy = jest.spyOn(Docker, 'getExecOutput').mockImplementation(async () => {
+  // using spyOn() here isn't enough, as we alter the logic
+  // so use `jest.fn()` here for the `Docker.getExecOutput`
   Docker.getExecOutput = jest.fn(async () => {
     call_count++;
     console.log(`Mock: ${call_count}, ${stderr_strings}`);
