@@ -14,7 +14,7 @@ export async function login(registry: string, username: string, password: string
       }
     } catch (error) {
       if ((attempt < max_attempts) && (isRetriableError(error, http_errors_to_retry))) {
-        core.info("Attempt ", attempt, "out of ", max_attempts, "failed, retrying after ", retry_timeout, "seconds");
+        core.info(`Attempt ${attempt} out of ${max_attempts} failed, retrying after ${retry_timeout} seconds`);
         await new Promise(r => setTimeout(r, retry_timeout * 1000));
       } else {
         throw new Error(error);
