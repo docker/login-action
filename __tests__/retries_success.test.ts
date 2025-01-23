@@ -1,7 +1,4 @@
 import { expect, jest, test, } from '@jest/globals';
-import * as path from 'path';
-
-// import * as dockerModule from '../src/docker';
 
 import { login } from '../src/docker';
 import { Docker } from '@docker/actions-toolkit/lib/docker/docker';
@@ -38,7 +35,7 @@ test('login retries success function', async () => {
 
   // stderr_strings = []
   call_count = -1
-  expect(async () => {
+  await expect(async () => {
     await login(registry, username, password, 'false', ['408', '502', '400'], 5, 0.1);
   })
     .resolves;
@@ -50,7 +47,7 @@ test('login retries success function', async () => {
     'mock error, failed with status: 400 Request Timeout',
   ]
   call_count = -1
-  expect(async () => {
+  await expect(async () => {
     await login(registry, username, password, 'false', ['408', '502', '400'], 5, 0.1);
   })
     .resolves;

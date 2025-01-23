@@ -1,5 +1,4 @@
 import { expect, jest, test, } from '@jest/globals';
-import * as path from 'path';
 
 // import * as dockerModule from '../src/docker';
 
