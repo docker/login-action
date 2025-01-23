@@ -6,9 +6,9 @@ export interface Inputs {
   password: string;
   ecr: string;
   logout: boolean;
-  http_codes_to_retry: string[];
-  max_attempts: number;
-  retry_timeout: number;
+  httpCodesToRetry: string[];
+  maxAttempts: number;
+  retryTimeout: number;
 }
 
 export function getInputs(): Inputs {
@@ -18,8 +18,8 @@ export function getInputs(): Inputs {
     password: core.getInput('password'),
     ecr: core.getInput('ecr'),
     logout: core.getBooleanInput('logout'),
-    http_codes_to_retry: core.getInput('http_codes_to_retry').split(','),
-    max_attempts: Number.parseInt(core.getInput('max_attempts')),
-    retry_timeout: Number.parseInt(core.getInput('retry_timeout'))
+    httpCodesToRetry: core.getInput('http-codes-to-retry').split(','),
+    maxAttempts: Number.parseInt(core.getInput('max-attempts')),
+    retryTimeout: Number.parseInt(core.getInput('retry-timeout'))
   };
 }
