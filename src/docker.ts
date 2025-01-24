@@ -3,11 +3,24 @@ import * as core from '@actions/core';
 
 import {Docker} from '@docker/actions-toolkit/lib/docker/docker';
 
-export async function login(registry: string, username: string, password: string, ecr: string): Promise<void> {
-  if (/true/i.test(ecr) || (ecr == 'auto' && aws.isECR(registry))) {
-    await loginECR(registry, username, password);
-  } else {
-    await loginStandard(registry, username, password);
+export async function login(registry: string, username: string, password: string, ecr: string, httpCodesToRetry: string[], maxAttempts: number, retryTimeout: number): Promise<void> {
+  let succeeded: boolean = false;
+  for (let attempt = 1; attempt <= maxAttempts && !succeeded; attempt++) {
+    try {
+      if (/true/i.test(ecr) || (ecr == 'auto' && aws.isECR(registry))) {
+        await loginECR(registry, username, password);
+      } else {
+        await loginStandard(registry, username, password);
+      }
+      succeeded = true;
+    } catch (error) {
+      if (attempt < maxAttempts && isRetriableError(error.message, httpCodesToRetry)) {
+        core.info(`Attempt ${attempt} out of ${maxAttempts} failed, retrying after ${retryTimeout} seconds`);
+        await new Promise(r => setTimeout(r, retryTimeout * 1000));
+      } else {
+        throw error;
+      }
+    }
   }
 }
 
@@ -19,6 +32,17 @@ export async function logout(registry: string): Promise<void> {
       core.warning(res.stderr.trim());
     }
   });
+}
+
+function isRetriableError(errorMessage: string, httpCodesToRetry: string[]): boolean {
+  for (const errCode of httpCodesToRetry) {
+    if (errorMessage.includes('failed with status: ' + errCode)) {
+      core.info(`Retryable match found in ${errorMessage} for retryable code: ${errCode}`);
+      return true;
+    }
+  }
+  core.info(`No matches in ${errorMessage} when lookging for retryable codes: ${httpCodesToRetry}`);
+  return false;
 }
 
 export async function loginStandard(registry: string, username: string, password: string): Promise<void> {

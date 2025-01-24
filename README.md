@@ -148,7 +148,7 @@ jobs:
 > Google Container Registry. As a fully-managed service with support for both
 > container images and non-container artifacts. If you currently use Google
 > Container Registry, use the information [on this page](https://cloud.google.com/artifact-registry/docs/transition/transition-from-gcr)
-> to learn about transitioning to Google Artifact Registry. 
+> to learn about transitioning to Google Artifact Registry.
 
 You can authenticate with workload identity federation or a service account.
 
@@ -421,7 +421,7 @@ must be placed in format `<tenancy>/<username>` (in case of federated tenancy us
 
 For password [create an auth token](https://www.oracle.com/webfolder/technetwork/tutorials/obe/oci/registry/index.html#GetanAuthToken).
 Save username and token [as a secrets](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository)
-in your GitHub repo. 
+in your GitHub repo.
 
 ```yaml
 name: ci
@@ -500,13 +500,16 @@ jobs:
 
 The following inputs can be used as `step.with` keys:
 
-| Name       | Type   | Default | Description                                                                   |
-|------------|--------|---------|-------------------------------------------------------------------------------|
-| `registry` | String |         | Server address of Docker registry. If not set then will default to Docker Hub |
-| `username` | String |         | Username for authenticating to the Docker registry                            |
-| `password` | String |         | Password or personal access token for authenticating the Docker registry      |
-| `ecr`      | String | `auto`  | Specifies whether the given registry is ECR (`auto`, `true` or `false`)       |
-| `logout`   | Bool   | `true`  | Log out from the Docker registry at the end of a job                          |
+| Name                  | Type   | Default | Description                                                                   |
+|-----------------------|--------|---------|-------------------------------------------------------------------------------|
+| `registry`            | String |         | Server address of Docker registry. If not set then will default to Docker Hub |
+| `username`            | String |         | Username for authenticating to the Docker registry                            |
+| `password`            | String |         | Password or personal access token for authenticating the Docker registry      |
+| `ecr`                 | String | `auto`  | Specifies whether the given registry is ECR (`auto`, `true` or `false`)       |
+| `logout`              | Bool   | `true`  | Log out from the Docker registry at the end of a job                          |
+| `http-codes-to-retry` | String | `408,500,502,504` | Comma separated list of HTTP error codes we want to retry           |
+| `max-attempts`        | String | `1`     | Overall maximum number of attempts we could make (`1` means no retries)       |
+| `retry-timeout`       | String | `15`    | Timeout between retries, in seconds                                           |
 
 ## Contributing
 
