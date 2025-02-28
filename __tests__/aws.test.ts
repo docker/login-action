@@ -29,14 +29,21 @@ describe('isPubECR', () => {
   });
 });
 
-describe('getRegion', () => {
+describe('getRegions', () => {
   test.each([
-    ['012345678901.dkr.ecr.eu-west-3.amazonaws.com', 'eu-west-3'],
-    ['876820548815.dkr.ecr.cn-north-1.amazonaws.com.cn', 'cn-north-1'],
-    ['390948362332.dkr.ecr.cn-northwest-1.amazonaws.com.cn', 'cn-northwest-1'],
-    ['public.ecr.aws', 'us-east-1']
-  ])('given registry %p', async (registry, expected) => {
-    expect(aws.getRegion(registry)).toEqual(expected);
+    ['012345678901.dkr.ecr.eu-west-3.amazonaws.com', undefined, ['eu-west-3']],
+    ['876820548815.dkr.ecr.cn-north-1.amazonaws.com.cn', undefined, ['cn-north-1']],
+    ['390948362332.dkr.ecr.cn-northwest-1.amazonaws.com.cn', undefined, ['cn-northwest-1']],
+    ['public.ecr.aws', undefined, ['us-east-1']],
+    ['012345678901.dkr.ecr.eu-west-3.amazonaws.com', 'us-west-1,us-east-1', ['eu-west-3', 'us-west-1', 'us-east-1']],
+    ['012345678901.dkr.ecr.eu-west-3.amazonaws.com', 'us-west-1,eu-west-3,us-east-1', ['eu-west-3', 'us-west-1', 'us-east-1']],
+    ['', 'us-west-1,us-east-1', ['us-west-1', 'us-east-1']],
+    ['', 'us-west-1,us-east-1,us-east-1', ['us-west-1', 'us-east-1']]
+  ])('given registry %p', async (registry, regionsEnv, expected) => {
+    if (regionsEnv) {
+      process.env.AWS_REGIONS = regionsEnv;
+    }
+    expect(aws.getRegions(registry)).toEqual(expected);
   });
 });
 
@@ -76,12 +83,13 @@ describe('getRegistriesData', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     delete process.env.AWS_ACCOUNT_IDS;
+    delete process.env.AWS_REGIONS;
   });
   // prettier-ignore
   test.each([
     [
       '012345678901.dkr.ecr.aws-region-1.amazonaws.com',
-      'dkr.ecr.aws-region-1.amazonaws.com', undefined,
+      'dkr.ecr.aws-region-1.amazonaws.com', undefined, undefined,
       [
         {
           registry: '012345678901.dkr.ecr.aws-region-1.amazonaws.com',
@@ -94,6 +102,7 @@ describe('getRegistriesData', () => {
       '012345678901.dkr.ecr.eu-west-3.amazonaws.com',
       'dkr.ecr.eu-west-3.amazonaws.com',
       '012345678910,023456789012',
+      undefined,
       [
         {
           registry: '012345678901.dkr.ecr.eu-west-3.amazonaws.com',
@@ -116,6 +125,7 @@ describe('getRegistriesData', () => {
       'public.ecr.aws',
       undefined,
       undefined,
+      undefined,
       [
         {
           registry: 'public.ecr.aws',
@@ -123,34 +133,129 @@ describe('getRegistriesData', () => {
           password: 'world'
         }
       ]
+    ],
+    [
+      '012345678901.dkr.ecr.eu-west-3.amazonaws.com',
+      undefined,
+      undefined,
+      'us-west-1,us-east-3',
+      [
+        {
+          registry: '012345678901.dkr.ecr.eu-west-3.amazonaws.com',
+          username: '012345678901',
+          password: 'world'
+        },
+        {
+          registry: '012345678901.dkr.ecr.us-west-1.amazonaws.com',
+          username: '012345678901',
+          password: 'world'
+        },
+        {
+          registry: '012345678901.dkr.ecr.us-east-3.amazonaws.com',
+          username: '012345678901',
+          password: 'world'
+        }
+      ],
+    ],
+    [
+      '012345678901.dkr.ecr.eu-west-3.amazonaws.com',
+      undefined,
+      '023456789012',
+      'us-west-1,us-east-3',
+      [
+        {
+          registry: '012345678901.dkr.ecr.eu-west-3.amazonaws.com',
+          username: '012345678901',
+          password: 'world'
+        },
+        {
+          registry: '023456789012.dkr.ecr.eu-west-3.amazonaws.com',
+          username: '023456789012',
+          password: 'world'
+        },
+        {
+          registry: '012345678901.dkr.ecr.us-west-1.amazonaws.com',
+          username: '012345678901',
+          password: 'world'
+        },
+        {
+          registry: '023456789012.dkr.ecr.us-west-1.amazonaws.com',
+          username: '023456789012',
+          password: 'world'
+        },
+        {
+          registry: '012345678901.dkr.ecr.us-east-3.amazonaws.com',
+          username: '012345678901',
+          password: 'world'
+        },
+        {
+          registry: '023456789012.dkr.ecr.us-east-3.amazonaws.com',
+          username: '023456789012',
+          password: 'world'
+        }
+      ]
+    ],
+    [
+      '',
+      undefined,
+      '012345678901,023456789012',
+      'us-west-1,us-east-3',
+      [
+        {
+          registry: '012345678901.dkr.ecr.us-west-1.amazonaws.com',
+          username: '012345678901',
+          password: 'world'
+        },
+        {
+          registry: '023456789012.dkr.ecr.us-west-1.amazonaws.com',
+          username: '023456789012',
+          password: 'world'
+        },
+        {
+          registry: '012345678901.dkr.ecr.us-east-3.amazonaws.com',
+          username: '012345678901',
+          password: 'world'
+        },
+        {
+          registry: '023456789012.dkr.ecr.us-east-3.amazonaws.com',
+          username: '023456789012',
+          password: 'world'
+        }
+      ]
     ]
-  ])('given registry %p', async (registry, fqdn, accountIDsEnv, expected: aws.RegistryData[]) => {
+  ])('given registry %p', async (registry, fqdn, accountIDsEnv, regionsEnv, expected: aws.RegistryData[]) => {
     if (accountIDsEnv) {
       process.env.AWS_ACCOUNT_IDS = accountIDsEnv;
     }
-    const accountIDs = aws.getAccountIDs(registry);
-    const authData: AuthorizationData[] = [];
-    if (accountIDs.length == 0) {
-      mockEcrPublicGetAuthToken.mockImplementation(() => {
-        return Promise.resolve({
-          authorizationData: {
-            authorizationToken: Buffer.from(`AWS:world`).toString('base64'),
-          }
-        });
-      });
-    } else {
-      aws.getAccountIDs(registry).forEach(accountID => {
-        authData.push({
-          authorizationToken: Buffer.from(`${accountID}:world`).toString('base64'),
-          proxyEndpoint: `${accountID}.${fqdn}`
-        });
-      });
-      mockEcrGetAuthToken.mockImplementation(() => {
-        return Promise.resolve({
-          authorizationData: authData
-        });
-      });
+
+    if (regionsEnv) {
+      process.env.AWS_REGIONS = regionsEnv;
     }
+
+    const accountIDs = aws.getAccountIDs(registry);
+    const regions = aws.getRegions(registry);
+    const authDataByRegion: AuthorizationData[][] = [];
+
+  if (accountIDs.length == 0) {
+    mockEcrPublicGetAuthToken.mockImplementation(() => ({
+      authorizationData: {
+        authorizationToken: Buffer.from(`AWS:world`).toString('base64'),
+      }
+    }));
+  }  else {
+    regions.forEach(region => {
+      const regionAuthData = accountIDs.map(accountID => ({
+        authorizationToken: Buffer.from(`${accountID}:world`).toString('base64'),
+        proxyEndpoint: `${accountID}.dkr.ecr.${region}.amazonaws.com`
+      }));
+      authDataByRegion.push(regionAuthData);
+    });
+
+    mockEcrGetAuthToken.mockImplementation(() => {
+      const regionAuthData = authDataByRegion.shift();
+      return { authorizationData: regionAuthData };
+    });
+  }
     const regData = await aws.getRegistriesData(registry);
     expect(regData).toEqual(expected);
   });

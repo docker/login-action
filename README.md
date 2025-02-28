@@ -352,6 +352,30 @@ jobs:
 
 > Only available with [AWS CLI version 1](https://docs.aws.amazon.com/cli/latest/reference/ecr/get-login.html)
 
+You can use the environment variable `AWS_REGIONS` to set multiple regions account ids in `AWS_ACCOUNT_IDS`.
+
+```yaml
+name: ci
+
+on:
+  push:
+    branches: main
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Login to ECR
+        uses: docker/login-action@v3
+        with:
+          registry: <aws-account-number>.dkr.ecr.<region>.amazonaws.com
+          username: ${{ vars.AWS_ACCESS_KEY_ID }}
+          password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        env:
+          AWS_REGIONS: us-west-2,us-east-1,eu-central-1
+```
+
 You can also use the [Configure AWS Credentials](https://github.com/aws-actions/configure-aws-credentials)
 action in combination with this action:
 

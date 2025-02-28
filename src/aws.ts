@@ -15,23 +15,39 @@ export const isPubECR = (registry: string): boolean => {
   return registry === 'public.ecr.aws';
 };
 
-export const getRegion = (registry: string): string => {
+export const getRegions = (registry: string): string[] => {
   if (isPubECR(registry)) {
-    return process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || 'us-east-1';
+    return [process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || 'us-east-1'];
   }
+
   const matches = registry.match(ecrRegistryRegex);
   if (!matches) {
-    return '';
+    if (process.env.AWS_REGIONS) {
+      const regions: Array<string> = [...process.env.AWS_REGIONS.split(',')];
+      return regions.filter((item, index) => regions.indexOf(item) === index);
+    }
+    return [];
   }
-  return matches[3];
+
+  const regions: Array<string> = [matches[3]];
+  if (process.env.AWS_REGIONS) {
+    regions.push(...process.env.AWS_REGIONS.split(','));
+  }
+
+  return regions.filter((item, index) => regions.indexOf(item) === index);
 };
 
 export const getAccountIDs = (registry: string): string[] => {
   if (isPubECR(registry)) {
     return [];
   }
+
   const matches = registry.match(ecrRegistryRegex);
   if (!matches) {
+    if (process.env.AWS_ACCOUNT_IDS) {
+      const accountIDs: Array<string> = [...process.env.AWS_ACCOUNT_IDS.split(',')];
+      return accountIDs.filter((item, index) => accountIDs.indexOf(item) === index);
+    }
     return [];
   }
   const accountIDs: Array<string> = [matches[2]];
@@ -48,7 +64,7 @@ export interface RegistryData {
 }
 
 export const getRegistriesData = async (registry: string, username?: string, password?: string): Promise<RegistryData[]> => {
-  const region = getRegion(registry);
+  const regions = getRegions(registry);
   const accountIDs = getAccountIDs(registry);
 
   const authTokenRequest = {};
@@ -80,11 +96,11 @@ export const getRegistriesData = async (registry: string, username?: string, pas
       : undefined;
 
   if (isPubECR(registry)) {
-    core.info(`AWS Public ECR detected with ${region} region`);
+    core.info(`AWS Public ECR detected with region ${regions[0]}`);
     const ecrPublic = new ECRPUBLIC({
       customUserAgent: 'docker-login-action',
       credentials,
-      region: region,
+      region: regions[0],
       requestHandler: new NodeHttpHandler({
         httpAgent: httpProxyAgent,
         httpsAgent: httpsProxyAgent
@@ -106,31 +122,37 @@ export const getRegistriesData = async (registry: string, username?: string, pas
       }
     ];
   } else {
-    core.info(`AWS ECR detected with ${region} region`);
-    const ecr = new ECR({
-      customUserAgent: 'docker-login-action',
-      credentials,
-      region: region,
-      requestHandler: new NodeHttpHandler({
-        httpAgent: httpProxyAgent,
-        httpsAgent: httpsProxyAgent
-      })
-    });
-    const authTokenResponse = await ecr.getAuthorizationToken(authTokenRequest);
-    if (!Array.isArray(authTokenResponse.authorizationData) || !authTokenResponse.authorizationData.length) {
-      throw new Error('Could not retrieve an authorization token from AWS ECR');
+    if (regions.length > 1) {
+      core.info(`AWS ECR detected with regions ${regions}`);
+    } else {
+      core.info(`AWS ECR detected with region ${regions[0]}`);
     }
     const regDatas: RegistryData[] = [];
-    for (const authData of authTokenResponse.authorizationData) {
-      const authToken = Buffer.from(authData.authorizationToken || '', 'base64').toString('utf-8');
-      const creds = authToken.split(':', 2);
-      core.setSecret(creds[0]); // redacted in workflow logs
-      core.setSecret(creds[1]); // redacted in workflow logs
-      regDatas.push({
-        registry: authData.proxyEndpoint || '',
-        username: creds[0],
-        password: creds[1]
+    for (const region of regions) {
+      const ecr = new ECR({
+        customUserAgent: 'docker-login-action',
+        credentials,
+        region: region,
+        requestHandler: new NodeHttpHandler({
+          httpAgent: httpProxyAgent,
+          httpsAgent: httpsProxyAgent
+        })
       });
+      const authTokenResponse = await ecr.getAuthorizationToken(authTokenRequest);
+      if (!Array.isArray(authTokenResponse.authorizationData) || !authTokenResponse.authorizationData.length) {
+        throw new Error('Could not retrieve an authorization token from AWS ECR');
+      }
+      for (const authData of authTokenResponse.authorizationData) {
+        const authToken = Buffer.from(authData.authorizationToken || '', 'base64').toString('utf-8');
+        const creds = authToken.split(':', 2);
+        core.setSecret(creds[0]); // redacted in workflow logs
+        core.setSecret(creds[1]); // redacted in workflow logs
+        regDatas.push({
+          registry: authData.proxyEndpoint || '',
+          username: creds[0],
+          password: creds[1]
+        });
+      }
     }
     return regDatas;
   }
