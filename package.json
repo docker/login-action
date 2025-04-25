@@ -28,7 +28,7 @@
     "@actions/core": "^1.11.1",
     "@aws-sdk/client-ecr": "^3.766.0",
     "@aws-sdk/client-ecr-public": "^3.758.0",
-    "@docker/actions-toolkit": "^0.57.0",
+    "@docker/actions-toolkit": "^0.61.0",
     "http-proxy-agent": "^7.0.2",
     "https-proxy-agent": "^7.0.6"
   },
