@@ -227,8 +227,9 @@ You can authenticate with workload identity federation or a service account.
 
 #### Workload identity federation
 
-Your service account must have permission to push to GAR. Use the
-`google-github-actions/auth` action to authenticate using workload identity as
+Configure [Direct Workload Identity Federation](https://github.com/google-github-actions/auth/blob/v2.1.10/README.md#preferred-direct-workload-identity-federation) for GitHub Actions in Google Cloud and avoid long-lived GCP credentials.
+Make sure to grant the [principal identity](https://cloud.google.com/iam/docs/workload-identity-federation#principal-types) enough permissions to the GAR repository (E.g.: `roles/artifactregistry.writer`).
+Use the `google-github-actions/auth@v2` action to authenticate using workload identity as
 shown in the following example:
 
 ```yaml
@@ -238,6 +239,11 @@ on:
   push:
     branches: main
 
+env:
+  GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
+  WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+  REGISTRY_URL: ${{ secrets.REGISTRY_URL }}
+
 jobs:
   login:
     runs-on: ubuntu-latest
@@ -245,28 +251,23 @@ jobs:
       -
         name: Authenticate to Google Cloud
         id: auth
-        uses: google-github-actions/auth@v1
+        uses: google-github-actions/auth@v2
         with:
-          token_format: access_token
-          workload_identity_provider: <workload_identity_provider>
-          service_account: <service_account>
+          project_id: ${{ env.GCP_PROJECT }}
+          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+
       -
-        name: Login to GAR
+        name: Login to Google Artifact Registry
         uses: docker/login-action@v3
         with:
-          registry: <location>-docker.pkg.dev
+          registry: ${{ env.REGISTRY_URL}}
           username: oauth2accesstoken
-          password: ${{ steps.auth.outputs.access_token }}
+          password: ${{ steps.auth.outputs.auth_token }}
 ```
 
-> Replace `<workload_identity_provider>` with configured workload identity
-> provider
+> Set `WORKLOAD_IDENTITY_PROVIDER` to the configured workload identity provider. For steps to configure, [see here](https://github.com/google-github-actions/auth/blob/v2.1.10/README.md#inputs).
 
-> Replace `<service_account>` with configured service account in workload
-> identity provider which has access to push to GCR
-
-> Replace `<location>` with the regional or multi-regional [location](https://cloud.google.com/artifact-registry/docs/repo-organize#locations)
-> of the repository where the image is stored.
+> Set `REGISTRY_URL` to the regional or multi-regional [repository URL](https://cloud.google.com/artifact-registry/docs/repo-organize#locations).
 
 #### Service account based authentication
 
