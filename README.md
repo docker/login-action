@@ -12,23 +12,30 @@ GitHub Action to login against a Docker registry.
 
 ___
 
-* [Usage](#usage)
-  * [Docker Hub](#docker-hub)
-  * [GitHub Container Registry](#github-container-registry)
-  * [GitLab](#gitlab)
-  * [Azure Container Registry (ACR)](#azure-container-registry-acr)
-  * [Google Container Registry (GCR)](#google-container-registry-gcr)
-  * [Google Artifact Registry (GAR)](#google-artifact-registry-gar)
-  * [AWS Elastic Container Registry (ECR)](#aws-elastic-container-registry-ecr)
-  * [AWS Public Elastic Container Registry (ECR)](#aws-public-elastic-container-registry-ecr)
-  * [OCI Oracle Cloud Infrastructure Registry (OCIR)](#oci-oracle-cloud-infrastructure-registry-ocir)
-  * [Quay.io](#quayio)
-  * [DigitalOcean](#digitalocean-container-registry)
-  * [Authenticate to multiple registries](#authenticate-to-multiple-registries)
-  * [Set scopes for the authentication token](#set-scopes-for-the-authentication-token)
-* [Customizing](#customizing)
-  * [inputs](#inputs)
-* [Contributing](#contributing)
+- [About](#about)
+- [Usage](#usage)
+  - [Docker Hub](#docker-hub)
+  - [GitHub Container Registry](#github-container-registry)
+  - [GitLab](#gitlab)
+  - [Azure Container Registry (ACR)](#azure-container-registry-acr)
+    - [Service principal](#service-principal)
+    - [OpenID Connect (OIDC)](#openid-connect-oidc)
+  - [Google Container Registry (GCR)](#google-container-registry-gcr)
+    - [Workload identity federation](#workload-identity-federation)
+    - [Service account based authentication](#service-account-based-authentication)
+  - [Google Artifact Registry (GAR)](#google-artifact-registry-gar)
+    - [Workload identity federation](#workload-identity-federation-1)
+    - [Service account based authentication](#service-account-based-authentication-1)
+  - [AWS Elastic Container Registry (ECR)](#aws-elastic-container-registry-ecr)
+  - [AWS Public Elastic Container Registry (ECR)](#aws-public-elastic-container-registry-ecr)
+  - [OCI Oracle Cloud Infrastructure Registry (OCIR)](#oci-oracle-cloud-infrastructure-registry-ocir)
+  - [Quay.io](#quayio)
+  - [DigitalOcean Container Registry](#digitalocean-container-registry)
+  - [Authenticate to multiple registries](#authenticate-to-multiple-registries)
+  - [Set scopes for the authentication token](#set-scopes-for-the-authentication-token)
+- [Customizing](#customizing)
+  - [inputs](#inputs)
+- [Contributing](#contributing)
 
 ## Usage
 
@@ -202,7 +209,7 @@ jobs:
 > Google Container Registry. As a fully-managed service with support for both
 > container images and non-container artifacts. If you currently use Google
 > Container Registry, use the information [on this page](https://cloud.google.com/artifact-registry/docs/transition/transition-from-gcr)
-> to learn about transitioning to Google Artifact Registry. 
+> to learn about transitioning to Google Artifact Registry.
 
 You can authenticate with workload identity federation or a service account.
 
@@ -282,8 +289,9 @@ You can authenticate with workload identity federation or a service account.
 
 #### Workload identity federation
 
-Your service account must have permission to push to GAR. Use the
-`google-github-actions/auth` action to authenticate using workload identity as
+Configure [Direct Workload Identity Federation](https://github.com/google-github-actions/auth/blob/v2.1.10/README.md#preferred-direct-workload-identity-federation) for GitHub Actions in Google Cloud and avoid long-lived GCP credentials.
+Make sure to grant the [principal identity](https://cloud.google.com/iam/docs/workload-identity-federation#principal-types) enough permissions to the GAR repository (E.g.: `roles/artifactregistry.writer`).
+Use the `google-github-actions/auth@v2` action to authenticate using workload identity as
 shown in the following example:
 
 ```yaml
@@ -292,6 +300,11 @@ name: ci
 on:
   push:
     branches: main
+
+env:
+  GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
+  WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+  REGISTRY_URL: ${{ secrets.REGISTRY_URL }}
 
 jobs:
   login:
@@ -302,16 +315,16 @@ jobs:
         id: auth
         uses: google-github-actions/auth@v3
         with:
-          token_format: access_token
-          workload_identity_provider: <workload_identity_provider>
-          service_account: <service_account>
+          project_id: ${{ env.GCP_PROJECT }}
+          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+
       -
         name: Login to GAR
         uses: docker/login-action@v4
         with:
-          registry: <location>-docker.pkg.dev
+          registry: ${{ env.REGISTRY_URL}}
           username: oauth2accesstoken
-          password: ${{ steps.auth.outputs.access_token }}
+          password: ${{ steps.auth.outputs.auth_token }}
 ```
 
 > [!NOTE]
@@ -323,6 +336,8 @@ jobs:
 >
 > Replace `<location>` with the regional or multi-regional [location](https://cloud.google.com/artifact-registry/docs/repo-organize#locations)
 > of the repository where the image is stored.
+
+> Set `registry` to the regional or multi-regional [repository URL](https://cloud.google.com/artifact-registry/docs/repo-organize#locations).
 
 #### Service account based authentication
 
@@ -481,7 +496,7 @@ must be placed in format `<tenancy>/<username>` (in case of federated tenancy us
 
 For password [create an auth token](https://www.oracle.com/webfolder/technetwork/tutorials/obe/oci/registry/index.html#GetanAuthToken).
 Save username and token [as a secrets](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository)
-in your GitHub repo. 
+in your GitHub repo.
 
 ```yaml
 name: ci
@@ -678,7 +693,7 @@ credentials, while authenticated access is used only to push `myorg/myimage`.
 The following inputs can be used as `step.with` keys:
 
 | Name            | Type   | Default     | Description                                                                   |
-|-----------------|--------|-------------|-------------------------------------------------------------------------------|
+| --------------- | ------ | ----------- | ----------------------------------------------------------------------------- |
 | `registry`      | String | `docker.io` | Server address of Docker registry. If not set then will default to Docker Hub |
 | `username`      | String |             | Username for authenticating to the Docker registry                            |
 | `password`      | String |             | Password or personal access token for authenticating the Docker registry      |
