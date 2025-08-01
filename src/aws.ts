@@ -6,13 +6,14 @@ import {HttpProxyAgent} from 'http-proxy-agent';
 import {HttpsProxyAgent} from 'https-proxy-agent';
 
 const ecrRegistryRegex = /^(([0-9]{12})\.(dkr\.ecr|dkr-ecr)\.(.+)\.(on\.aws|amazonaws\.com(.cn)?))(\/([^:]+)(:.+)?)?$/;
+const ecrPublicRegistryRegex = /public\.ecr\.aws|ecr-public\.aws\.com/;
 
 export const isECR = (registry: string): boolean => {
   return ecrRegistryRegex.test(registry) || isPubECR(registry);
 };
 
 export const isPubECR = (registry: string): boolean => {
-  return registry === 'public.ecr.aws';
+  return ecrPublicRegistryRegex.test(registry);
 };
 
 export const getRegion = (registry: string): string => {
