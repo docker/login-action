@@ -11,7 +11,8 @@ describe('isECR', () => {
     ['876820548815.dkr.ecr.cn-north-1.amazonaws.com.cn', true],
     ['390948362332.dkr.ecr.cn-northwest-1.amazonaws.com.cn', true],
     ['012345678901.dkr-ecr.eu-north-1.on.aws', true],
-    ['public.ecr.aws', true]
+    ['public.ecr.aws', true],
+    ['ecr-public.aws.com', true]
   ])('given registry %p', async (registry, expected) => {
     expect(aws.isECR(registry)).toEqual(expected);
   });
@@ -25,7 +26,8 @@ describe('isPubECR', () => {
     ['876820548815.dkr.ecr.cn-north-1.amazonaws.com.cn', false],
     ['390948362332.dkr.ecr.cn-northwest-1.amazonaws.com.cn', false],
     ['012345678901.dkr-ecr.eu-north-1.on.aws', false],
-    ['public.ecr.aws', true]
+    ['public.ecr.aws', true],
+    ['ecr-public.aws.com', true]
   ])('given registry %p', async (registry, expected) => {
     expect(aws.isPubECR(registry)).toEqual(expected);
   });
