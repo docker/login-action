@@ -5,7 +5,7 @@ import {NodeHttpHandler} from '@smithy/node-http-handler';
 import {HttpProxyAgent} from 'http-proxy-agent';
 import {HttpsProxyAgent} from 'https-proxy-agent';
 
-const ecrRegistryRegex = /^(([0-9]{12})\.dkr\.ecr\.(.+)\.amazonaws\.com(.cn)?)(\/([^:]+)(:.+)?)?$/;
+const ecrRegistryRegex = /^(([0-9]{12})\.(dkr\.ecr|dkr-ecr)\.(.+)\.(on\.aws|amazonaws\.com(.cn)?))(\/([^:]+)(:.+)?)?$/;
 
 export const isECR = (registry: string): boolean => {
   return ecrRegistryRegex.test(registry) || isPubECR(registry);
@@ -23,7 +23,7 @@ export const getRegion = (registry: string): string => {
   if (!matches) {
     return '';
   }
-  return matches[3];
+  return matches[4];
 };
 
 export const getAccountIDs = (registry: string): string[] => {
