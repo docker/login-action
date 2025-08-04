@@ -231,14 +231,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-ecr-public@npm:^3.858.0":
-  version: 3.858.0
-  resolution: "@aws-sdk/client-ecr-public@npm:3.858.0"
+"@aws-sdk/client-ecr-public@npm:^3.859.0":
+  version: 3.859.0
+  resolution: "@aws-sdk/client-ecr-public@npm:3.859.0"
   dependencies:
     "@aws-crypto/sha256-browser": 5.2.0
     "@aws-crypto/sha256-js": 5.2.0
     "@aws-sdk/core": 3.858.0
-    "@aws-sdk/credential-provider-node": 3.858.0
+    "@aws-sdk/credential-provider-node": 3.859.0
     "@aws-sdk/middleware-host-header": 3.840.0
     "@aws-sdk/middleware-logger": 3.840.0
     "@aws-sdk/middleware-recursion-detection": 3.840.0
@@ -274,18 +274,18 @@ __metadata:
     "@smithy/util-retry": ^4.0.6
     "@smithy/util-utf8": ^4.0.0
     tslib: ^2.6.2
-  checksum: 50c1eb3d5dec3323e81ecec9575d6bcc68a75cbf806b19a57f0e388c8d6915d18b28588a89fee300e41104df484de50e66f1005f634164474d29687466f3dd1a
+  checksum: 94c8cbd79ed39e2ba113edad393b5c103357b9f0a6336e4c19faa4c9885041027e3ab92938159b1317c09d2c1e4c4e4521bcde3ec0dd97ca01e1f1a948d1626e
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-ecr@npm:^3.858.0":
-  version: 3.858.0
-  resolution: "@aws-sdk/client-ecr@npm:3.858.0"
+"@aws-sdk/client-ecr@npm:^3.859.0":
+  version: 3.859.0
+  resolution: "@aws-sdk/client-ecr@npm:3.859.0"
   dependencies:
     "@aws-crypto/sha256-browser": 5.2.0
     "@aws-crypto/sha256-js": 5.2.0
     "@aws-sdk/core": 3.858.0
-    "@aws-sdk/credential-provider-node": 3.858.0
+    "@aws-sdk/credential-provider-node": 3.859.0
     "@aws-sdk/middleware-host-header": 3.840.0
     "@aws-sdk/middleware-logger": 3.840.0
     "@aws-sdk/middleware-recursion-detection": 3.840.0
@@ -322,7 +322,7 @@ __metadata:
     "@smithy/util-utf8": ^4.0.0
     "@smithy/util-waiter": ^4.0.6
     tslib: ^2.6.2
-  checksum: e1ffaa795a5aafb99509a237edb0a7ee701d2a526dc05be358af4953f1e1fc39227f79d31364bbc36a6a39c033d247a5a7b2ba318c620da6ec452748647e9a15
+  checksum: 39c9dd696111bcdb6ddf63205c7d5df95f2f1c1c0b2c17a311471dca5e6e42bed24d3a564b9169f9a3a16e112cc6726e1e7e39cf82cb3d0eee25122bbe1bc78b
   languageName: node
   linkType: hard
 
@@ -426,15 +426,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/credential-provider-ini@npm:3.858.0":
-  version: 3.858.0
-  resolution: "@aws-sdk/credential-provider-ini@npm:3.858.0"
+"@aws-sdk/credential-provider-ini@npm:3.859.0":
+  version: 3.859.0
+  resolution: "@aws-sdk/credential-provider-ini@npm:3.859.0"
   dependencies:
     "@aws-sdk/core": 3.858.0
     "@aws-sdk/credential-provider-env": 3.858.0
     "@aws-sdk/credential-provider-http": 3.858.0
     "@aws-sdk/credential-provider-process": 3.858.0
-    "@aws-sdk/credential-provider-sso": 3.858.0
+    "@aws-sdk/credential-provider-sso": 3.859.0
     "@aws-sdk/credential-provider-web-identity": 3.858.0
     "@aws-sdk/nested-clients": 3.858.0
     "@aws-sdk/types": 3.840.0
@@ -443,19 +443,19 @@ __metadata:
     "@smithy/shared-ini-file-loader": ^4.0.4
     "@smithy/types": ^4.3.1
     tslib: ^2.6.2
-  checksum: efd01548ee6b47fb23673b4aa2faaa42ccf86bde805bd2b303855a342c83d8fcdb8612ab2ddc1f701b3683c383c4270f2dc9a2a8c9fcbc966b793ac2c767281f
+  checksum: f7f08f09702feb445c1386e31a1246ab9d8324be6d90a72560b2664d0763101d8d791db7db2f5c12cb0c9a4efd41c3a0562dac49c194b1672da02fd0c35728cb
   languageName: node
   linkType: hard
 
-"@aws-sdk/credential-provider-node@npm:3.858.0":
-  version: 3.858.0
-  resolution: "@aws-sdk/credential-provider-node@npm:3.858.0"
+"@aws-sdk/credential-provider-node@npm:3.859.0":
+  version: 3.859.0
+  resolution: "@aws-sdk/credential-provider-node@npm:3.859.0"
   dependencies:
     "@aws-sdk/credential-provider-env": 3.858.0
     "@aws-sdk/credential-provider-http": 3.858.0
-    "@aws-sdk/credential-provider-ini": 3.858.0
+    "@aws-sdk/credential-provider-ini": 3.859.0
     "@aws-sdk/credential-provider-process": 3.858.0
-    "@aws-sdk/credential-provider-sso": 3.858.0
+    "@aws-sdk/credential-provider-sso": 3.859.0
     "@aws-sdk/credential-provider-web-identity": 3.858.0
     "@aws-sdk/types": 3.840.0
     "@smithy/credential-provider-imds": ^4.0.6
@@ -463,7 +463,7 @@ __metadata:
     "@smithy/shared-ini-file-loader": ^4.0.4
     "@smithy/types": ^4.3.1
     tslib: ^2.6.2
-  checksum: fc3d1614ec9afcc1edb3154920eaeb6300abc096f4f6272c7f573bf4f1ddb73b455b2b11eb634a280e0dbf1ec5b5cc9b24a9b3463f9fb4c7436774f27f54ae36
+  checksum: 8802cee6d5efb6be90b1a386cd2b293f5c1c123f29b898079f91dddc85811ed3ddd13501ce71b75466e58f043911a4a2c1a74eb988a153b7825d296497706128
   languageName: node
   linkType: hard
 
@@ -481,19 +481,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/credential-provider-sso@npm:3.858.0":
-  version: 3.858.0
-  resolution: "@aws-sdk/credential-provider-sso@npm:3.858.0"
+"@aws-sdk/credential-provider-sso@npm:3.859.0":
+  version: 3.859.0
+  resolution: "@aws-sdk/credential-provider-sso@npm:3.859.0"
   dependencies:
     "@aws-sdk/client-sso": 3.858.0
     "@aws-sdk/core": 3.858.0
-    "@aws-sdk/token-providers": 3.858.0
+    "@aws-sdk/token-providers": 3.859.0
     "@aws-sdk/types": 3.840.0
     "@smithy/property-provider": ^4.0.4
     "@smithy/shared-ini-file-loader": ^4.0.4
     "@smithy/types": ^4.3.1
     tslib: ^2.6.2
-  checksum: c0ce4b4a948b8dd77031b2a73f5780ca2464a53ec31cb5daeb771ee90fdfa2c08127d9c65dcbb516b2417fe83baba82ee2073c95dccc61eb22bb9934f71572fb
+  checksum: 5330fc5e29c287059880451f9718d778300dc3d0afa510b4089a74b8aac50b193e68658183e8b114aedefc559d235cd50ac4ec0233ca47325c4af1429e18548a
   languageName: node
   linkType: hard
 
@@ -621,9 +621,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/token-providers@npm:3.858.0":
-  version: 3.858.0
-  resolution: "@aws-sdk/token-providers@npm:3.858.0"
+"@aws-sdk/token-providers@npm:3.859.0":
+  version: 3.859.0
+  resolution: "@aws-sdk/token-providers@npm:3.859.0"
   dependencies:
     "@aws-sdk/core": 3.858.0
     "@aws-sdk/nested-clients": 3.858.0
@@ -632,7 +632,7 @@ __metadata:
     "@smithy/shared-ini-file-loader": ^4.0.4
     "@smithy/types": ^4.3.1
     tslib: ^2.6.2
-  checksum: e979faffce4b51ad35ac930ff46f150b61f5787420bbcfee504f12a6050abfc23112cf6db2ecf5d6dad248dc553d30c14a0cedcef43650ffd8e118852ad58863
+  checksum: 22c0d91bb46ddbb798fa40c5a1663e2e8147f2c1bc29d89e7432abaced230ce3321d22e3503b3285f4989f3a5a6c2a544f4fcf64981e6a6939690527ca1ab65f
   languageName: node
   linkType: hard
 
@@ -4312,8 +4312,8 @@ __metadata:
   resolution: "docker-login@workspace:."
   dependencies:
     "@actions/core": ^1.11.1
-    "@aws-sdk/client-ecr": ^3.858.0
-    "@aws-sdk/client-ecr-public": ^3.858.0
+    "@aws-sdk/client-ecr": ^3.859.0
+    "@aws-sdk/client-ecr-public": ^3.859.0
     "@docker/actions-toolkit": ^0.62.1
     "@types/node": ^20.12.12
     "@typescript-eslint/eslint-plugin": ^7.9.0
