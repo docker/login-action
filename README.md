@@ -24,6 +24,7 @@ ___
   * [OCI Oracle Cloud Infrastructure Registry (OCIR)](#oci-oracle-cloud-infrastructure-registry-ocir)
   * [Quay.io](#quayio)
   * [DigitalOcean](#digitalocean-container-registry)
+  * [Multiple Registries](#multiple-registries)
 * [Customizing](#customizing)
   * [inputs](#inputs)
 * [Contributing](#contributing)
@@ -494,6 +495,34 @@ jobs:
           password: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 ```
 
+### Multiple Registries
+You can login to multiple registries by providing a multiline string for the registry input. Each registry will be processed sequentically using the same username and password.
+
+```yaml
+name: ci
+
+on:
+  push:
+    branches: main
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Login to Multiple Regsitries
+        uses: docker/login-action@v7
+        with:
+          registry: |
+            ghcr.io
+            docker.io
+            registry.gitlab.com
+          # for single registry, 
+          # registry: "ghcr.io"
+          username: ${{ vars.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+```
+
 ## Customizing
 
 ### inputs
@@ -502,7 +531,7 @@ The following inputs can be used as `step.with` keys:
 
 | Name       | Type   | Default | Description                                                                   |
 |------------|--------|---------|-------------------------------------------------------------------------------|
-| `registry` | String |         | Server address of Docker registry. If not set then will default to Docker Hub |
+| `registry` | String |         | Server address of Docker registry. If not set then will default to Docker Hub. Supports multiline string for multiplr registries. |
 | `username` | String |         | Username for authenticating to the Docker registry                            |
 | `password` | String |         | Password or personal access token for authenticating the Docker registry      |
 | `ecr`      | String | `auto`  | Specifies whether the given registry is ECR (`auto`, `true` or `false`)       |

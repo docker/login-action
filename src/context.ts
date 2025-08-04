@@ -1,7 +1,7 @@
 import * as core from '@actions/core';
 
 export interface Inputs {
-  registry: string;
+  registry: string[];
   username: string;
   password: string;
   ecr: string;
@@ -10,7 +10,7 @@ export interface Inputs {
 
 export function getInputs(): Inputs {
   return {
-    registry: core.getInput('registry'),
+    registry: core.getMultilineInput('registry'),
     username: core.getInput('username'),
     password: core.getInput('password'),
     ecr: core.getInput('ecr'),

@@ -4,18 +4,23 @@ import * as context from './context';
 import * as docker from './docker';
 import * as stateHelper from './state-helper';
 
+const input: context.Inputs = context.getInputs();
+
 export async function main(): Promise<void> {
-  const input: context.Inputs = context.getInputs();
   stateHelper.setRegistry(input.registry);
   stateHelper.setLogout(input.logout);
-  await docker.login(input.registry, input.username, input.password, input.ecr);
+  for (const reg of input.registry) {
+    await docker.login(reg, input.username, input.password, input.ecr);
+  }
 }
 
 async function post(): Promise<void> {
   if (!stateHelper.logout) {
     return;
   }
-  await docker.logout(stateHelper.registry);
+  for (const reg of input.registry) {
+    await docker.logout(reg);
+  }
 }
 
 actionsToolkit.run(main, post);

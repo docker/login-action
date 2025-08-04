@@ -20,17 +20,34 @@ test('loginStandard calls exec', async () => {
 
   const username = 'dbowie';
   const password = 'groundcontrol';
-  const registry = 'https://ghcr.io';
+  // Define const registry as multiline input
+  const registry = `https://ghcr.io
+https://docker.io`;
 
-  await loginStandard(registry, username, password);
+  const registryArray = registry.split('\n').map(r => r.trim());
 
-  expect(execSpy).toHaveBeenCalledTimes(1);
-  const callfunc = execSpy.mock.calls[0];
-  if (callfunc && callfunc[1]) {
-    // we don't want to check env opt
-    callfunc[1].env = undefined;
+  for (const reg of registryArray) {
+    await loginStandard(reg, username, password);
   }
-  expect(execSpy).toHaveBeenCalledWith(['login', '--password-stdin', '--username', username, registry], {
+
+  expect(execSpy).toHaveBeenCalledTimes(2);
+  const firstcall = execSpy.mock.calls[0];
+  if (firstcall && firstcall[1]) {
+    // we don't want to check env opt
+    firstcall[1].env = undefined;
+  }
+  expect(execSpy).toHaveBeenCalledWith(['login', '--password-stdin', '--username', username, registryArray[0]], {
+    input: Buffer.from(password),
+    silent: true,
+    ignoreReturnCode: true
+  });
+
+  const secondcall = execSpy.mock.calls[1];
+  if (secondcall && secondcall[1]) {
+    // we don't want to check env opt
+    secondcall[1].env = undefined;
+  }
+  expect(execSpy).toHaveBeenCalledWith(['login', '--password-stdin', '--username', username, registryArray[1]], {
     input: Buffer.from(password),
     silent: true,
     ignoreReturnCode: true
@@ -48,17 +65,32 @@ test('logout calls exec', async () => {
     };
   });
 
-  const registry = 'https://ghcr.io';
+  const registry = `https://ghcr.io
+https://docker.io`;
 
-  await logout(registry);
+  const registryArray = registry.split('\n').map(r => r.trim());
 
-  expect(execSpy).toHaveBeenCalledTimes(1);
-  const callfunc = execSpy.mock.calls[0];
-  if (callfunc && callfunc[1]) {
-    // we don't want to check env opt
-    callfunc[1].env = undefined;
+  for (const reg of registryArray) {
+    await logout(reg);
   }
-  expect(execSpy).toHaveBeenCalledWith(['logout', registry], {
+
+  expect(execSpy).toHaveBeenCalledTimes(2);
+  const firstcall = execSpy.mock.calls[0];
+  if (firstcall && firstcall[1]) {
+    // we don't want to check env opt
+    firstcall[1].env = undefined;
+  }
+  expect(execSpy).toHaveBeenCalledWith(['logout', registryArray[0]], {
+    ignoreReturnCode: true
+  });
+
+  const secondcall = execSpy.mock.calls[1];
+  if (secondcall && secondcall[1]) {
+    // we don't want to check env opt
+    secondcall[1].env = undefined;
+  }
+
+  expect(execSpy).toHaveBeenCalledWith(['logout', registryArray[1]], {
     ignoreReturnCode: true
   });
 });
