@@ -19,7 +19,7 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       -
         name: Stop docker
         run: |
@@ -43,7 +43,7 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       -
         name: Login to GitHub Container Registry
         uses: ./
@@ -60,7 +60,7 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       -
         name: Login to GitHub Container Registry
         uses: ./
@@ -85,7 +85,7 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       -
         name: Login to ACR
         uses: ./
@@ -105,7 +105,7 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       -
         name: Login to Docker Hub
         uses: ./
@@ -124,7 +124,7 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       -
         name: Login to ECR
         uses: ./
@@ -144,7 +144,7 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       -
         name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -169,7 +169,7 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       -
         name: Login to Public ECR
         continue-on-error: ${{ matrix.os == 'windows-latest' }}
@@ -192,7 +192,7 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       -
         name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -218,7 +218,7 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       -
         name: Login to GitHub Container Registry
         uses: ./
@@ -238,7 +238,7 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       -
         name: Login to GitLab
         uses: ./
@@ -258,7 +258,7 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       -
         name: Login to Google Artifact Registry
         uses: ./
@@ -278,7 +278,7 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       -
         name: Login to Google Container Registry
         uses: ./
