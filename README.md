@@ -24,6 +24,7 @@ ___
   * [OCI Oracle Cloud Infrastructure Registry (OCIR)](#oci-oracle-cloud-infrastructure-registry-ocir)
   * [Quay.io](#quayio)
   * [DigitalOcean](#digitalocean-container-registry)
+  * [Authenticate to multiple registries](#authenticate-to-multiple-registries)
 * [Customizing](#customizing)
   * [inputs](#inputs)
 * [Contributing](#contributing)
@@ -494,19 +495,86 @@ jobs:
           password: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 ```
 
+### Authenticate to multiple registries
+
+To authenticate against multiple registries, you can specify the login-action
+step multiple times in your workflow:
+
+```yaml
+name: ci
+
+on:
+  push:
+    branches: main
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+```
+
+You can also use the `registry-auth` input for raw authentication to
+registries, defined as YAML objects. Each object can contain `registry`,
+`username`, `password` and `ecr` keys similar to current inputs:
+
+> [!WARNING]
+> We don't recommend using this method, it's better to use the action multiple
+> times as shown above.
+
+```yaml
+name: ci
+
+on:
+  push:
+    branches: main
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Login to registries
+        uses: docker/login-action@v3
+        with:
+          registry-auth: |
+            - username: ${{ vars.DOCKERHUB_USERNAME }}
+              password: ${{ secrets.DOCKERHUB_TOKEN }}
+            - registry: ghcr.io
+              username: ${{ github.actor }}
+              password: ${{ secrets.GITHUB_TOKEN }}
+```
+
 ## Customizing
 
 ### inputs
 
 The following inputs can be used as `step.with` keys:
 
-| Name       | Type   | Default | Description                                                                   |
-|------------|--------|---------|-------------------------------------------------------------------------------|
-| `registry` | String |         | Server address of Docker registry. If not set then will default to Docker Hub |
-| `username` | String |         | Username for authenticating to the Docker registry                            |
-| `password` | String |         | Password or personal access token for authenticating the Docker registry      |
-| `ecr`      | String | `auto`  | Specifies whether the given registry is ECR (`auto`, `true` or `false`)       |
-| `logout`   | Bool   | `true`  | Log out from the Docker registry at the end of a job                          |
+| Name            | Type   | Default     | Description                                                                   |
+|-----------------|--------|-------------|-------------------------------------------------------------------------------|
+| `registry`      | String | `docker.io` | Server address of Docker registry. If not set then will default to Docker Hub |
+| `username`      | String |             | Username for authenticating to the Docker registry                            |
+| `password`      | String |             | Password or personal access token for authenticating the Docker registry      |
+| `ecr`           | String | `auto`      | Specifies whether the given registry is ECR (`auto`, `true` or `false`)       |
+| `logout`        | Bool   | `true`      | Log out from the Docker registry at the end of a job                          |
+| `registry-auth` | YAML   |             | Raw authentication to registries, defined as YAML objects                     |
+
+> [!NOTE]
+> The `registry-auth` input is mutually exclusive with `registry`, `username`,
+> `password` and `ecr` inputs.
 
 ## Contributing
 

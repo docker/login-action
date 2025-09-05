@@ -286,3 +286,73 @@ jobs:
           registry: gcr.io
           username: _json_key
           password: ${{ secrets.GCR_JSON_KEY }}
+
+  registry-auth:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v5
+      -
+        name: Login to registries
+        uses: ./
+        with:
+          registry-auth: |
+            - username: ${{ secrets.DOCKERHUB_USERNAME }}
+              password: ${{ secrets.DOCKERHUB_TOKEN }}
+            - registry: ghcr.io
+              username: ${{ github.actor }}
+              password: ${{ secrets.GITHUB_TOKEN }}
+            - registry: public.ecr.aws
+              username: ${{ secrets.AWS_ACCESS_KEY_ID }}
+              password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            - registry: registry.gitlab.com
+              username: ${{ secrets.GITLAB_USERNAME }}
+              password: ${{ secrets.GITLAB_TOKEN }}
+
+  registry-auth-dup:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v5
+      -
+        name: Login to registries
+        uses: ./
+        with:
+          registry-auth: |
+            - registry: ghcr.io
+              username: ${{ github.actor }}
+              password: ${{ secrets.GITHUB_TOKEN }}
+            - registry: public.ecr.aws
+              username: ${{ secrets.AWS_ACCESS_KEY_ID }}
+              password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            - registry: ghcr.io
+              username: ${{ github.actor }}
+              password: ${{ secrets.GITHUB_TOKEN }}
+
+  registry-auth-exclusive:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v5
+      -
+        name: Login to registries
+        id: login
+        continue-on-error: true
+        uses: ./
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry-auth: |
+            - username: ${{ secrets.DOCKERHUB_USERNAME }}
+              password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Check
+        run: |
+          if [ "${{ steps.login.outcome }}" != "failure" ] || [ "${{ steps.login.conclusion }}" != "success" ]; then
+            echo "::error::Should have failed"
+            exit 1
+          fi

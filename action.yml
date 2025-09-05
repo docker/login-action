@@ -18,11 +18,13 @@ inputs:
     required: false
   ecr:
     description: 'Specifies whether the given registry is ECR (auto, true or false)'
-    default: 'auto'
     required: false
   logout:
     description: 'Log out from the Docker registry at the end of a job'
     default: 'true'
+    required: false
+  registry-auth:
+    description: 'Raw authentication to registries, defined as YAML objects'
     required: false
 
 runs:

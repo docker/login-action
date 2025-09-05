@@ -3236,6 +3236,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/js-yaml@npm:^4.0.9":
+  version: 4.0.9
+  resolution: "@types/js-yaml@npm:4.0.9"
+  checksum: e5e5e49b5789a29fdb1f7d204f82de11cb9e8f6cb24ab064c616da5d6e1b3ccfbf95aa5d1498a9fbd3b9e745564e69b4a20b6c530b5a8bbb2d4eb830cda9bc69
+  languageName: node
+  linkType: hard
+
 "@types/node-fetch@npm:^2.5.0":
   version: 2.6.4
   resolution: "@types/node-fetch@npm:2.6.4"
@@ -4315,6 +4322,7 @@ __metadata:
     "@aws-sdk/client-ecr": ^3.859.0
     "@aws-sdk/client-ecr-public": ^3.859.0
     "@docker/actions-toolkit": ^0.62.1
+    "@types/js-yaml": ^4.0.9
     "@types/node": ^20.12.12
     "@typescript-eslint/eslint-plugin": ^7.9.0
     "@typescript-eslint/parser": ^7.9.0
@@ -4326,6 +4334,7 @@ __metadata:
     http-proxy-agent: ^7.0.2
     https-proxy-agent: ^7.0.6
     jest: ^29.7.0
+    js-yaml: ^4.1.0
     prettier: ^3.2.5
     ts-jest: ^29.1.2
     ts-node: ^10.9.2
