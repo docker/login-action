@@ -30,9 +30,11 @@
     "@aws-sdk/client-ecr-public": "^3.859.0",
     "@docker/actions-toolkit": "^0.62.1",
     "http-proxy-agent": "^7.0.2",
-    "https-proxy-agent": "^7.0.6"
+    "https-proxy-agent": "^7.0.6",
+    "js-yaml": "^4.1.0"
   },
   "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^20.12.12",
     "@typescript-eslint/eslint-plugin": "^7.9.0",
     "@typescript-eslint/parser": "^7.9.0",

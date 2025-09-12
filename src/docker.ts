@@ -36,11 +36,7 @@ export async function loginStandard(registry: string, username: string, password
   loginArgs.push('--username', username);
   loginArgs.push(registry);
 
-  if (registry) {
-    core.info(`Logging into ${registry}...`);
-  } else {
-    core.info(`Logging into Docker Hub...`);
-  }
+  core.info(`Logging into ${registry}...`);
   await Docker.getExecOutput(loginArgs, {
     ignoreReturnCode: true,
     silent: true,
