@@ -32,9 +32,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@actions/cache@npm:^4.0.3":
-  version: 4.0.3
-  resolution: "@actions/cache@npm:4.0.3"
+"@actions/cache@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "@actions/cache@npm:4.1.0"
   dependencies:
     "@actions/core": "npm:^1.11.1"
     "@actions/exec": "npm:^1.0.1"
@@ -44,9 +44,9 @@ __metadata:
     "@azure/abort-controller": "npm:^1.1.0"
     "@azure/ms-rest-js": "npm:^2.6.0"
     "@azure/storage-blob": "npm:^12.13.0"
-    "@protobuf-ts/plugin": "npm:^2.9.4"
+    "@protobuf-ts/runtime-rpc": "npm:^2.11.1"
     semver: "npm:^6.3.1"
-  checksum: 10/232790477fcbddf4591c84cd2860b009715515e53edb7bcba718b73ddd46401f09fd859f04b426614ad82e8cdcf6948fdc4ff03e926fbf5081163d77d9a8eec8
+  checksum: 10/ee0bb0db93b0e1ffefec86400236589cc8c2ee3fc87a876acf136a49162e17d60fd42a643163ccb3653a0ee3b1ec10ba48b638142944ea2a4a88b845201fbf6d
   languageName: node
   linkType: hard
 
@@ -1642,12 +1642,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@docker/actions-toolkit@npm:^0.63.0":
-  version: 0.63.0
-  resolution: "@docker/actions-toolkit@npm:0.63.0"
+"@docker/actions-toolkit@npm:^0.64.0":
+  version: 0.64.0
+  resolution: "@docker/actions-toolkit@npm:0.64.0"
   dependencies:
     "@actions/artifact": "npm:^2.3.2"
-    "@actions/cache": "npm:^4.0.3"
+    "@actions/cache": "npm:^4.1.0"
     "@actions/core": "npm:^1.11.1"
     "@actions/exec": "npm:^1.1.1"
     "@actions/github": "npm:^6.0.1"
@@ -1658,16 +1658,16 @@ __metadata:
     "@octokit/core": "npm:^5.2.2"
     "@octokit/plugin-rest-endpoint-methods": "npm:^10.4.1"
     async-retry: "npm:^1.3.3"
-    csv-parse: "npm:^5.6.0"
+    csv-parse: "npm:^6.1.0"
     gunzip-maybe: "npm:^1.4.2"
     handlebars: "npm:^4.7.8"
     he: "npm:^1.2.0"
     js-yaml: "npm:^4.1.0"
     jwt-decode: "npm:^4.0.0"
-    semver: "npm:^7.7.2"
+    semver: "npm:^7.7.3"
     tar-stream: "npm:^3.1.7"
-    tmp: "npm:^0.2.4"
-  checksum: 10/4ef58ccd0c44caf80a301bd30cf4f010f663758db80b018d39acf9018c8062d266a3b45dd308613292db91dee3808575569abb9eb1180eca57501ff7a2d728da
+    tmp: "npm:^0.2.5"
+  checksum: 10/a8b59fe5d93cc770148061da7a36aba89b44f38001de717f3fe1a046f1ac6ff575d3581f4f8ef39b673018052955f9a3524f5a575024238278c6385f0350635f
   languageName: node
   linkType: hard
 
@@ -2544,16 +2544,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@protobuf-ts/plugin-framework@npm:^2.9.5":
-  version: 2.9.5
-  resolution: "@protobuf-ts/plugin-framework@npm:2.9.5"
-  dependencies:
-    "@protobuf-ts/runtime": "npm:^2.9.5"
-    typescript: "npm:^3.9"
-  checksum: 10/6c03396073486d08c25cfad0ddd24ae32ac751ecc7e308d3d0301f60ca5c18f76a98cf341c4d48ddaec91130e2eead0e82f45a02144d43476b1060b926a77e7a
-  languageName: node
-  linkType: hard
-
 "@protobuf-ts/plugin@npm:^2.2.3-alpha.1":
   version: 2.9.4
   resolution: "@protobuf-ts/plugin@npm:2.9.4"
@@ -2570,22 +2560,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@protobuf-ts/plugin@npm:^2.9.4":
-  version: 2.9.5
-  resolution: "@protobuf-ts/plugin@npm:2.9.5"
-  dependencies:
-    "@protobuf-ts/plugin-framework": "npm:^2.9.5"
-    "@protobuf-ts/protoc": "npm:^2.9.5"
-    "@protobuf-ts/runtime": "npm:^2.9.5"
-    "@protobuf-ts/runtime-rpc": "npm:^2.9.5"
-    typescript: "npm:^3.9"
-  bin:
-    protoc-gen-dump: bin/protoc-gen-dump
-    protoc-gen-ts: bin/protoc-gen-ts
-  checksum: 10/9c2f5cbd5af36260c47d9cce0efe15558b0ccb42234dbb04ddf7a10a44a8894b9b4746524d1f8168bae8af88e79c1461033ed4a6d12f6b490746f3f243db42a4
-  languageName: node
-  linkType: hard
-
 "@protobuf-ts/protoc@npm:^2.9.4":
   version: 2.9.4
   resolution: "@protobuf-ts/protoc@npm:2.9.4"
@@ -2595,12 +2569,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@protobuf-ts/protoc@npm:^2.9.5":
-  version: 2.9.5
-  resolution: "@protobuf-ts/protoc@npm:2.9.5"
-  bin:
-    protoc: protoc.js
-  checksum: 10/3f7736d8f85fa8531da858031ed86b83f27e28fe8bfa4d5456908745cb0fe4ca748b832f0e02a4433f8ae9873a55c51946ff9361053d10bd1f5fb12bc2b4dc83
+"@protobuf-ts/runtime-rpc@npm:^2.11.1":
+  version: 2.11.1
+  resolution: "@protobuf-ts/runtime-rpc@npm:2.11.1"
+  dependencies:
+    "@protobuf-ts/runtime": "npm:^2.11.1"
+  checksum: 10/32c9220a4898b8abca1628806075066292a3f2774965b7d1f39e9389c43a178d7b5023d9e67a0e024d0010790b0b7b6a4e73080e59a0e1701e2d5cee9572e6e2
   languageName: node
   linkType: hard
 
@@ -2613,12 +2587,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@protobuf-ts/runtime-rpc@npm:^2.9.5":
-  version: 2.9.5
-  resolution: "@protobuf-ts/runtime-rpc@npm:2.9.5"
-  dependencies:
-    "@protobuf-ts/runtime": "npm:^2.9.5"
-  checksum: 10/da7163307879d849f71a85f1fb750501f9cd7471dea7529f46d6de70e4c225d87e1a3baa5f1df4586ab323e4d0747a4ee3a361180568ba29a97d0bb737589770
+"@protobuf-ts/runtime@npm:^2.11.1":
+  version: 2.11.1
+  resolution: "@protobuf-ts/runtime@npm:2.11.1"
+  checksum: 10/888b963a0b2b26c0b5f77d411b99bfc80068faa89e287efeede2e7686f1b0fea09fc5f0cf7e6be148728f2acf9c05ec7b5814f6633da6cdc810895677b2e68f5
   languageName: node
   linkType: hard
 
@@ -2626,13 +2598,6 @@ __metadata:
   version: 2.9.4
   resolution: "@protobuf-ts/runtime@npm:2.9.4"
   checksum: 10/95f82bd7090320b6a1b68047171bd6db782b85d22e9cb1207f4dbebf196d4f0087ea779070a8f7ed9d8fd9c1503bed3648d4df64da6361975b5742c2222a456a
-  languageName: node
-  linkType: hard
-
-"@protobuf-ts/runtime@npm:^2.9.5":
-  version: 2.9.5
-  resolution: "@protobuf-ts/runtime@npm:2.9.5"
-  checksum: 10/0f125f9dc54e1b89f1d8eebebfed9758cd92aff852e4c5d2480e5baa90acee9c52393c52a9136bec8b14c9514bbec01e364f197d092f2c361e85f0b74a16c4d9
   languageName: node
   linkType: hard
 
@@ -4346,10 +4311,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"csv-parse@npm:^5.6.0":
-  version: 5.6.0
-  resolution: "csv-parse@npm:5.6.0"
-  checksum: 10/4c82e11f50ae0ccbac2aed716ef2502d0468bf96552083561db789fc0258ee4bb0a30106fcfb2684f153cb4042f0413e0eac3645d5466874803b7ccdeba67ac8
+"csv-parse@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "csv-parse@npm:6.1.0"
+  checksum: 10/607d92611435fdfb7631242644a2582bfb218fad8c6c6d6416db31647c2e63a3110f16c9837de6baaa3edf318212765cfc6e72d672d99690fd7f565d6c93d6f4
   languageName: node
   linkType: hard
 
@@ -4442,7 +4407,7 @@ __metadata:
     "@actions/core": "npm:^1.11.1"
     "@aws-sdk/client-ecr": "npm:^3.890.0"
     "@aws-sdk/client-ecr-public": "npm:^3.890.0"
-    "@docker/actions-toolkit": "npm:^0.63.0"
+    "@docker/actions-toolkit": "npm:^0.64.0"
     "@types/js-yaml": "npm:^4.0.9"
     "@types/node": "npm:^20.19.9"
     "@typescript-eslint/eslint-plugin": "npm:^7.18.0"
@@ -7307,6 +7272,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"semver@npm:^7.7.3":
+  version: 7.7.3
+  resolution: "semver@npm:7.7.3"
+  bin:
+    semver: bin/semver.js
+  checksum: 10/8dbc3168e057a38fc322af909c7f5617483c50caddba135439ff09a754b20bdd6482a5123ff543dad4affa488ecf46ec5fb56d61312ad20bb140199b88dfaea9
+  languageName: node
+  linkType: hard
+
 "shebang-command@npm:^2.0.0":
   version: 2.0.0
   resolution: "shebang-command@npm:2.0.0"
@@ -7668,7 +7642,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tmp@npm:^0.2.4":
+"tmp@npm:^0.2.5":
   version: 0.2.5
   resolution: "tmp@npm:0.2.5"
   checksum: 10/dd4b78b32385eab4899d3ae296007b34482b035b6d73e1201c4a9aede40860e90997a1452c65a2d21aee73d53e93cd167d741c3db4015d90e63b6d568a93d7ec
