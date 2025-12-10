@@ -25,7 +25,7 @@
   "license": "Apache-2.0",
   "packageManager": "yarn@4.9.2",
   "dependencies": {
-    "@actions/core": "^1.11.1",
+    "@actions/core": "^2.0.0",
     "@aws-sdk/client-ecr": "^3.890.0",
     "@aws-sdk/client-ecr-public": "^3.890.0",
     "@docker/actions-toolkit": "^0.63.0",

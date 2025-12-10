@@ -70,6 +70,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@actions/core@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@actions/core@npm:2.0.0"
+  dependencies:
+    "@actions/exec": "npm:^1.1.1"
+    "@actions/http-client": "npm:^3.0.0"
+  checksum: 10/051190c962d4abee7bc1878c1d94aa6660bf04f41ec99913f2f16b6e3c02b25fffb62451a8ce0742d8a594d3aff316f17f6539ab27dadcf772f1c4c562aab4dd
+  languageName: node
+  linkType: hard
+
 "@actions/exec@npm:^1.0.0, @actions/exec@npm:^1.0.1, @actions/exec@npm:^1.1.1":
   version: 1.1.1
   resolution: "@actions/exec@npm:1.1.1"
@@ -143,6 +153,16 @@ __metadata:
     tunnel: "npm:^0.0.6"
     undici: "npm:^5.25.4"
   checksum: 10/0c0a540c79e50f795d214f696710bb9c50bdf5bb1458be288140f2aae3686adec73fdb464c43da5ef94f985ac7736273efef21cb5ba5a3b09e85b403d852c04b
+  languageName: node
+  linkType: hard
+
+"@actions/http-client@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@actions/http-client@npm:3.0.0"
+  dependencies:
+    tunnel: "npm:^0.0.6"
+    undici: "npm:^5.28.5"
+  checksum: 10/7ed597cf91953cb56f74ece13187914fee629cb81cd11357676425388dd239508be63d0eff7930e2b066034f2a86dd24b313c09717f878aaf8ed3f5a6853b816
   languageName: node
   linkType: hard
 
@@ -4439,7 +4459,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "docker-login@workspace:."
   dependencies:
-    "@actions/core": "npm:^1.11.1"
+    "@actions/core": "npm:^2.0.0"
     "@aws-sdk/client-ecr": "npm:^3.890.0"
     "@aws-sdk/client-ecr-public": "npm:^3.890.0"
     "@docker/actions-toolkit": "npm:^0.63.0"
