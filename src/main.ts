@@ -39,6 +39,9 @@ export async function main(): Promise<void> {
     } else {
       registries.push(auth.registry);
     }
+    if (auth.password) {
+      core.setSecret(auth.password);
+    }
   }
   stateHelper.setRegistries(registries.filter((value, index, self) => self.indexOf(value) === index));
 
