@@ -527,8 +527,8 @@ jobs:
 ```
 
 You can also use the `registry-auth` input for raw authentication to
-registries, defined as YAML objects. Each object can contain `registry`,
-`username`, `password` and `ecr` keys similar to current inputs:
+registries, defined as YAML objects. Each object have the same attributes as
+current inputs (except `logout`):
 
 > [!WARNING]
 > We don't recommend using this method, it's better to use the action multiple
@@ -568,13 +568,13 @@ The following inputs can be used as `step.with` keys:
 | `registry`      | String | `docker.io` | Server address of Docker registry. If not set then will default to Docker Hub |
 | `username`      | String |             | Username for authenticating to the Docker registry                            |
 | `password`      | String |             | Password or personal access token for authenticating the Docker registry      |
+| `scope`         | String |             | Scope for the authentication token                                            |
 | `ecr`           | String | `auto`      | Specifies whether the given registry is ECR (`auto`, `true` or `false`)       |
 | `logout`        | Bool   | `true`      | Log out from the Docker registry at the end of a job                          |
 | `registry-auth` | YAML   |             | Raw authentication to registries, defined as YAML objects                     |
 
 > [!NOTE]
-> The `registry-auth` input is mutually exclusive with `registry`, `username`,
-> `password` and `ecr` inputs.
+> The `registry-auth` input cannot be used with other inputs except `logout`.
 
 ## Contributing
 

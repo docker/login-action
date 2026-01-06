@@ -1,4 +1,3 @@
-import * as yaml from 'js-yaml';
 import * as core from '@actions/core';
 import * as actionsToolkit from '@docker/actions-toolkit';
 
@@ -6,48 +5,21 @@ import * as context from './context';
 import * as docker from './docker';
 import * as stateHelper from './state-helper';
 
-interface Auth {
-  registry: string;
-  username: string;
-  password: string;
-  ecr: string;
-}
-
 export async function main(): Promise<void> {
   const inputs: context.Inputs = context.getInputs();
   stateHelper.setLogout(inputs.logout);
 
-  if (inputs.registryAuth && (inputs.registry || inputs.username || inputs.password || inputs.ecr)) {
-    throw new Error('Cannot use registry-auth with other inputs');
-  }
+  const auths = context.getAuthList(inputs);
+  stateHelper.setRegistries(Array.from(new Map(auths.map(auth => [`${auth.registry}|${auth.configDir}`, {registry: auth.registry, configDir: auth.configDir} as stateHelper.RegistryState])).values()));
 
-  if (!inputs.registryAuth) {
-    stateHelper.setRegistries([inputs.registry || 'docker.io']);
-    await docker.login(inputs.registry || 'docker.io', inputs.username, inputs.password, inputs.ecr || 'auto');
+  if (auths.length === 1) {
+    await docker.login(auths[0]);
     return;
   }
 
-  const auths = yaml.load(inputs.registryAuth) as Auth[];
-  if (auths.length == 0) {
-    throw new Error('No registry to login');
-  }
-
-  const registries: string[] = [];
   for (const auth of auths) {
-    if (!auth.registry) {
-      registries.push('docker.io');
-    } else {
-      registries.push(auth.registry);
-    }
-    if (auth.password) {
-      core.setSecret(auth.password);
-    }
-  }
-  stateHelper.setRegistries(registries.filter((value, index, self) => self.indexOf(value) === index));
-
-  for (const auth of auths) {
-    await core.group(`Login to ${auth.registry || 'docker.io'}`, async () => {
-      await docker.login(auth.registry || 'docker.io', auth.username, auth.password, auth.ecr || 'auto');
+    await core.group(`Login to ${auth.registry}`, async () => {
+      await docker.login(auth);
     });
   }
 }
@@ -56,8 +28,10 @@ async function post(): Promise<void> {
   if (!stateHelper.logout) {
     return;
   }
-  for (const registry of stateHelper.registries.split(',')) {
-    await docker.logout(registry);
+  for (const registryState of stateHelper.registries) {
+    await core.group(`Logout from ${registryState.registry}`, async () => {
+      await docker.logout(registryState.registry, registryState.configDir);
+    });
   }
 }
 

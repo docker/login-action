@@ -207,7 +207,7 @@ jobs:
         with:
           registry: public.ecr.aws
 
-  github-container:
+  ghcr:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -356,3 +356,125 @@ jobs:
             echo "::error::Should have failed"
             exit 1
           fi
+
+  scope-dockerhub:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v6
+      -
+        name: Login to Docker Hub
+        uses: ./
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          scope: '@push'
+      -
+        name: Print config.json files
+        shell: bash
+        run: |
+          shopt -s globstar nullglob
+          for file in ~/.docker/**/config.json; do
+            echo "## ${file}"
+            jq '(.auths[]?.auth) |= "REDACTED"' "$file"
+            echo ""
+          done
+
+  scope-dockerhub-repo:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v6
+      -
+        name: Login to Docker Hub
+        uses: ./
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          scope: 'docker/buildx-bin@push'
+      -
+        name: Print config.json files
+        shell: bash
+        run: |
+          shopt -s globstar nullglob
+          for file in ~/.docker/**/config.json; do
+            echo "## ${file}"
+            jq '(.auths[]?.auth) |= "REDACTED"' "$file"
+            echo ""
+          done
+
+  scope-ghcr:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v6
+      -
+        name: Login to GitHub Container Registry
+        uses: ./
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          scope: '@push'
+      -
+        name: Print config.json files
+        shell: bash
+        run: |
+          shopt -s globstar nullglob
+          for file in ~/.docker/**/config.json; do
+            echo "## ${file}"
+            jq '(.auths[]?.auth) |= "REDACTED"' "$file"
+            echo ""
+          done
+
+  scope-ghcr-repo:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v6
+      -
+        name: Login to GitHub Container Registry
+        uses: ./
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          scope: 'docker/login-action@push'
+      -
+        name: Print config.json files
+        shell: bash
+        run: |
+          shopt -s globstar nullglob
+          for file in ~/.docker/**/config.json; do
+            echo "## ${file}"
+            jq '(.auths[]?.auth) |= "REDACTED"' "$file"
+            echo ""
+          done
