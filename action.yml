@@ -19,6 +19,9 @@ inputs:
   ecr:
     description: 'Specifies whether the given registry is ECR (auto, true or false)'
     required: false
+  scope:
+    description: 'Scope for the authentication token'
+    required: false
   logout:
     description: 'Log out from the Docker registry at the end of a job'
     default: 'true'
