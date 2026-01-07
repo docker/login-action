@@ -25,6 +25,7 @@ ___
   * [Quay.io](#quayio)
   * [DigitalOcean](#digitalocean-container-registry)
   * [Authenticate to multiple registries](#authenticate-to-multiple-registries)
+  * [Set scopes for the authentication token](#set-scopes-for-the-authentication-token)
 * [Customizing](#customizing)
   * [inputs](#inputs)
 * [Contributing](#contributing)
@@ -556,6 +557,60 @@ jobs:
               username: ${{ github.actor }}
               password: ${{ secrets.GITHUB_TOKEN }}
 ```
+
+### Set scopes for the authentication token
+
+The `scope` input allows limiting registry credentials to a specific repository
+or namespace scope when building images with Buildx.
+
+This is useful in GitHub Actions to avoid overriding the Docker Hub
+authentication token embedded in GitHub-hosted runners, which is used for
+pulling images without rate limits. By scoping credentials, you can
+authenticate only where needed (typically for pushing), while keeping
+unauthenticated pulls for base images.
+
+When `scope` is set, credentials are written to the Buildx configuration
+instead of the global Docker configuration. This means:
+* Authentication applies only to the specified scope
+* The default Docker Hub credentials remain available for pulls
+* Credentials are used only by Buildx during the build
+
+> [!IMPORTANT]
+> Credentials written to the Buildx configuration are only accessible by Buildx.
+> They are not available to `docker pull`, `docker push`, or any other Docker
+> CLI commands outside Buildx.
+
+> [!NOTE]
+> This feature requires Buildx version 0.31.0 or later.
+
+```yaml
+name: ci
+
+on:
+  push:
+    branches: main
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Login to Docker Hub (scoped)
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          scope: 'myorg/myimage@push'
+      -
+        name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: myorg/myimage:latest
+```
+
+In this example, base images are pulled using the embedded GitHub-hosted runner
+credentials, while authenticated access is used only to push `myorg/myimage`.
 
 ## Customizing
 
