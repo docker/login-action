@@ -1,19 +1,31 @@
-import * as aws from './aws';
 import * as core from '@actions/core';
+
+import * as aws from './aws';
+import * as context from './context';
 
 import {Docker} from '@docker/actions-toolkit/lib/docker/docker';
 
-export async function login(registry: string, username: string, password: string, ecr: string): Promise<void> {
-  if (/true/i.test(ecr) || (ecr == 'auto' && aws.isECR(registry))) {
-    await loginECR(registry, username, password);
+export async function login(auth: context.Auth): Promise<void> {
+  if (/true/i.test(auth.ecr) || (auth.ecr == 'auto' && aws.isECR(auth.registry))) {
+    await loginECR(auth.registry, auth.username, auth.password, auth.scope);
   } else {
-    await loginStandard(registry, username, password);
+    await loginStandard(auth.registry, auth.username, auth.password, auth.scope);
   }
 }
 
-export async function logout(registry: string): Promise<void> {
+export async function logout(registry: string, configDir: string): Promise<void> {
+  let envs: {[key: string]: string} | undefined;
+  if (configDir !== '') {
+    envs = Object.assign({}, process.env, {
+      DOCKER_CONFIG: configDir
+    }) as {
+      [key: string]: string;
+    };
+    core.info(`Alternative config dir: ${configDir}`);
+  }
   await Docker.getExecOutput(['logout', registry], {
-    ignoreReturnCode: true
+    ignoreReturnCode: true,
+    env: envs
   }).then(res => {
     if (res.stderr.length > 0 && res.exitCode != 0) {
       core.warning(res.stderr.trim());
@@ -21,7 +33,7 @@ export async function logout(registry: string): Promise<void> {
   });
 }
 
-export async function loginStandard(registry: string, username: string, password: string): Promise<void> {
+export async function loginStandard(registry: string, username: string, password: string, scope?: string): Promise<void> {
   if (!username && !password) {
     throw new Error('Username and password required');
   }
@@ -31,38 +43,39 @@ export async function loginStandard(registry: string, username: string, password
   if (!password) {
     throw new Error('Password required');
   }
+  await loginExec(registry, username, password, scope);
+}
 
-  const loginArgs: Array<string> = ['login', '--password-stdin'];
-  loginArgs.push('--username', username);
-  loginArgs.push(registry);
+export async function loginECR(registry: string, username: string, password: string, scope?: string): Promise<void> {
+  core.info(`Retrieving registries data through AWS SDK...`);
+  const regDatas = await aws.getRegistriesData(registry, username, password);
+  for (const regData of regDatas) {
+    await loginExec(regData.registry, regData.username, regData.password, scope);
+  }
+}
 
-  core.info(`Logging into ${registry}...`);
-  await Docker.getExecOutput(loginArgs, {
+async function loginExec(registry: string, username: string, password: string, scope?: string): Promise<void> {
+  let envs: {[key: string]: string} | undefined;
+  const configDir = context.scopeToConfigDir(registry, scope);
+  if (configDir !== '') {
+    envs = Object.assign({}, process.env, {
+      DOCKER_CONFIG: configDir
+    }) as {
+      [key: string]: string;
+    };
+    core.info(`Logging into ${registry} (scope ${scope})...`);
+  } else {
+    core.info(`Logging into ${registry}...`);
+  }
+  await Docker.getExecOutput(['login', '--password-stdin', '--username', username, registry], {
     ignoreReturnCode: true,
     silent: true,
-    input: Buffer.from(password)
+    input: Buffer.from(password),
+    env: envs
   }).then(res => {
     if (res.stderr.length > 0 && res.exitCode != 0) {
       throw new Error(res.stderr.trim());
     }
-    core.info(`Login Succeeded!`);
+    core.info('Login Succeeded!');
   });
-}
-
-export async function loginECR(registry: string, username: string, password: string): Promise<void> {
-  core.info(`Retrieving registries data through AWS SDK...`);
-  const regDatas = await aws.getRegistriesData(registry, username, password);
-  for (const regData of regDatas) {
-    core.info(`Logging into ${regData.registry}...`);
-    await Docker.getExecOutput(['login', '--password-stdin', '--username', regData.username, regData.registry], {
-      ignoreReturnCode: true,
-      silent: true,
-      input: Buffer.from(regData.password)
-    }).then(res => {
-      if (res.stderr.length > 0 && res.exitCode != 0) {
-        throw new Error(res.stderr.trim());
-      }
-      core.info('Login Succeeded!');
-    });
-  }
 }
