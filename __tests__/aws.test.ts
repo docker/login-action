@@ -11,6 +11,7 @@ describe('isECR', () => {
     ['876820548815.dkr.ecr.cn-north-1.amazonaws.com.cn', true],
     ['390948362332.dkr.ecr.cn-northwest-1.amazonaws.com.cn', true],
     ['012345678901.dkr-ecr.eu-north-1.on.aws', true],
+    ['012345678901.dkr.ecr.eusc-de-east-1.amazonaws.eu', true],
     ['public.ecr.aws', true],
     ['ecr-public.aws.com', true]
   ])('given registry %p', async (registry, expected) => {
@@ -26,6 +27,7 @@ describe('isPubECR', () => {
     ['876820548815.dkr.ecr.cn-north-1.amazonaws.com.cn', false],
     ['390948362332.dkr.ecr.cn-northwest-1.amazonaws.com.cn', false],
     ['012345678901.dkr-ecr.eu-north-1.on.aws', false],
+    ['012345678901.dkr.ecr.eusc-de-east-1.amazonaws.eu', false],
     ['public.ecr.aws', true],
     ['ecr-public.aws.com', true]
   ])('given registry %p', async (registry, expected) => {
@@ -39,6 +41,7 @@ describe('getRegion', () => {
     ['876820548815.dkr.ecr.cn-north-1.amazonaws.com.cn', 'cn-north-1'],
     ['390948362332.dkr.ecr.cn-northwest-1.amazonaws.com.cn', 'cn-northwest-1'],
     ['012345678901.dkr-ecr.eu-north-1.on.aws', 'eu-north-1'],
+    ['012345678901.dkr.ecr.eusc-de-east-1.amazonaws.eu', 'eusc-de-east-1'],
     ['public.ecr.aws', 'us-east-1']
   ])('given registry %p', async (registry, expected) => {
     expect(aws.getRegion(registry)).toEqual(expected);
@@ -52,6 +55,7 @@ describe('getAccountIDs', () => {
     ['012345678901.dkr.ecr.eu-west-3.amazonaws.com', '012345678901,012345678910,023456789012', ['012345678901', '012345678910', '023456789012']],
     ['390948362332.dkr.ecr.cn-northwest-1.amazonaws.com.cn', '012345678910,023456789012', ['390948362332', '012345678910', '023456789012']],
     ['876820548815.dkr-ecr.eu-north-1.on.aws', '012345678910,023456789012', ['876820548815', '012345678910', '023456789012']],
+    ['012345678901.dkr.ecr.eusc-de-east-1.amazonaws.eu', '012345678910,023456789012', ['012345678901', '012345678910', '023456789012']],
     ['public.ecr.aws', undefined, []]
   ])('given registry %p', async (registry, accountIDsEnv, expected) => {
     if (accountIDsEnv) {
