@@ -5,7 +5,7 @@ import {NodeHttpHandler} from '@smithy/node-http-handler';
 import {HttpProxyAgent} from 'http-proxy-agent';
 import {HttpsProxyAgent} from 'https-proxy-agent';
 
-const ecrRegistryRegex = /^(([0-9]{12})\.(dkr\.ecr|dkr-ecr)\.(.+)\.(on\.aws|amazonaws\.com(.cn)?))(\/([^:]+)(:.+)?)?$/;
+const ecrRegistryRegex = /^(([0-9]{12})\.(dkr\.ecr|dkr-ecr)\.(.+)\.(on\.aws|amazonaws\.(com(.cn)?|eu)))(\/([^:]+)(:.+)?)?$/;
 const ecrPublicRegistryRegex = /public\.ecr\.aws|ecr-public\.aws\.com/;
 
 export const isECR = (registry: string): boolean => {
