@@ -25,6 +25,7 @@ ___
   * [Quay.io](#quayio)
   * [DigitalOcean](#digitalocean-container-registry)
   * [Authenticate to multiple registries](#authenticate-to-multiple-registries)
+  * [Set scopes for the authentication token](#set-scopes-for-the-authentication-token)
 * [Customizing](#customizing)
   * [inputs](#inputs)
 * [Contributing](#contributing)
@@ -527,8 +528,8 @@ jobs:
 ```
 
 You can also use the `registry-auth` input for raw authentication to
-registries, defined as YAML objects. Each object can contain `registry`,
-`username`, `password` and `ecr` keys similar to current inputs:
+registries, defined as YAML objects. Each object have the same attributes as
+current inputs (except `logout`):
 
 > [!WARNING]
 > We don't recommend using this method, it's better to use the action multiple
@@ -557,6 +558,60 @@ jobs:
               password: ${{ secrets.GITHUB_TOKEN }}
 ```
 
+### Set scopes for the authentication token
+
+The `scope` input allows limiting registry credentials to a specific repository
+or namespace scope when building images with Buildx.
+
+This is useful in GitHub Actions to avoid overriding the Docker Hub
+authentication token embedded in GitHub-hosted runners, which is used for
+pulling images without rate limits. By scoping credentials, you can
+authenticate only where needed (typically for pushing), while keeping
+unauthenticated pulls for base images.
+
+When `scope` is set, credentials are written to the Buildx configuration
+instead of the global Docker configuration. This means:
+* Authentication applies only to the specified scope
+* The default Docker Hub credentials remain available for pulls
+* Credentials are used only by Buildx during the build
+
+> [!IMPORTANT]
+> Credentials written to the Buildx configuration are only accessible by Buildx.
+> They are not available to `docker pull`, `docker push`, or any other Docker
+> CLI commands outside Buildx.
+
+> [!NOTE]
+> This feature requires Buildx version 0.31.0 or later.
+
+```yaml
+name: ci
+
+on:
+  push:
+    branches: main
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Login to Docker Hub (scoped)
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          scope: 'myorg/myimage@push'
+      -
+        name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: myorg/myimage:latest
+```
+
+In this example, base images are pulled using the embedded GitHub-hosted runner
+credentials, while authenticated access is used only to push `myorg/myimage`.
+
 ## Customizing
 
 ### inputs
@@ -568,13 +623,13 @@ The following inputs can be used as `step.with` keys:
 | `registry`      | String | `docker.io` | Server address of Docker registry. If not set then will default to Docker Hub |
 | `username`      | String |             | Username for authenticating to the Docker registry                            |
 | `password`      | String |             | Password or personal access token for authenticating the Docker registry      |
+| `scope`         | String |             | Scope for the authentication token                                            |
 | `ecr`           | String | `auto`      | Specifies whether the given registry is ECR (`auto`, `true` or `false`)       |
 | `logout`        | Bool   | `true`      | Log out from the Docker registry at the end of a job                          |
 | `registry-auth` | YAML   |             | Raw authentication to registries, defined as YAML objects                     |
 
 > [!NOTE]
-> The `registry-auth` input is mutually exclusive with `registry`, `username`,
-> `password` and `ecr` inputs.
+> The `registry-auth` input cannot be used with other inputs except `logout`.
 
 ## Contributing
 

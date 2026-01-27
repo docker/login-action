@@ -50,7 +50,7 @@ test('logout calls exec', async () => {
 
   const registry = 'https://ghcr.io';
 
-  await logout(registry);
+  await logout(registry, '');
 
   expect(execSpy).toHaveBeenCalledTimes(1);
   const callfunc = execSpy.mock.calls[0];
