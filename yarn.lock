@@ -4511,7 +4511,7 @@ __metadata:
     http-proxy-agent: "npm:^7.0.2"
     https-proxy-agent: "npm:^7.0.6"
     jest: "npm:^29.7.0"
-    js-yaml: "npm:^4.1.0"
+    js-yaml: "npm:^4.1.1"
     prettier: "npm:^3.6.2"
     ts-jest: "npm:^29.4.1"
     ts-node: "npm:^10.9.2"
