@@ -29,6 +29,14 @@ inputs:
   registry-auth:
     description: 'Raw authentication to registries, defined as YAML objects'
     required: false
+  retry-attempts:
+    description: 'Number of retry attempts for transient failures'
+    default: '0'
+    required: false
+  retry-delay:
+    description: 'Delay between retries in milliseconds'
+    default: '5000'
+    required: false
 
 runs:
   using: 'node20'

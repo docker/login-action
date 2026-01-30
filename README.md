@@ -618,15 +618,17 @@ credentials, while authenticated access is used only to push `myorg/myimage`.
 
 The following inputs can be used as `step.with` keys:
 
-| Name            | Type   | Default     | Description                                                                   |
-|-----------------|--------|-------------|-------------------------------------------------------------------------------|
-| `registry`      | String | `docker.io` | Server address of Docker registry. If not set then will default to Docker Hub |
-| `username`      | String |             | Username for authenticating to the Docker registry                            |
-| `password`      | String |             | Password or personal access token for authenticating the Docker registry      |
-| `scope`         | String |             | Scope for the authentication token                                            |
-| `ecr`           | String | `auto`      | Specifies whether the given registry is ECR (`auto`, `true` or `false`)       |
-| `logout`        | Bool   | `true`      | Log out from the Docker registry at the end of a job                          |
-| `registry-auth` | YAML   |             | Raw authentication to registries, defined as YAML objects                     |
+| Name             | Type   | Default     | Description                                                                   |
+|------------------|--------|-------------|-------------------------------------------------------------------------------|
+| `registry`       | String | `docker.io` | Server address of Docker registry. If not set then will default to Docker Hub |
+| `username`       | String |             | Username for authenticating to the Docker registry                            |
+| `password`       | String |             | Password or personal access token for authenticating the Docker registry      |
+| `scope`          | String |             | Scope for the authentication token                                            |
+| `ecr`            | String | `auto`      | Specifies whether the given registry is ECR (`auto`, `true` or `false`)       |
+| `logout`         | Bool   | `true`      | Log out from the Docker registry at the end of a job                          |
+| `registry-auth`  | YAML   |             | Raw authentication to registries, defined as YAML objects                     |
+| `retry-attempts` | Number | `0`         | Number of retry attempts for transient failures                               |
+| `retry-delay`    | Number | `5000`      | Delay between retries in milliseconds (uses exponential backoff)              |
 
 > [!NOTE]
 > The `registry-auth` input cannot be used with other inputs except `logout`.

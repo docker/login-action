@@ -5,6 +5,11 @@ import * as yaml from 'js-yaml';
 import {Buildx} from '@docker/actions-toolkit/lib/buildx/buildx';
 import {Util} from '@docker/actions-toolkit/lib/util';
 
+export interface RetryArgs {
+  attempts: number;
+  delayMs: number;
+}
+
 export interface Inputs {
   registry: string;
   username: string;
@@ -13,6 +18,7 @@ export interface Inputs {
   ecr: string;
   logout: boolean;
   registryAuth: string;
+  retryArgs: RetryArgs;
 }
 
 export interface Auth {
@@ -22,6 +28,7 @@ export interface Auth {
   scope: string;
   ecr: string;
   configDir: string;
+  retryArgs: RetryArgs;
 }
 
 export function getInputs(): Inputs {
@@ -32,7 +39,11 @@ export function getInputs(): Inputs {
     scope: core.getInput('scope'),
     ecr: core.getInput('ecr'),
     logout: core.getBooleanInput('logout'),
-    registryAuth: core.getInput('registry-auth')
+    registryAuth: core.getInput('registry-auth'),
+    retryArgs: {
+      attempts: parseInt(core.getInput('retry-attempts') || '0', 10),
+      delayMs: parseInt(core.getInput('retry-delay') || '5000', 10)
+    }
   };
 }
 
@@ -48,7 +59,8 @@ export function getAuthList(inputs: Inputs): Array<Auth> {
       password: inputs.password,
       scope: inputs.scope,
       ecr: inputs.ecr || 'auto',
-      configDir: scopeToConfigDir(inputs.registry, inputs.scope)
+      configDir: scopeToConfigDir(inputs.registry, inputs.scope),
+      retryArgs: inputs.retryArgs
     });
   } else {
     auths = (yaml.load(inputs.registryAuth) as Array<Auth>).map(auth => {
@@ -59,7 +71,8 @@ export function getAuthList(inputs: Inputs): Array<Auth> {
         password: auth.password,
         scope: auth.scope,
         ecr: auth.ecr || 'auto',
-        configDir: scopeToConfigDir(auth.registry || 'docker.io', auth.scope)
+        configDir: scopeToConfigDir(auth.registry || 'docker.io', auth.scope),
+        retryArgs: auth.retryArgs || inputs.retryArgs
       };
     });
   }
