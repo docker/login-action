@@ -474,7 +474,7 @@ jobs:
 
 ### DigitalOcean Container Registry
 
-Use your DigitalOcean registered email address and an API access token to authenticate.
+Use your [DigitalOcean](https://docs.digitalocean.com/products/container-registry/how-to/set-up-ci-cd/) DigitalOcean API token as both the username and the password.
 
 ```yaml
 name: ci
