@@ -1,4 +1,4 @@
-import {expect, jest, test} from '@jest/globals';
+import {afterEach, beforeEach, expect, jest, test} from '@jest/globals';
 import * as path from 'path';
 
 import {loginStandard, logout} from '../src/docker';
@@ -6,6 +6,14 @@ import {loginStandard, logout} from '../src/docker';
 import {Docker} from '@docker/actions-toolkit/lib/docker/docker';
 
 process.env['RUNNER_TEMP'] = path.join(__dirname, 'runner');
+
+beforeEach(() => {
+  delete process.env.DOCKER_LOGIN_SKIP_IF_MISSING_CREDS;
+});
+
+afterEach(() => {
+  delete process.env.DOCKER_LOGIN_SKIP_IF_MISSING_CREDS;
+});
 
 test('loginStandard calls exec', async () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -20,7 +28,7 @@ test('loginStandard calls exec', async () => {
 
   const username = 'dbowie';
   const password = 'groundcontrol';
-  const registry = 'https://ghcr.io';
+  const registry = 'ghcr.io';
 
   await loginStandard(registry, username, password);
 
@@ -37,6 +45,60 @@ test('loginStandard calls exec', async () => {
   });
 });
 
+test('loginStandard throws if username and password are missing', async () => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const execSpy = jest.spyOn(Docker, 'getExecOutput');
+  await expect(loginStandard('ghcr.io', '', '')).rejects.toThrow('Username and password required');
+  expect(execSpy).not.toHaveBeenCalled();
+});
+
+test('loginStandard throws if username is missing', async () => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const execSpy = jest.spyOn(Docker, 'getExecOutput');
+  await expect(loginStandard('ghcr.io', '', 'groundcontrol')).rejects.toThrow('Username required');
+  expect(execSpy).not.toHaveBeenCalled();
+});
+
+test('loginStandard throws if password is missing', async () => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const execSpy = jest.spyOn(Docker, 'getExecOutput');
+  await expect(loginStandard('ghcr.io', 'dbowie', '')).rejects.toThrow('Password required');
+  expect(execSpy).not.toHaveBeenCalled();
+});
+
+test('loginStandard skips if both credentials are missing and env opt-in is enabled', async () => {
+  process.env.DOCKER_LOGIN_SKIP_IF_MISSING_CREDS = 'true';
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const execSpy = jest.spyOn(Docker, 'getExecOutput');
+
+  await expect(loginStandard('ghcr.io', '', '')).resolves.toBeUndefined();
+  expect(execSpy).not.toHaveBeenCalled();
+});
+
+test('loginStandard skips if username is missing and env opt-in is enabled', async () => {
+  process.env.DOCKER_LOGIN_SKIP_IF_MISSING_CREDS = 'true';
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const execSpy = jest.spyOn(Docker, 'getExecOutput');
+
+  await expect(loginStandard('ghcr.io', '', 'groundcontrol')).resolves.toBeUndefined();
+  expect(execSpy).not.toHaveBeenCalled();
+});
+
+test('loginStandard skips if password is missing and env opt-in is enabled', async () => {
+  process.env.DOCKER_LOGIN_SKIP_IF_MISSING_CREDS = 'true';
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const execSpy = jest.spyOn(Docker, 'getExecOutput');
+
+  await expect(loginStandard('ghcr.io', 'dbowie', '')).resolves.toBeUndefined();
+  expect(execSpy).not.toHaveBeenCalled();
+});
+
 test('logout calls exec', async () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -48,7 +110,7 @@ test('logout calls exec', async () => {
     };
   });
 
-  const registry = 'https://ghcr.io';
+  const registry = 'ghcr.io';
 
   await logout(registry, '');
 

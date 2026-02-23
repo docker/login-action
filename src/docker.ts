@@ -4,6 +4,7 @@ import * as aws from './aws';
 import * as context from './context';
 
 import {Docker} from '@docker/actions-toolkit/lib/docker/docker';
+import {Util} from '@docker/actions-toolkit/lib/util';
 
 export async function login(auth: context.Auth): Promise<void> {
   if (/true/i.test(auth.ecr) || (auth.ecr == 'auto' && aws.isECR(auth.registry))) {
@@ -34,6 +35,10 @@ export async function logout(registry: string, configDir: string): Promise<void>
 }
 
 export async function loginStandard(registry: string, username: string, password: string, scope?: string): Promise<void> {
+  if ((!username || !password) && skipLoginIfMissingCredsEnabled()) {
+    core.info(`Skipping login to ${registry}. Username or password is not set and DOCKER_LOGIN_SKIP_IF_MISSING_CREDS is enabled.`);
+    return;
+  }
   if (!username && !password) {
     throw new Error('Username and password required');
   }
@@ -78,4 +83,11 @@ async function loginExec(registry: string, username: string, password: string, s
     }
     core.info('Login Succeeded!');
   });
+}
+
+function skipLoginIfMissingCredsEnabled(): boolean {
+  if (process.env.DOCKER_LOGIN_SKIP_IF_MISSING_CREDS) {
+    return Util.parseBool(process.env.DOCKER_LOGIN_SKIP_IF_MISSING_CREDS);
+  }
+  return false;
 }
