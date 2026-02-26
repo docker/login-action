@@ -2,6 +2,7 @@ import {expect, jest, test} from '@jest/globals';
 import * as path from 'path';
 
 import {loginStandard, logout} from '../src/docker';
+import * as core from '@actions/core';
 
 import {Docker} from '@docker/actions-toolkit/lib/docker/docker';
 
@@ -35,6 +36,50 @@ test('loginStandard calls exec', async () => {
     silent: true,
     ignoreReturnCode: true
   });
+});
+
+test('loginStandard throws plain error on auth failure', async () => {
+  jest.spyOn(Docker, 'getExecOutput').mockImplementation(async () => {
+    return {
+      exitCode: 1,
+      stdout: '',
+      stderr: 'Error response from daemon: unauthorized: incorrect username or password'
+    };
+  });
+
+  await expect(loginStandard('https://ghcr.io', 'user', 'wrongpass')).rejects.toThrow(
+    'Error response from daemon: unauthorized: incorrect username or password'
+  );
+});
+
+test('loginStandard appends network hint on timeout error', async () => {
+  jest.spyOn(Docker, 'getExecOutput').mockImplementation(async () => {
+    return {
+      exitCode: 1,
+      stdout: '',
+      stderr: 'Error response from daemon: Get "https://ghcr.io/v2/": context deadline exceeded (Client.Timeout exceeded while awaiting headers)'
+    };
+  });
+  jest.spyOn(core, 'warning').mockImplementation(() => undefined);
+
+  await expect(loginStandard('https://ghcr.io', 'user', 'pass')).rejects.toThrow(
+    /context deadline exceeded[\s\S]*Hint: looks like a network connectivity issue/
+  );
+});
+
+test('loginStandard appends network hint on dial tcp error', async () => {
+  jest.spyOn(Docker, 'getExecOutput').mockImplementation(async () => {
+    return {
+      exitCode: 1,
+      stdout: '',
+      stderr: 'Error response from daemon: Get "https://ghcr.io/v2/": dial tcp 140.82.112.21:443: i/o timeout'
+    };
+  });
+  jest.spyOn(core, 'warning').mockImplementation(() => undefined);
+
+  await expect(loginStandard('https://ghcr.io', 'user', 'pass')).rejects.toThrow(
+    /dial tcp[\s\S]*Hint: looks like a network connectivity issue/
+  );
 });
 
 test('logout calls exec', async () => {
