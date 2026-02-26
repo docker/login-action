@@ -74,8 +74,22 @@ async function loginExec(registry: string, username: string, password: string, s
     env: envs
   }).then(res => {
     if (res.stderr.length > 0 && res.exitCode != 0) {
-      throw new Error(res.stderr.trim());
+      const errMsg = res.stderr.trim();
+      // if the docker daemon cannot reach the registry at all, user should get a more useful hint
+      // rather than just forwarding the raw timeout/dial error
+      if (isNetworkError(errMsg)) {
+        throw new Error(
+          `${errMsg}\n\nHint: looks like a network connectivity issue - verify the runner can reach ${registry} (check firewall rules, proxy settings, and DNS resolution).`
+        );
+      }
+      throw new Error(errMsg);
     }
     core.info('Login Succeeded!');
   });
+}
+
+// checks if a docker daemon error msg looks like a connectivity/timeout problem
+// vs an actual auth failure or other non-network error
+function isNetworkError(msg: string): boolean {
+  return /context deadline exceeded|request canceled|i\/o timeout|dial tcp|connection refused|no such host/.test(msg);
 }
