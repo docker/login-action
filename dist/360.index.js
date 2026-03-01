@@ -1,7 +1,6 @@
-"use strict";
-exports.id = 360;
-exports.ids = [360];
-exports.modules = {
+export const id = 360;
+export const ids = [360];
+export const modules = {
 
 /***/ 75360:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
@@ -90,5 +89,5 @@ exports.fromProcess = fromProcess;
 /***/ })
 
 };
-;
+
 //# sourceMappingURL=360.index.js.map
