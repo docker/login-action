@@ -1,17 +1,16 @@
-import fs from 'fs';
-import os from 'os';
-import path from 'path';
+/* eslint-disable @typescript-eslint/no-require-imports */
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
 
-const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'docker-login-action-')).split(path.sep).join(path.posix.sep);
+const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'docker-login-action-'));
 
 process.env = Object.assign({}, process.env, {
   TEMP: tmpDir,
   GITHUB_REPOSITORY: 'docker/login-action',
-  RUNNER_TEMP: path.join(tmpDir, 'runner-temp').split(path.sep).join(path.posix.sep),
-  RUNNER_TOOL_CACHE: path.join(tmpDir, 'runner-tool-cache').split(path.sep).join(path.posix.sep)
-}) as {
-  [key: string]: string;
-};
+  RUNNER_TEMP: path.join(tmpDir, 'runner-temp'),
+  RUNNER_TOOL_CACHE: path.join(tmpDir, 'runner-tool-cache')
+});
 
 module.exports = {
   clearMocks: true,
