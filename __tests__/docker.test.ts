@@ -1,9 +1,9 @@
 import {expect, test, vi} from 'vitest';
 import * as path from 'path';
 
-import {loginStandard, logout} from '../src/docker';
+import {Docker} from '@docker/actions-toolkit/lib/docker/docker.js';
 
-import {Docker} from '@docker/actions-toolkit/lib/docker/docker';
+import {loginStandard, logout} from '../src/docker.js';
 
 process.env['RUNNER_TEMP'] = path.join(__dirname, 'runner');
 

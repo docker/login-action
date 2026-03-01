@@ -1,7 +1,7 @@
 import {beforeEach, describe, expect, test, vi} from 'vitest';
 import {AuthorizationData} from '@aws-sdk/client-ecr';
 
-import * as aws from '../src/aws';
+import * as aws from '../src/aws.js';
 
 describe('isECR', () => {
   test.each([
