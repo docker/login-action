@@ -1253,7 +1253,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/js@npm:9.39.3, @eslint/js@npm:^9.39.2":
+"@eslint/js@npm:9.39.3, @eslint/js@npm:^9.39.3":
   version: 9.39.3
   resolution: "@eslint/js@npm:9.39.3"
   checksum: 10/91a1a1822cfeb2eb8a89aae86be5dfabad0b66b0915946516690a8485ddd80b91f43eee346789313fea1acbb7390a4958119ca7dc9a684a5c4014f12fcb3aaf3
@@ -2548,7 +2548,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^20.19.27":
+"@types/node@npm:^20.19.35":
   version: 20.19.35
   resolution: "@types/node@npm:20.19.35"
   dependencies:
@@ -2557,7 +2557,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/eslint-plugin@npm:^8.50.0":
+"@typescript-eslint/eslint-plugin@npm:^8.56.1":
   version: 8.56.1
   resolution: "@typescript-eslint/eslint-plugin@npm:8.56.1"
   dependencies:
@@ -2577,7 +2577,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/parser@npm:^8.50.0":
+"@typescript-eslint/parser@npm:^8.56.1":
   version: 8.56.1
   resolution: "@typescript-eslint/parser@npm:8.56.1"
   dependencies:
@@ -3377,22 +3377,22 @@ __metadata:
     "@aws-sdk/client-ecr": "npm:^3.978.0"
     "@aws-sdk/client-ecr-public": "npm:^3.978.0"
     "@docker/actions-toolkit": "npm:^0.76.0"
-    "@eslint/js": "npm:^9.39.2"
+    "@eslint/js": "npm:^9.39.3"
     "@types/js-yaml": "npm:^4.0.9"
-    "@types/node": "npm:^20.19.27"
-    "@typescript-eslint/eslint-plugin": "npm:^8.50.0"
-    "@typescript-eslint/parser": "npm:^8.50.0"
+    "@types/node": "npm:^20.19.35"
+    "@typescript-eslint/eslint-plugin": "npm:^8.56.1"
+    "@typescript-eslint/parser": "npm:^8.56.1"
     "@vercel/ncc": "npm:^0.38.4"
     "@vitest/coverage-v8": "npm:^4.0.18"
     "@vitest/eslint-plugin": "npm:^1.6.9"
-    eslint: "npm:^9.39.2"
+    eslint: "npm:^9.39.3"
     eslint-config-prettier: "npm:^10.1.8"
-    eslint-plugin-prettier: "npm:^5.5.4"
+    eslint-plugin-prettier: "npm:^5.5.5"
     globals: "npm:^17.3.0"
     http-proxy-agent: "npm:^7.0.2"
     https-proxy-agent: "npm:^7.0.6"
     js-yaml: "npm:^4.1.0"
-    prettier: "npm:^3.7.4"
+    prettier: "npm:^3.8.1"
     typescript: "npm:^5.9.3"
     vitest: "npm:^4.0.18"
   languageName: unknown
@@ -3577,12 +3577,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-prettier@npm:^5.5.4":
-  version: 5.5.4
-  resolution: "eslint-plugin-prettier@npm:5.5.4"
+"eslint-plugin-prettier@npm:^5.5.5":
+  version: 5.5.5
+  resolution: "eslint-plugin-prettier@npm:5.5.5"
   dependencies:
-    prettier-linter-helpers: "npm:^1.0.0"
-    synckit: "npm:^0.11.7"
+    prettier-linter-helpers: "npm:^1.0.1"
+    synckit: "npm:^0.11.12"
   peerDependencies:
     "@types/eslint": ">=8.0.0"
     eslint: ">=8.0.0"
@@ -3593,7 +3593,7 @@ __metadata:
       optional: true
     eslint-config-prettier:
       optional: true
-  checksum: 10/5e39e3b7046d4ba0e1111cc2048630ee9d0aa5d5bb00d6230bef56893fdae37cbe2261babfb26db350cc2ad517c81d283b3f8b04cfee4e5aef7cd4bee72f90de
+  checksum: 10/36c22c2fa2fd7c61ed292af1280e1d8f94dfe1671eacc5a503a249ca4b27fd226dbf6a1820457d611915926946f42729488d2dc7a5c320601e6cf1fad0d28f66
   languageName: node
   linkType: hard
 
@@ -3628,7 +3628,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^9.39.2":
+"eslint@npm:^9.39.3":
   version: 9.39.3
   resolution: "eslint@npm:9.39.3"
   dependencies:
@@ -4971,16 +4971,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier-linter-helpers@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "prettier-linter-helpers@npm:1.0.0"
+"prettier-linter-helpers@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "prettier-linter-helpers@npm:1.0.1"
   dependencies:
     fast-diff: "npm:^1.1.2"
-  checksum: 10/00ce8011cf6430158d27f9c92cfea0a7699405633f7f1d4a45f07e21bf78e99895911cbcdc3853db3a824201a7c745bd49bfea8abd5fb9883e765a90f74f8392
+  checksum: 10/2dc35f5036a35f4c4f5e645887edda1436acb63687a7f12b2383e0a6f3c1f76b8a0a4709fe4d82e19157210feb5984b159bb714d43290022911ab53d606474ec
   languageName: node
   linkType: hard
 
-"prettier@npm:^3.7.4":
+"prettier@npm:^3.8.1":
   version: 3.8.1
   resolution: "prettier@npm:3.8.1"
   bin:
@@ -5498,12 +5498,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"synckit@npm:^0.11.7":
-  version: 0.11.11
-  resolution: "synckit@npm:0.11.11"
+"synckit@npm:^0.11.12":
+  version: 0.11.12
+  resolution: "synckit@npm:0.11.12"
   dependencies:
     "@pkgr/core": "npm:^0.2.9"
-  checksum: 10/6ecd88212b5be80004376b6ea74babcba284566ff59a50d8803afcaa78c165b5d268635c1dd84532ee3f690a979409e1eda225a8a35bed2d135ffdcea06ce7b0
+  checksum: 10/2f51978bfed81aaf0b093f596709a72c49b17909020f42b43c5549f9c0fe18b1fe29f82e41ef771172d729b32e9ce82900a85d2b87fa14d59f886d4df8d7a329
   languageName: node
   linkType: hard
 
