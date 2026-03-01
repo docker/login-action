@@ -16,6 +16,6 @@
     "./__tests__/**/*",
     "./lib/**/*",
     "node_modules",
-    "jest.config.ts"
+    "vitest.config.ts"
   ]
 }

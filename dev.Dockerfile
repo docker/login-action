@@ -76,7 +76,7 @@ ENV RUNNER_TOOL_CACHE=/tmp/github_tool_cache
 RUN --mount=type=bind,target=.,rw \
   --mount=type=cache,target=/src/.yarn/cache \
   --mount=type=cache,target=/src/node_modules \
-  yarn run test --coverage --coverageDirectory=/tmp/coverage
+  yarn run test --coverage --coverage.reportsDirectory=/tmp/coverage
 
 FROM scratch AS test-coverage
 COPY --from=test /tmp/coverage /

@@ -1,4 +1,4 @@
-import {beforeEach, describe, expect, jest, test} from '@jest/globals';
+import {beforeEach, describe, expect, test, vi} from 'vitest';
 import {AuthorizationData} from '@aws-sdk/client-ecr';
 
 import * as aws from '../src/aws';
@@ -65,26 +65,28 @@ describe('getAccountIDs', () => {
   });
 });
 
-const mockEcrGetAuthToken = jest.fn();
-const mockEcrPublicGetAuthToken = jest.fn();
-jest.mock('@aws-sdk/client-ecr', () => {
+const mockEcrGetAuthToken = vi.fn();
+const mockEcrPublicGetAuthToken = vi.fn();
+vi.mock('@aws-sdk/client-ecr', () => {
+  class ECR {
+    getAuthorizationToken = mockEcrGetAuthToken;
+  }
   return {
-    ECR: jest.fn(() => ({
-      getAuthorizationToken: mockEcrGetAuthToken
-    }))
+    ECR
   };
 });
-jest.mock('@aws-sdk/client-ecr-public', () => {
+vi.mock('@aws-sdk/client-ecr-public', () => {
+  class ECRPUBLIC {
+    getAuthorizationToken = mockEcrPublicGetAuthToken;
+  }
   return {
-    ECRPUBLIC: jest.fn(() => ({
-      getAuthorizationToken: mockEcrPublicGetAuthToken
-    }))
+    ECRPUBLIC
   };
 });
 
 describe('getRegistriesData', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     delete process.env.AWS_ACCOUNT_IDS;
   });
   // prettier-ignore

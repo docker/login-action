@@ -1,4 +1,4 @@
-import {expect, jest, test} from '@jest/globals';
+import {expect, test, vi} from 'vitest';
 import * as path from 'path';
 
 import {loginStandard, logout} from '../src/docker';
@@ -10,7 +10,7 @@ process.env['RUNNER_TEMP'] = path.join(__dirname, 'runner');
 test('loginStandard calls exec', async () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  const execSpy = jest.spyOn(Docker, 'getExecOutput').mockImplementation(async () => {
+  const execSpy = vi.spyOn(Docker, 'getExecOutput').mockImplementation(async () => {
     return {
       exitCode: expect.any(Number),
       stdout: expect.any(Function),
@@ -40,7 +40,7 @@ test('loginStandard calls exec', async () => {
 test('logout calls exec', async () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  const execSpy = jest.spyOn(Docker, 'getExecOutput').mockImplementation(async () => {
+  const execSpy = vi.spyOn(Docker, 'getExecOutput').mockImplementation(async () => {
     return {
       exitCode: expect.any(Number),
       stdout: expect.any(Function),
