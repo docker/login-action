@@ -240,8 +240,146 @@ util_endpoints_2.customEndpointFunctions.aws = util_endpoints_1.awsEndpointFunct
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ruleSet = void 0;
 const F = "required", G = "type", H = "fn", I = "argv", J = "ref";
-const a = false, b = true, c = "booleanEquals", d = "stringEquals", e = "sigv4", f = "sts", g = "us-east-1", h = "endpoint", i = "https://sts.{Region}.{PartitionResult#dnsSuffix}", j = "tree", k = "error", l = "getAttr", m = { [F]: false, [G]: "string" }, n = { [F]: true, "default": false, [G]: "boolean" }, o = { [J]: "Endpoint" }, p = { [H]: "isSet", [I]: [{ [J]: "Region" }] }, q = { [J]: "Region" }, r = { [H]: "aws.partition", [I]: [q], "assign": "PartitionResult" }, s = { [J]: "UseFIPS" }, t = { [J]: "UseDualStack" }, u = { "url": "https://sts.amazonaws.com", "properties": { "authSchemes": [{ "name": e, "signingName": f, "signingRegion": g }] }, "headers": {} }, v = {}, w = { "conditions": [{ [H]: d, [I]: [q, "aws-global"] }], [h]: u, [G]: h }, x = { [H]: c, [I]: [s, true] }, y = { [H]: c, [I]: [t, true] }, z = { [H]: l, [I]: [{ [J]: "PartitionResult" }, "supportsFIPS"] }, A = { [J]: "PartitionResult" }, B = { [H]: c, [I]: [true, { [H]: l, [I]: [A, "supportsDualStack"] }] }, C = [{ [H]: "isSet", [I]: [o] }], D = [x], E = [y];
-const _data = { version: "1.0", parameters: { Region: m, UseDualStack: n, UseFIPS: n, Endpoint: m, UseGlobalEndpoint: n }, rules: [{ conditions: [{ [H]: c, [I]: [{ [J]: "UseGlobalEndpoint" }, b] }, { [H]: "not", [I]: C }, p, r, { [H]: c, [I]: [s, a] }, { [H]: c, [I]: [t, a] }], rules: [{ conditions: [{ [H]: d, [I]: [q, "ap-northeast-1"] }], endpoint: u, [G]: h }, { conditions: [{ [H]: d, [I]: [q, "ap-south-1"] }], endpoint: u, [G]: h }, { conditions: [{ [H]: d, [I]: [q, "ap-southeast-1"] }], endpoint: u, [G]: h }, { conditions: [{ [H]: d, [I]: [q, "ap-southeast-2"] }], endpoint: u, [G]: h }, w, { conditions: [{ [H]: d, [I]: [q, "ca-central-1"] }], endpoint: u, [G]: h }, { conditions: [{ [H]: d, [I]: [q, "eu-central-1"] }], endpoint: u, [G]: h }, { conditions: [{ [H]: d, [I]: [q, "eu-north-1"] }], endpoint: u, [G]: h }, { conditions: [{ [H]: d, [I]: [q, "eu-west-1"] }], endpoint: u, [G]: h }, { conditions: [{ [H]: d, [I]: [q, "eu-west-2"] }], endpoint: u, [G]: h }, { conditions: [{ [H]: d, [I]: [q, "eu-west-3"] }], endpoint: u, [G]: h }, { conditions: [{ [H]: d, [I]: [q, "sa-east-1"] }], endpoint: u, [G]: h }, { conditions: [{ [H]: d, [I]: [q, g] }], endpoint: u, [G]: h }, { conditions: [{ [H]: d, [I]: [q, "us-east-2"] }], endpoint: u, [G]: h }, { conditions: [{ [H]: d, [I]: [q, "us-west-1"] }], endpoint: u, [G]: h }, { conditions: [{ [H]: d, [I]: [q, "us-west-2"] }], endpoint: u, [G]: h }, { endpoint: { url: i, properties: { authSchemes: [{ name: e, signingName: f, signingRegion: "{Region}" }] }, headers: v }, [G]: h }], [G]: j }, { conditions: C, rules: [{ conditions: D, error: "Invalid Configuration: FIPS and custom endpoint are not supported", [G]: k }, { conditions: E, error: "Invalid Configuration: Dualstack and custom endpoint are not supported", [G]: k }, { endpoint: { url: o, properties: v, headers: v }, [G]: h }], [G]: j }, { conditions: [p], rules: [{ conditions: [r], rules: [{ conditions: [x, y], rules: [{ conditions: [{ [H]: c, [I]: [b, z] }, B], rules: [{ endpoint: { url: "https://sts-fips.{Region}.{PartitionResult#dualStackDnsSuffix}", properties: v, headers: v }, [G]: h }], [G]: j }, { error: "FIPS and DualStack are enabled, but this partition does not support one or both", [G]: k }], [G]: j }, { conditions: D, rules: [{ conditions: [{ [H]: c, [I]: [z, b] }], rules: [{ conditions: [{ [H]: d, [I]: [{ [H]: l, [I]: [A, "name"] }, "aws-us-gov"] }], endpoint: { url: "https://sts.{Region}.amazonaws.com", properties: v, headers: v }, [G]: h }, { endpoint: { url: "https://sts-fips.{Region}.{PartitionResult#dnsSuffix}", properties: v, headers: v }, [G]: h }], [G]: j }, { error: "FIPS is enabled but this partition does not support FIPS", [G]: k }], [G]: j }, { conditions: E, rules: [{ conditions: [B], rules: [{ endpoint: { url: "https://sts.{Region}.{PartitionResult#dualStackDnsSuffix}", properties: v, headers: v }, [G]: h }], [G]: j }, { error: "DualStack is enabled but this partition does not support DualStack", [G]: k }], [G]: j }, w, { endpoint: { url: i, properties: v, headers: v }, [G]: h }], [G]: j }], [G]: j }, { error: "Invalid Configuration: Missing Region", [G]: k }] };
+const a = false, b = true, c = "booleanEquals", d = "stringEquals", e = "sigv4", f = "sts", g = "us-east-1", h = "endpoint", i = "https://sts.{Region}.{PartitionResult#dnsSuffix}", j = "tree", k = "error", l = "getAttr", m = { [F]: false, [G]: "string" }, n = { [F]: true, default: false, [G]: "boolean" }, o = { [J]: "Endpoint" }, p = { [H]: "isSet", [I]: [{ [J]: "Region" }] }, q = { [J]: "Region" }, r = { [H]: "aws.partition", [I]: [q], assign: "PartitionResult" }, s = { [J]: "UseFIPS" }, t = { [J]: "UseDualStack" }, u = {
+    url: "https://sts.amazonaws.com",
+    properties: { authSchemes: [{ name: e, signingName: f, signingRegion: g }] },
+    headers: {},
+}, v = {}, w = { conditions: [{ [H]: d, [I]: [q, "aws-global"] }], [h]: u, [G]: h }, x = { [H]: c, [I]: [s, true] }, y = { [H]: c, [I]: [t, true] }, z = { [H]: l, [I]: [{ [J]: "PartitionResult" }, "supportsFIPS"] }, A = { [J]: "PartitionResult" }, B = { [H]: c, [I]: [true, { [H]: l, [I]: [A, "supportsDualStack"] }] }, C = [{ [H]: "isSet", [I]: [o] }], D = [x], E = [y];
+const _data = {
+    version: "1.0",
+    parameters: { Region: m, UseDualStack: n, UseFIPS: n, Endpoint: m, UseGlobalEndpoint: n },
+    rules: [
+        {
+            conditions: [
+                { [H]: c, [I]: [{ [J]: "UseGlobalEndpoint" }, b] },
+                { [H]: "not", [I]: C },
+                p,
+                r,
+                { [H]: c, [I]: [s, a] },
+                { [H]: c, [I]: [t, a] },
+            ],
+            rules: [
+                { conditions: [{ [H]: d, [I]: [q, "ap-northeast-1"] }], endpoint: u, [G]: h },
+                { conditions: [{ [H]: d, [I]: [q, "ap-south-1"] }], endpoint: u, [G]: h },
+                { conditions: [{ [H]: d, [I]: [q, "ap-southeast-1"] }], endpoint: u, [G]: h },
+                { conditions: [{ [H]: d, [I]: [q, "ap-southeast-2"] }], endpoint: u, [G]: h },
+                w,
+                { conditions: [{ [H]: d, [I]: [q, "ca-central-1"] }], endpoint: u, [G]: h },
+                { conditions: [{ [H]: d, [I]: [q, "eu-central-1"] }], endpoint: u, [G]: h },
+                { conditions: [{ [H]: d, [I]: [q, "eu-north-1"] }], endpoint: u, [G]: h },
+                { conditions: [{ [H]: d, [I]: [q, "eu-west-1"] }], endpoint: u, [G]: h },
+                { conditions: [{ [H]: d, [I]: [q, "eu-west-2"] }], endpoint: u, [G]: h },
+                { conditions: [{ [H]: d, [I]: [q, "eu-west-3"] }], endpoint: u, [G]: h },
+                { conditions: [{ [H]: d, [I]: [q, "sa-east-1"] }], endpoint: u, [G]: h },
+                { conditions: [{ [H]: d, [I]: [q, g] }], endpoint: u, [G]: h },
+                { conditions: [{ [H]: d, [I]: [q, "us-east-2"] }], endpoint: u, [G]: h },
+                { conditions: [{ [H]: d, [I]: [q, "us-west-1"] }], endpoint: u, [G]: h },
+                { conditions: [{ [H]: d, [I]: [q, "us-west-2"] }], endpoint: u, [G]: h },
+                {
+                    endpoint: {
+                        url: i,
+                        properties: { authSchemes: [{ name: e, signingName: f, signingRegion: "{Region}" }] },
+                        headers: v,
+                    },
+                    [G]: h,
+                },
+            ],
+            [G]: j,
+        },
+        {
+            conditions: C,
+            rules: [
+                { conditions: D, error: "Invalid Configuration: FIPS and custom endpoint are not supported", [G]: k },
+                { conditions: E, error: "Invalid Configuration: Dualstack and custom endpoint are not supported", [G]: k },
+                { endpoint: { url: o, properties: v, headers: v }, [G]: h },
+            ],
+            [G]: j,
+        },
+        {
+            conditions: [p],
+            rules: [
+                {
+                    conditions: [r],
+                    rules: [
+                        {
+                            conditions: [x, y],
+                            rules: [
+                                {
+                                    conditions: [{ [H]: c, [I]: [b, z] }, B],
+                                    rules: [
+                                        {
+                                            endpoint: {
+                                                url: "https://sts-fips.{Region}.{PartitionResult#dualStackDnsSuffix}",
+                                                properties: v,
+                                                headers: v,
+                                            },
+                                            [G]: h,
+                                        },
+                                    ],
+                                    [G]: j,
+                                },
+                                { error: "FIPS and DualStack are enabled, but this partition does not support one or both", [G]: k },
+                            ],
+                            [G]: j,
+                        },
+                        {
+                            conditions: D,
+                            rules: [
+                                {
+                                    conditions: [{ [H]: c, [I]: [z, b] }],
+                                    rules: [
+                                        {
+                                            conditions: [{ [H]: d, [I]: [{ [H]: l, [I]: [A, "name"] }, "aws-us-gov"] }],
+                                            endpoint: { url: "https://sts.{Region}.amazonaws.com", properties: v, headers: v },
+                                            [G]: h,
+                                        },
+                                        {
+                                            endpoint: {
+                                                url: "https://sts-fips.{Region}.{PartitionResult#dnsSuffix}",
+                                                properties: v,
+                                                headers: v,
+                                            },
+                                            [G]: h,
+                                        },
+                                    ],
+                                    [G]: j,
+                                },
+                                { error: "FIPS is enabled but this partition does not support FIPS", [G]: k },
+                            ],
+                            [G]: j,
+                        },
+                        {
+                            conditions: E,
+                            rules: [
+                                {
+                                    conditions: [B],
+                                    rules: [
+                                        {
+                                            endpoint: {
+                                                url: "https://sts.{Region}.{PartitionResult#dualStackDnsSuffix}",
+                                                properties: v,
+                                                headers: v,
+                                            },
+                                            [G]: h,
+                                        },
+                                    ],
+                                    [G]: j,
+                                },
+                                { error: "DualStack is enabled but this partition does not support DualStack", [G]: k },
+                            ],
+                            [G]: j,
+                        },
+                        w,
+                        { endpoint: { url: i, properties: v, headers: v }, [G]: h },
+                    ],
+                    [G]: j,
+                },
+            ],
+            [G]: j,
+        },
+        { error: "Invalid Configuration: Missing Region", [G]: k },
+    ],
+};
 exports.ruleSet = _data;
 
 
@@ -256,287 +394,11 @@ var STSClient = __webpack_require__(3723);
 var smithyClient = __webpack_require__(1411);
 var middlewareEndpoint = __webpack_require__(99);
 var EndpointParameters = __webpack_require__(6811);
-var schema = __webpack_require__(6890);
+var schemas_0 = __webpack_require__(1684);
+var errors = __webpack_require__(1688);
 var client = __webpack_require__(5152);
 var regionConfigResolver = __webpack_require__(6463);
-
-class STSServiceException extends smithyClient.ServiceException {
-    constructor(options) {
-        super(options);
-        Object.setPrototypeOf(this, STSServiceException.prototype);
-    }
-}
-
-class ExpiredTokenException extends STSServiceException {
-    name = "ExpiredTokenException";
-    $fault = "client";
-    constructor(opts) {
-        super({
-            name: "ExpiredTokenException",
-            $fault: "client",
-            ...opts,
-        });
-        Object.setPrototypeOf(this, ExpiredTokenException.prototype);
-    }
-}
-class MalformedPolicyDocumentException extends STSServiceException {
-    name = "MalformedPolicyDocumentException";
-    $fault = "client";
-    constructor(opts) {
-        super({
-            name: "MalformedPolicyDocumentException",
-            $fault: "client",
-            ...opts,
-        });
-        Object.setPrototypeOf(this, MalformedPolicyDocumentException.prototype);
-    }
-}
-class PackedPolicyTooLargeException extends STSServiceException {
-    name = "PackedPolicyTooLargeException";
-    $fault = "client";
-    constructor(opts) {
-        super({
-            name: "PackedPolicyTooLargeException",
-            $fault: "client",
-            ...opts,
-        });
-        Object.setPrototypeOf(this, PackedPolicyTooLargeException.prototype);
-    }
-}
-class RegionDisabledException extends STSServiceException {
-    name = "RegionDisabledException";
-    $fault = "client";
-    constructor(opts) {
-        super({
-            name: "RegionDisabledException",
-            $fault: "client",
-            ...opts,
-        });
-        Object.setPrototypeOf(this, RegionDisabledException.prototype);
-    }
-}
-class IDPRejectedClaimException extends STSServiceException {
-    name = "IDPRejectedClaimException";
-    $fault = "client";
-    constructor(opts) {
-        super({
-            name: "IDPRejectedClaimException",
-            $fault: "client",
-            ...opts,
-        });
-        Object.setPrototypeOf(this, IDPRejectedClaimException.prototype);
-    }
-}
-class InvalidIdentityTokenException extends STSServiceException {
-    name = "InvalidIdentityTokenException";
-    $fault = "client";
-    constructor(opts) {
-        super({
-            name: "InvalidIdentityTokenException",
-            $fault: "client",
-            ...opts,
-        });
-        Object.setPrototypeOf(this, InvalidIdentityTokenException.prototype);
-    }
-}
-class IDPCommunicationErrorException extends STSServiceException {
-    name = "IDPCommunicationErrorException";
-    $fault = "client";
-    constructor(opts) {
-        super({
-            name: "IDPCommunicationErrorException",
-            $fault: "client",
-            ...opts,
-        });
-        Object.setPrototypeOf(this, IDPCommunicationErrorException.prototype);
-    }
-}
-
-const _A = "Arn";
-const _AKI = "AccessKeyId";
-const _AR = "AssumeRole";
-const _ARI = "AssumedRoleId";
-const _ARR = "AssumeRoleRequest";
-const _ARRs = "AssumeRoleResponse";
-const _ARU = "AssumedRoleUser";
-const _ARWWI = "AssumeRoleWithWebIdentity";
-const _ARWWIR = "AssumeRoleWithWebIdentityRequest";
-const _ARWWIRs = "AssumeRoleWithWebIdentityResponse";
-const _Au = "Audience";
-const _C = "Credentials";
-const _CA = "ContextAssertion";
-const _DS = "DurationSeconds";
-const _E = "Expiration";
-const _EI = "ExternalId";
-const _ETE = "ExpiredTokenException";
-const _IDPCEE = "IDPCommunicationErrorException";
-const _IDPRCE = "IDPRejectedClaimException";
-const _IITE = "InvalidIdentityTokenException";
-const _K = "Key";
-const _MPDE = "MalformedPolicyDocumentException";
-const _P = "Policy";
-const _PA = "PolicyArns";
-const _PAr = "ProviderArn";
-const _PC = "ProvidedContexts";
-const _PCLT = "ProvidedContextsListType";
-const _PCr = "ProvidedContext";
-const _PDT = "PolicyDescriptorType";
-const _PI = "ProviderId";
-const _PPS = "PackedPolicySize";
-const _PPTLE = "PackedPolicyTooLargeException";
-const _Pr = "Provider";
-const _RA = "RoleArn";
-const _RDE = "RegionDisabledException";
-const _RSN = "RoleSessionName";
-const _SAK = "SecretAccessKey";
-const _SFWIT = "SubjectFromWebIdentityToken";
-const _SI = "SourceIdentity";
-const _SN = "SerialNumber";
-const _ST = "SessionToken";
-const _T = "Tags";
-const _TC = "TokenCode";
-const _TTK = "TransitiveTagKeys";
-const _Ta = "Tag";
-const _V = "Value";
-const _WIT = "WebIdentityToken";
-const _a = "arn";
-const _aKST = "accessKeySecretType";
-const _aQE = "awsQueryError";
-const _c = "client";
-const _cTT = "clientTokenType";
-const _e = "error";
-const _hE = "httpError";
-const _m = "message";
-const _pDLT = "policyDescriptorListType";
-const _s = "smithy.ts.sdk.synthetic.com.amazonaws.sts";
-const _tLT = "tagListType";
-const n0 = "com.amazonaws.sts";
-var accessKeySecretType = [0, n0, _aKST, 8, 0];
-var clientTokenType = [0, n0, _cTT, 8, 0];
-var AssumedRoleUser$ = [3, n0, _ARU, 0, [_ARI, _A], [0, 0], 2];
-var AssumeRoleRequest$ = [
-    3,
-    n0,
-    _ARR,
-    0,
-    [_RA, _RSN, _PA, _P, _DS, _T, _TTK, _EI, _SN, _TC, _SI, _PC],
-    [0, 0, () => policyDescriptorListType, 0, 1, () => tagListType, 64 | 0, 0, 0, 0, 0, () => ProvidedContextsListType],
-    2,
-];
-var AssumeRoleResponse$ = [
-    3,
-    n0,
-    _ARRs,
-    0,
-    [_C, _ARU, _PPS, _SI],
-    [[() => Credentials$, 0], () => AssumedRoleUser$, 1, 0],
-];
-var AssumeRoleWithWebIdentityRequest$ = [
-    3,
-    n0,
-    _ARWWIR,
-    0,
-    [_RA, _RSN, _WIT, _PI, _PA, _P, _DS],
-    [0, 0, [() => clientTokenType, 0], 0, () => policyDescriptorListType, 0, 1],
-    3,
-];
-var AssumeRoleWithWebIdentityResponse$ = [
-    3,
-    n0,
-    _ARWWIRs,
-    0,
-    [_C, _SFWIT, _ARU, _PPS, _Pr, _Au, _SI],
-    [[() => Credentials$, 0], 0, () => AssumedRoleUser$, 1, 0, 0, 0],
-];
-var Credentials$ = [
-    3,
-    n0,
-    _C,
-    0,
-    [_AKI, _SAK, _ST, _E],
-    [0, [() => accessKeySecretType, 0], 0, 4],
-    4,
-];
-var ExpiredTokenException$ = [
-    -3,
-    n0,
-    _ETE,
-    { [_aQE]: [`ExpiredTokenException`, 400], [_e]: _c, [_hE]: 400 },
-    [_m],
-    [0],
-];
-schema.TypeRegistry.for(n0).registerError(ExpiredTokenException$, ExpiredTokenException);
-var IDPCommunicationErrorException$ = [
-    -3,
-    n0,
-    _IDPCEE,
-    { [_aQE]: [`IDPCommunicationError`, 400], [_e]: _c, [_hE]: 400 },
-    [_m],
-    [0],
-];
-schema.TypeRegistry.for(n0).registerError(IDPCommunicationErrorException$, IDPCommunicationErrorException);
-var IDPRejectedClaimException$ = [
-    -3,
-    n0,
-    _IDPRCE,
-    { [_aQE]: [`IDPRejectedClaim`, 403], [_e]: _c, [_hE]: 403 },
-    [_m],
-    [0],
-];
-schema.TypeRegistry.for(n0).registerError(IDPRejectedClaimException$, IDPRejectedClaimException);
-var InvalidIdentityTokenException$ = [
-    -3,
-    n0,
-    _IITE,
-    { [_aQE]: [`InvalidIdentityToken`, 400], [_e]: _c, [_hE]: 400 },
-    [_m],
-    [0],
-];
-schema.TypeRegistry.for(n0).registerError(InvalidIdentityTokenException$, InvalidIdentityTokenException);
-var MalformedPolicyDocumentException$ = [
-    -3,
-    n0,
-    _MPDE,
-    { [_aQE]: [`MalformedPolicyDocument`, 400], [_e]: _c, [_hE]: 400 },
-    [_m],
-    [0],
-];
-schema.TypeRegistry.for(n0).registerError(MalformedPolicyDocumentException$, MalformedPolicyDocumentException);
-var PackedPolicyTooLargeException$ = [
-    -3,
-    n0,
-    _PPTLE,
-    { [_aQE]: [`PackedPolicyTooLarge`, 400], [_e]: _c, [_hE]: 400 },
-    [_m],
-    [0],
-];
-schema.TypeRegistry.for(n0).registerError(PackedPolicyTooLargeException$, PackedPolicyTooLargeException);
-var PolicyDescriptorType$ = [3, n0, _PDT, 0, [_a], [0]];
-var ProvidedContext$ = [3, n0, _PCr, 0, [_PAr, _CA], [0, 0]];
-var RegionDisabledException$ = [
-    -3,
-    n0,
-    _RDE,
-    { [_aQE]: [`RegionDisabledException`, 403], [_e]: _c, [_hE]: 403 },
-    [_m],
-    [0],
-];
-schema.TypeRegistry.for(n0).registerError(RegionDisabledException$, RegionDisabledException);
-var Tag$ = [3, n0, _Ta, 0, [_K, _V], [0, 0], 2];
-var STSServiceException$ = [-3, _s, "STSServiceException", 0, [], []];
-schema.TypeRegistry.for(_s).registerError(STSServiceException$, STSServiceException);
-var policyDescriptorListType = [1, n0, _pDLT, 0, () => PolicyDescriptorType$];
-var ProvidedContextsListType = [1, n0, _PCLT, 0, () => ProvidedContext$];
-var tagListType = [1, n0, _tLT, 0, () => Tag$];
-var AssumeRole$ = [9, n0, _AR, 0, () => AssumeRoleRequest$, () => AssumeRoleResponse$];
-var AssumeRoleWithWebIdentity$ = [
-    9,
-    n0,
-    _ARWWI,
-    0,
-    () => AssumeRoleWithWebIdentityRequest$,
-    () => AssumeRoleWithWebIdentityResponse$,
-];
+var STSServiceException = __webpack_require__(7171);
 
 class AssumeRoleCommand extends smithyClient.Command
     .classBuilder()
@@ -546,7 +408,7 @@ class AssumeRoleCommand extends smithyClient.Command
 })
     .s("AWSSecurityTokenServiceV20110615", "AssumeRole", {})
     .n("STSClient", "AssumeRoleCommand")
-    .sc(AssumeRole$)
+    .sc(schemas_0.AssumeRole$)
     .build() {
 }
 
@@ -558,7 +420,7 @@ class AssumeRoleWithWebIdentityCommand extends smithyClient.Command
 })
     .s("AWSSecurityTokenServiceV20110615", "AssumeRoleWithWebIdentity", {})
     .n("STSClient", "AssumeRoleWithWebIdentityCommand")
-    .sc(AssumeRoleWithWebIdentity$)
+    .sc(schemas_0.AssumeRoleWithWebIdentity$)
     .build() {
 }
 
@@ -690,49 +552,165 @@ const decorateDefaultCredentialProvider = (provider) => (input) => provider({
     ...input,
 });
 
-Object.defineProperty(exports, "$Command", ({
-    enumerable: true,
-    get: function () { return smithyClient.Command; }
-}));
-exports.AssumeRole$ = AssumeRole$;
+exports.$Command = smithyClient.Command;
+exports.STSServiceException = STSServiceException.STSServiceException;
 exports.AssumeRoleCommand = AssumeRoleCommand;
-exports.AssumeRoleRequest$ = AssumeRoleRequest$;
-exports.AssumeRoleResponse$ = AssumeRoleResponse$;
-exports.AssumeRoleWithWebIdentity$ = AssumeRoleWithWebIdentity$;
 exports.AssumeRoleWithWebIdentityCommand = AssumeRoleWithWebIdentityCommand;
-exports.AssumeRoleWithWebIdentityRequest$ = AssumeRoleWithWebIdentityRequest$;
-exports.AssumeRoleWithWebIdentityResponse$ = AssumeRoleWithWebIdentityResponse$;
-exports.AssumedRoleUser$ = AssumedRoleUser$;
-exports.Credentials$ = Credentials$;
-exports.ExpiredTokenException = ExpiredTokenException;
-exports.ExpiredTokenException$ = ExpiredTokenException$;
-exports.IDPCommunicationErrorException = IDPCommunicationErrorException;
-exports.IDPCommunicationErrorException$ = IDPCommunicationErrorException$;
-exports.IDPRejectedClaimException = IDPRejectedClaimException;
-exports.IDPRejectedClaimException$ = IDPRejectedClaimException$;
-exports.InvalidIdentityTokenException = InvalidIdentityTokenException;
-exports.InvalidIdentityTokenException$ = InvalidIdentityTokenException$;
-exports.MalformedPolicyDocumentException = MalformedPolicyDocumentException;
-exports.MalformedPolicyDocumentException$ = MalformedPolicyDocumentException$;
-exports.PackedPolicyTooLargeException = PackedPolicyTooLargeException;
-exports.PackedPolicyTooLargeException$ = PackedPolicyTooLargeException$;
-exports.PolicyDescriptorType$ = PolicyDescriptorType$;
-exports.ProvidedContext$ = ProvidedContext$;
-exports.RegionDisabledException = RegionDisabledException;
-exports.RegionDisabledException$ = RegionDisabledException$;
 exports.STS = STS;
-exports.STSServiceException = STSServiceException;
-exports.STSServiceException$ = STSServiceException$;
-exports.Tag$ = Tag$;
 exports.decorateDefaultCredentialProvider = decorateDefaultCredentialProvider;
 exports.getDefaultRoleAssumer = getDefaultRoleAssumer;
 exports.getDefaultRoleAssumerWithWebIdentity = getDefaultRoleAssumerWithWebIdentity;
-Object.keys(STSClient).forEach(function (k) {
-    if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) Object.defineProperty(exports, k, {
+Object.prototype.hasOwnProperty.call(STSClient, '__proto__') &&
+    !Object.prototype.hasOwnProperty.call(exports, '__proto__') &&
+    Object.defineProperty(exports, '__proto__', {
         enumerable: true,
-        get: function () { return STSClient[k]; }
+        value: STSClient['__proto__']
     });
+
+Object.keys(STSClient).forEach(function (k) {
+    if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) exports[k] = STSClient[k];
 });
+Object.prototype.hasOwnProperty.call(schemas_0, '__proto__') &&
+    !Object.prototype.hasOwnProperty.call(exports, '__proto__') &&
+    Object.defineProperty(exports, '__proto__', {
+        enumerable: true,
+        value: schemas_0['__proto__']
+    });
+
+Object.keys(schemas_0).forEach(function (k) {
+    if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) exports[k] = schemas_0[k];
+});
+Object.prototype.hasOwnProperty.call(errors, '__proto__') &&
+    !Object.prototype.hasOwnProperty.call(exports, '__proto__') &&
+    Object.defineProperty(exports, '__proto__', {
+        enumerable: true,
+        value: errors['__proto__']
+    });
+
+Object.keys(errors).forEach(function (k) {
+    if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) exports[k] = errors[k];
+});
+
+
+/***/ }),
+
+/***/ 7171:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.STSServiceException = exports.__ServiceException = void 0;
+const smithy_client_1 = __webpack_require__(1411);
+Object.defineProperty(exports, "__ServiceException", ({ enumerable: true, get: function () { return smithy_client_1.ServiceException; } }));
+class STSServiceException extends smithy_client_1.ServiceException {
+    constructor(options) {
+        super(options);
+        Object.setPrototypeOf(this, STSServiceException.prototype);
+    }
+}
+exports.STSServiceException = STSServiceException;
+
+
+/***/ }),
+
+/***/ 1688:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.IDPCommunicationErrorException = exports.InvalidIdentityTokenException = exports.IDPRejectedClaimException = exports.RegionDisabledException = exports.PackedPolicyTooLargeException = exports.MalformedPolicyDocumentException = exports.ExpiredTokenException = void 0;
+const STSServiceException_1 = __webpack_require__(7171);
+class ExpiredTokenException extends STSServiceException_1.STSServiceException {
+    name = "ExpiredTokenException";
+    $fault = "client";
+    constructor(opts) {
+        super({
+            name: "ExpiredTokenException",
+            $fault: "client",
+            ...opts,
+        });
+        Object.setPrototypeOf(this, ExpiredTokenException.prototype);
+    }
+}
+exports.ExpiredTokenException = ExpiredTokenException;
+class MalformedPolicyDocumentException extends STSServiceException_1.STSServiceException {
+    name = "MalformedPolicyDocumentException";
+    $fault = "client";
+    constructor(opts) {
+        super({
+            name: "MalformedPolicyDocumentException",
+            $fault: "client",
+            ...opts,
+        });
+        Object.setPrototypeOf(this, MalformedPolicyDocumentException.prototype);
+    }
+}
+exports.MalformedPolicyDocumentException = MalformedPolicyDocumentException;
+class PackedPolicyTooLargeException extends STSServiceException_1.STSServiceException {
+    name = "PackedPolicyTooLargeException";
+    $fault = "client";
+    constructor(opts) {
+        super({
+            name: "PackedPolicyTooLargeException",
+            $fault: "client",
+            ...opts,
+        });
+        Object.setPrototypeOf(this, PackedPolicyTooLargeException.prototype);
+    }
+}
+exports.PackedPolicyTooLargeException = PackedPolicyTooLargeException;
+class RegionDisabledException extends STSServiceException_1.STSServiceException {
+    name = "RegionDisabledException";
+    $fault = "client";
+    constructor(opts) {
+        super({
+            name: "RegionDisabledException",
+            $fault: "client",
+            ...opts,
+        });
+        Object.setPrototypeOf(this, RegionDisabledException.prototype);
+    }
+}
+exports.RegionDisabledException = RegionDisabledException;
+class IDPRejectedClaimException extends STSServiceException_1.STSServiceException {
+    name = "IDPRejectedClaimException";
+    $fault = "client";
+    constructor(opts) {
+        super({
+            name: "IDPRejectedClaimException",
+            $fault: "client",
+            ...opts,
+        });
+        Object.setPrototypeOf(this, IDPRejectedClaimException.prototype);
+    }
+}
+exports.IDPRejectedClaimException = IDPRejectedClaimException;
+class InvalidIdentityTokenException extends STSServiceException_1.STSServiceException {
+    name = "InvalidIdentityTokenException";
+    $fault = "client";
+    constructor(opts) {
+        super({
+            name: "InvalidIdentityTokenException",
+            $fault: "client",
+            ...opts,
+        });
+        Object.setPrototypeOf(this, InvalidIdentityTokenException.prototype);
+    }
+}
+exports.InvalidIdentityTokenException = InvalidIdentityTokenException;
+class IDPCommunicationErrorException extends STSServiceException_1.STSServiceException {
+    name = "IDPCommunicationErrorException";
+    $fault = "client";
+    constructor(opts) {
+        super({
+            name: "IDPCommunicationErrorException",
+            $fault: "client",
+            ...opts,
+        });
+        Object.setPrototypeOf(this, IDPCommunicationErrorException.prototype);
+    }
+}
+exports.IDPCommunicationErrorException = IDPCommunicationErrorException;
 
 
 /***/ }),
@@ -826,6 +804,7 @@ const util_base64_1 = __webpack_require__(8385);
 const util_utf8_1 = __webpack_require__(1577);
 const httpAuthSchemeProvider_1 = __webpack_require__(7851);
 const endpointResolver_1 = __webpack_require__(9765);
+const schemas_0_1 = __webpack_require__(1684);
 const getRuntimeConfig = (config) => {
     return {
         apiVersion: "2011-06-15",
@@ -851,6 +830,7 @@ const getRuntimeConfig = (config) => {
         protocol: config?.protocol ?? protocols_1.AwsQueryProtocol,
         protocolSettings: config?.protocolSettings ?? {
             defaultNamespace: "com.amazonaws.sts",
+            errorTypeRegistries: schemas_0_1.errorTypeRegistries,
             xmlNamespace: "https://sts.amazonaws.com/doc/2011-06-15/",
             version: "2011-06-15",
             serviceTarget: "AWSSecurityTokenServiceV20110615",
@@ -886,10 +866,212 @@ exports.resolveRuntimeExtensions = resolveRuntimeExtensions;
 
 /***/ }),
 
+/***/ 1684:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AssumeRoleWithWebIdentity$ = exports.AssumeRole$ = exports.Tag$ = exports.ProvidedContext$ = exports.PolicyDescriptorType$ = exports.Credentials$ = exports.AssumeRoleWithWebIdentityResponse$ = exports.AssumeRoleWithWebIdentityRequest$ = exports.AssumeRoleResponse$ = exports.AssumeRoleRequest$ = exports.AssumedRoleUser$ = exports.errorTypeRegistries = exports.RegionDisabledException$ = exports.PackedPolicyTooLargeException$ = exports.MalformedPolicyDocumentException$ = exports.InvalidIdentityTokenException$ = exports.IDPRejectedClaimException$ = exports.IDPCommunicationErrorException$ = exports.ExpiredTokenException$ = exports.STSServiceException$ = void 0;
+const _A = "Arn";
+const _AKI = "AccessKeyId";
+const _AR = "AssumeRole";
+const _ARI = "AssumedRoleId";
+const _ARR = "AssumeRoleRequest";
+const _ARRs = "AssumeRoleResponse";
+const _ARU = "AssumedRoleUser";
+const _ARWWI = "AssumeRoleWithWebIdentity";
+const _ARWWIR = "AssumeRoleWithWebIdentityRequest";
+const _ARWWIRs = "AssumeRoleWithWebIdentityResponse";
+const _Au = "Audience";
+const _C = "Credentials";
+const _CA = "ContextAssertion";
+const _DS = "DurationSeconds";
+const _E = "Expiration";
+const _EI = "ExternalId";
+const _ETE = "ExpiredTokenException";
+const _IDPCEE = "IDPCommunicationErrorException";
+const _IDPRCE = "IDPRejectedClaimException";
+const _IITE = "InvalidIdentityTokenException";
+const _K = "Key";
+const _MPDE = "MalformedPolicyDocumentException";
+const _P = "Policy";
+const _PA = "PolicyArns";
+const _PAr = "ProviderArn";
+const _PC = "ProvidedContexts";
+const _PCLT = "ProvidedContextsListType";
+const _PCr = "ProvidedContext";
+const _PDT = "PolicyDescriptorType";
+const _PI = "ProviderId";
+const _PPS = "PackedPolicySize";
+const _PPTLE = "PackedPolicyTooLargeException";
+const _Pr = "Provider";
+const _RA = "RoleArn";
+const _RDE = "RegionDisabledException";
+const _RSN = "RoleSessionName";
+const _SAK = "SecretAccessKey";
+const _SFWIT = "SubjectFromWebIdentityToken";
+const _SI = "SourceIdentity";
+const _SN = "SerialNumber";
+const _ST = "SessionToken";
+const _T = "Tags";
+const _TC = "TokenCode";
+const _TTK = "TransitiveTagKeys";
+const _Ta = "Tag";
+const _V = "Value";
+const _WIT = "WebIdentityToken";
+const _a = "arn";
+const _aKST = "accessKeySecretType";
+const _aQE = "awsQueryError";
+const _c = "client";
+const _cTT = "clientTokenType";
+const _e = "error";
+const _hE = "httpError";
+const _m = "message";
+const _pDLT = "policyDescriptorListType";
+const _s = "smithy.ts.sdk.synthetic.com.amazonaws.sts";
+const _tLT = "tagListType";
+const n0 = "com.amazonaws.sts";
+const schema_1 = __webpack_require__(6890);
+const errors_1 = __webpack_require__(1688);
+const STSServiceException_1 = __webpack_require__(7171);
+const _s_registry = schema_1.TypeRegistry.for(_s);
+exports.STSServiceException$ = [-3, _s, "STSServiceException", 0, [], []];
+_s_registry.registerError(exports.STSServiceException$, STSServiceException_1.STSServiceException);
+const n0_registry = schema_1.TypeRegistry.for(n0);
+exports.ExpiredTokenException$ = [
+    -3,
+    n0,
+    _ETE,
+    { [_aQE]: [`ExpiredTokenException`, 400], [_e]: _c, [_hE]: 400 },
+    [_m],
+    [0],
+];
+n0_registry.registerError(exports.ExpiredTokenException$, errors_1.ExpiredTokenException);
+exports.IDPCommunicationErrorException$ = [
+    -3,
+    n0,
+    _IDPCEE,
+    { [_aQE]: [`IDPCommunicationError`, 400], [_e]: _c, [_hE]: 400 },
+    [_m],
+    [0],
+];
+n0_registry.registerError(exports.IDPCommunicationErrorException$, errors_1.IDPCommunicationErrorException);
+exports.IDPRejectedClaimException$ = [
+    -3,
+    n0,
+    _IDPRCE,
+    { [_aQE]: [`IDPRejectedClaim`, 403], [_e]: _c, [_hE]: 403 },
+    [_m],
+    [0],
+];
+n0_registry.registerError(exports.IDPRejectedClaimException$, errors_1.IDPRejectedClaimException);
+exports.InvalidIdentityTokenException$ = [
+    -3,
+    n0,
+    _IITE,
+    { [_aQE]: [`InvalidIdentityToken`, 400], [_e]: _c, [_hE]: 400 },
+    [_m],
+    [0],
+];
+n0_registry.registerError(exports.InvalidIdentityTokenException$, errors_1.InvalidIdentityTokenException);
+exports.MalformedPolicyDocumentException$ = [
+    -3,
+    n0,
+    _MPDE,
+    { [_aQE]: [`MalformedPolicyDocument`, 400], [_e]: _c, [_hE]: 400 },
+    [_m],
+    [0],
+];
+n0_registry.registerError(exports.MalformedPolicyDocumentException$, errors_1.MalformedPolicyDocumentException);
+exports.PackedPolicyTooLargeException$ = [
+    -3,
+    n0,
+    _PPTLE,
+    { [_aQE]: [`PackedPolicyTooLarge`, 400], [_e]: _c, [_hE]: 400 },
+    [_m],
+    [0],
+];
+n0_registry.registerError(exports.PackedPolicyTooLargeException$, errors_1.PackedPolicyTooLargeException);
+exports.RegionDisabledException$ = [
+    -3,
+    n0,
+    _RDE,
+    { [_aQE]: [`RegionDisabledException`, 403], [_e]: _c, [_hE]: 403 },
+    [_m],
+    [0],
+];
+n0_registry.registerError(exports.RegionDisabledException$, errors_1.RegionDisabledException);
+exports.errorTypeRegistries = [_s_registry, n0_registry];
+var accessKeySecretType = [0, n0, _aKST, 8, 0];
+var clientTokenType = [0, n0, _cTT, 8, 0];
+exports.AssumedRoleUser$ = [3, n0, _ARU, 0, [_ARI, _A], [0, 0], 2];
+exports.AssumeRoleRequest$ = [
+    3,
+    n0,
+    _ARR,
+    0,
+    [_RA, _RSN, _PA, _P, _DS, _T, _TTK, _EI, _SN, _TC, _SI, _PC],
+    [0, 0, () => policyDescriptorListType, 0, 1, () => tagListType, 64 | 0, 0, 0, 0, 0, () => ProvidedContextsListType],
+    2,
+];
+exports.AssumeRoleResponse$ = [
+    3,
+    n0,
+    _ARRs,
+    0,
+    [_C, _ARU, _PPS, _SI],
+    [[() => exports.Credentials$, 0], () => exports.AssumedRoleUser$, 1, 0],
+];
+exports.AssumeRoleWithWebIdentityRequest$ = [
+    3,
+    n0,
+    _ARWWIR,
+    0,
+    [_RA, _RSN, _WIT, _PI, _PA, _P, _DS],
+    [0, 0, [() => clientTokenType, 0], 0, () => policyDescriptorListType, 0, 1],
+    3,
+];
+exports.AssumeRoleWithWebIdentityResponse$ = [
+    3,
+    n0,
+    _ARWWIRs,
+    0,
+    [_C, _SFWIT, _ARU, _PPS, _Pr, _Au, _SI],
+    [[() => exports.Credentials$, 0], 0, () => exports.AssumedRoleUser$, 1, 0, 0, 0],
+];
+exports.Credentials$ = [
+    3,
+    n0,
+    _C,
+    0,
+    [_AKI, _SAK, _ST, _E],
+    [0, [() => accessKeySecretType, 0], 0, 4],
+    4,
+];
+exports.PolicyDescriptorType$ = [3, n0, _PDT, 0, [_a], [0]];
+exports.ProvidedContext$ = [3, n0, _PCr, 0, [_PAr, _CA], [0, 0]];
+exports.Tag$ = [3, n0, _Ta, 0, [_K, _V], [0, 0], 2];
+var policyDescriptorListType = [1, n0, _pDLT, 0, () => exports.PolicyDescriptorType$];
+var ProvidedContextsListType = [1, n0, _PCLT, 0, () => exports.ProvidedContext$];
+var tagKeyListType = (/* unused pure expression or super */ null && (64 | 0));
+var tagListType = [1, n0, _tLT, 0, () => exports.Tag$];
+exports.AssumeRole$ = [9, n0, _AR, 0, () => exports.AssumeRoleRequest$, () => exports.AssumeRoleResponse$];
+exports.AssumeRoleWithWebIdentity$ = [
+    9,
+    n0,
+    _ARWWI,
+    0,
+    () => exports.AssumeRoleWithWebIdentityRequest$,
+    () => exports.AssumeRoleWithWebIdentityResponse$,
+];
+
+
+/***/ }),
+
 /***/ 9955:
 /***/ ((module) => {
 
-module.exports = /*#__PURE__*/JSON.parse('{"name":"@aws-sdk/nested-clients","version":"3.975.0","description":"Nested clients for AWS SDK packages.","main":"./dist-cjs/index.js","module":"./dist-es/index.js","types":"./dist-types/index.d.ts","scripts":{"build":"yarn lint && concurrently \'yarn:build:types\' \'yarn:build:es\' && yarn build:cjs","build:cjs":"node ../../scripts/compilation/inline nested-clients","build:es":"tsc -p tsconfig.es.json","build:include:deps":"yarn g:turbo run build -F=\\"$npm_package_name\\"","build:types":"tsc -p tsconfig.types.json","build:types:downlevel":"downlevel-dts dist-types dist-types/ts3.4","clean":"premove dist-cjs dist-es dist-types tsconfig.cjs.tsbuildinfo tsconfig.es.tsbuildinfo tsconfig.types.tsbuildinfo","lint":"node ../../scripts/validation/submodules-linter.js --pkg nested-clients","test":"yarn g:vitest run","test:watch":"yarn g:vitest watch"},"engines":{"node":">=20.0.0"},"sideEffects":false,"author":{"name":"AWS SDK for JavaScript Team","url":"https://aws.amazon.com/javascript/"},"license":"Apache-2.0","dependencies":{"@aws-crypto/sha256-browser":"5.2.0","@aws-crypto/sha256-js":"5.2.0","@aws-sdk/core":"^3.973.1","@aws-sdk/middleware-host-header":"^3.972.1","@aws-sdk/middleware-logger":"^3.972.1","@aws-sdk/middleware-recursion-detection":"^3.972.1","@aws-sdk/middleware-user-agent":"^3.972.2","@aws-sdk/region-config-resolver":"^3.972.1","@aws-sdk/types":"^3.973.0","@aws-sdk/util-endpoints":"3.972.0","@aws-sdk/util-user-agent-browser":"^3.972.1","@aws-sdk/util-user-agent-node":"^3.972.1","@smithy/config-resolver":"^4.4.6","@smithy/core":"^3.21.1","@smithy/fetch-http-handler":"^5.3.9","@smithy/hash-node":"^4.2.8","@smithy/invalid-dependency":"^4.2.8","@smithy/middleware-content-length":"^4.2.8","@smithy/middleware-endpoint":"^4.4.11","@smithy/middleware-retry":"^4.4.27","@smithy/middleware-serde":"^4.2.9","@smithy/middleware-stack":"^4.2.8","@smithy/node-config-provider":"^4.3.8","@smithy/node-http-handler":"^4.4.8","@smithy/protocol-http":"^5.3.8","@smithy/smithy-client":"^4.10.12","@smithy/types":"^4.12.0","@smithy/url-parser":"^4.2.8","@smithy/util-base64":"^4.3.0","@smithy/util-body-length-browser":"^4.2.0","@smithy/util-body-length-node":"^4.2.1","@smithy/util-defaults-mode-browser":"^4.3.26","@smithy/util-defaults-mode-node":"^4.2.29","@smithy/util-endpoints":"^3.2.8","@smithy/util-middleware":"^4.2.8","@smithy/util-retry":"^4.2.8","@smithy/util-utf8":"^4.2.0","tslib":"^2.6.2"},"devDependencies":{"concurrently":"7.0.0","downlevel-dts":"0.10.1","premove":"4.0.0","typescript":"~5.8.3"},"typesVersions":{"<4.0":{"dist-types/*":["dist-types/ts3.4/*"]}},"files":["./signin.d.ts","./signin.js","./sso-oidc.d.ts","./sso-oidc.js","./sts.d.ts","./sts.js","dist-*/**"],"browser":{"./dist-es/submodules/signin/runtimeConfig":"./dist-es/submodules/signin/runtimeConfig.browser","./dist-es/submodules/sso-oidc/runtimeConfig":"./dist-es/submodules/sso-oidc/runtimeConfig.browser","./dist-es/submodules/sts/runtimeConfig":"./dist-es/submodules/sts/runtimeConfig.browser"},"react-native":{},"homepage":"https://github.com/aws/aws-sdk-js-v3/tree/main/packages/nested-clients","repository":{"type":"git","url":"https://github.com/aws/aws-sdk-js-v3.git","directory":"packages/nested-clients"},"exports":{"./package.json":"./package.json","./sso-oidc":{"types":"./dist-types/submodules/sso-oidc/index.d.ts","module":"./dist-es/submodules/sso-oidc/index.js","node":"./dist-cjs/submodules/sso-oidc/index.js","import":"./dist-es/submodules/sso-oidc/index.js","require":"./dist-cjs/submodules/sso-oidc/index.js"},"./sts":{"types":"./dist-types/submodules/sts/index.d.ts","module":"./dist-es/submodules/sts/index.js","node":"./dist-cjs/submodules/sts/index.js","import":"./dist-es/submodules/sts/index.js","require":"./dist-cjs/submodules/sts/index.js"},"./signin":{"types":"./dist-types/submodules/signin/index.d.ts","module":"./dist-es/submodules/signin/index.js","node":"./dist-cjs/submodules/signin/index.js","import":"./dist-es/submodules/signin/index.js","require":"./dist-cjs/submodules/signin/index.js"}}}');
+module.exports = /*#__PURE__*/JSON.parse('{"name":"@aws-sdk/nested-clients","version":"3.996.3","description":"Nested clients for AWS SDK packages.","main":"./dist-cjs/index.js","module":"./dist-es/index.js","types":"./dist-types/index.d.ts","scripts":{"build":"yarn lint && concurrently \'yarn:build:types\' \'yarn:build:es\' && yarn build:cjs","build:cjs":"node ../../scripts/compilation/inline nested-clients","build:es":"tsc -p tsconfig.es.json","build:include:deps":"yarn g:turbo run build -F=\\"$npm_package_name\\"","build:types":"tsc -p tsconfig.types.json","build:types:downlevel":"downlevel-dts dist-types dist-types/ts3.4","clean":"premove dist-cjs dist-es dist-types tsconfig.cjs.tsbuildinfo tsconfig.es.tsbuildinfo tsconfig.types.tsbuildinfo","lint":"node ../../scripts/validation/submodules-linter.js --pkg nested-clients","test":"yarn g:vitest run","test:watch":"yarn g:vitest watch"},"engines":{"node":">=20.0.0"},"sideEffects":false,"author":{"name":"AWS SDK for JavaScript Team","url":"https://aws.amazon.com/javascript/"},"license":"Apache-2.0","dependencies":{"@aws-crypto/sha256-browser":"5.2.0","@aws-crypto/sha256-js":"5.2.0","@aws-sdk/core":"^3.973.15","@aws-sdk/middleware-host-header":"^3.972.6","@aws-sdk/middleware-logger":"^3.972.6","@aws-sdk/middleware-recursion-detection":"^3.972.6","@aws-sdk/middleware-user-agent":"^3.972.15","@aws-sdk/region-config-resolver":"^3.972.6","@aws-sdk/types":"^3.973.4","@aws-sdk/util-endpoints":"^3.996.3","@aws-sdk/util-user-agent-browser":"^3.972.6","@aws-sdk/util-user-agent-node":"^3.973.0","@smithy/config-resolver":"^4.4.9","@smithy/core":"^3.23.6","@smithy/fetch-http-handler":"^5.3.11","@smithy/hash-node":"^4.2.10","@smithy/invalid-dependency":"^4.2.10","@smithy/middleware-content-length":"^4.2.10","@smithy/middleware-endpoint":"^4.4.20","@smithy/middleware-retry":"^4.4.37","@smithy/middleware-serde":"^4.2.11","@smithy/middleware-stack":"^4.2.10","@smithy/node-config-provider":"^4.3.10","@smithy/node-http-handler":"^4.4.12","@smithy/protocol-http":"^5.3.10","@smithy/smithy-client":"^4.12.0","@smithy/types":"^4.13.0","@smithy/url-parser":"^4.2.10","@smithy/util-base64":"^4.3.1","@smithy/util-body-length-browser":"^4.2.1","@smithy/util-body-length-node":"^4.2.2","@smithy/util-defaults-mode-browser":"^4.3.36","@smithy/util-defaults-mode-node":"^4.2.39","@smithy/util-endpoints":"^3.3.1","@smithy/util-middleware":"^4.2.10","@smithy/util-retry":"^4.2.10","@smithy/util-utf8":"^4.2.1","tslib":"^2.6.2"},"devDependencies":{"concurrently":"7.0.0","downlevel-dts":"0.10.1","premove":"4.0.0","typescript":"~5.8.3"},"typesVersions":{"<4.0":{"dist-types/*":["dist-types/ts3.4/*"]}},"files":["./cognito-identity.d.ts","./cognito-identity.js","./signin.d.ts","./signin.js","./sso-oidc.d.ts","./sso-oidc.js","./sso.d.ts","./sso.js","./sts.d.ts","./sts.js","dist-*/**"],"browser":{"./dist-es/submodules/signin/runtimeConfig":"./dist-es/submodules/signin/runtimeConfig.browser","./dist-es/submodules/sso-oidc/runtimeConfig":"./dist-es/submodules/sso-oidc/runtimeConfig.browser","./dist-es/submodules/sts/runtimeConfig":"./dist-es/submodules/sts/runtimeConfig.browser"},"react-native":{},"homepage":"https://github.com/aws/aws-sdk-js-v3/tree/main/packages/nested-clients","repository":{"type":"git","url":"https://github.com/aws/aws-sdk-js-v3.git","directory":"packages/nested-clients"},"exports":{"./package.json":"./package.json","./sso-oidc":{"types":"./dist-types/submodules/sso-oidc/index.d.ts","module":"./dist-es/submodules/sso-oidc/index.js","node":"./dist-cjs/submodules/sso-oidc/index.js","import":"./dist-es/submodules/sso-oidc/index.js","require":"./dist-cjs/submodules/sso-oidc/index.js"},"./sts":{"types":"./dist-types/submodules/sts/index.d.ts","module":"./dist-es/submodules/sts/index.js","node":"./dist-cjs/submodules/sts/index.js","import":"./dist-es/submodules/sts/index.js","require":"./dist-cjs/submodules/sts/index.js"},"./signin":{"types":"./dist-types/submodules/signin/index.d.ts","module":"./dist-es/submodules/signin/index.js","node":"./dist-cjs/submodules/signin/index.js","import":"./dist-es/submodules/signin/index.js","require":"./dist-cjs/submodules/signin/index.js"},"./cognito-identity":{"types":"./dist-types/submodules/cognito-identity/index.d.ts","module":"./dist-es/submodules/cognito-identity/index.js","node":"./dist-cjs/submodules/cognito-identity/index.js","import":"./dist-es/submodules/cognito-identity/index.js","require":"./dist-cjs/submodules/cognito-identity/index.js"},"./sso":{"types":"./dist-types/submodules/sso/index.d.ts","module":"./dist-es/submodules/sso/index.js","node":"./dist-cjs/submodules/sso/index.js","import":"./dist-es/submodules/sso/index.js","require":"./dist-cjs/submodules/sso/index.js"}}}');
 
 /***/ })
 
