@@ -2,18 +2,18 @@ export const id = 566;
 export const ids = [566];
 export const modules = {
 
-/***/ 40566:
+/***/ 566:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 var __webpack_unused_export__;
 
 
-var propertyProvider = __webpack_require__(71238);
-var url = __webpack_require__(87016);
-var buffer = __webpack_require__(20181);
-var http = __webpack_require__(58611);
-var nodeConfigProvider = __webpack_require__(55704);
-var urlParser = __webpack_require__(14494);
+var propertyProvider = __webpack_require__(8857);
+var url = __webpack_require__(7016);
+var buffer = __webpack_require__(181);
+var http = __webpack_require__(8611);
+var nodeConfigProvider = __webpack_require__(5704);
+var urlParser = __webpack_require__(4494);
 
 function httpRequest(options) {
     return new Promise((resolve, reject) => {
