@@ -144,7 +144,7 @@ Object.keys(fromWebToken).forEach(function (k) {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.STSClient = exports.__Client = void 0;
-const middleware_host_header_1 = __webpack_require__(52590);
+const middleware_host_header_1 = __webpack_require__(30209);
 const middleware_logger_1 = __webpack_require__(85242);
 const middleware_recursion_detection_1 = __webpack_require__(81568);
 const middleware_user_agent_1 = __webpack_require__(32959);
