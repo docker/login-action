@@ -128,7 +128,7 @@ exports.ruleSet = _data;
 
 
 
-var middlewareHostHeader = __webpack_require__(52590);
+var middlewareHostHeader = __webpack_require__(30209);
 var middlewareLogger = __webpack_require__(85242);
 var middlewareRecursionDetection = __webpack_require__(81568);
 var middlewareUserAgent = __webpack_require__(32959);
