@@ -1,7 +1,6 @@
-"use strict";
-exports.id = 605;
-exports.ids = [605];
-exports.modules = {
+export const id = 605;
+export const ids = [605];
+export const modules = {
 
 /***/ 1509:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
@@ -231,5 +230,5 @@ Object.defineProperty(exports, "fromHttp", ({ enumerable: true, get: function ()
 /***/ })
 
 };
-;
+
 //# sourceMappingURL=605.index.js.map

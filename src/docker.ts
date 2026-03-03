@@ -1,9 +1,9 @@
 import * as core from '@actions/core';
 
-import * as aws from './aws';
-import * as context from './context';
+import {Docker} from '@docker/actions-toolkit/lib/docker/docker.js';
 
-import {Docker} from '@docker/actions-toolkit/lib/docker/docker';
+import * as aws from './aws.js';
+import * as context from './context.js';
 
 export async function login(auth: context.Auth): Promise<void> {
   if (/true/i.test(auth.ecr) || (auth.ecr == 'auto' && aws.isECR(auth.registry))) {

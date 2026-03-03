@@ -1,7 +1,6 @@
-"use strict";
-exports.id = 579;
-exports.ids = [579];
-exports.modules = {
+export const id = 579;
+export const ids = [579];
+export const modules = {
 
 /***/ 56579:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
@@ -267,5 +266,5 @@ exports.EventStreamSerde = EventStreamSerde;
 /***/ })
 
 };
-;
+
 //# sourceMappingURL=579.index.js.map

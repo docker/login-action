@@ -2,8 +2,8 @@ import path from 'path';
 import * as core from '@actions/core';
 import * as yaml from 'js-yaml';
 
-import {Buildx} from '@docker/actions-toolkit/lib/buildx/buildx';
-import {Util} from '@docker/actions-toolkit/lib/util';
+import {Buildx} from '@docker/actions-toolkit/lib/buildx/buildx.js';
+import {Util} from '@docker/actions-toolkit/lib/util.js';
 
 export interface Inputs {
   registry: string;

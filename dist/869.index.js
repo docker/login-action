@@ -1,7 +1,6 @@
-"use strict";
-exports.id = 869;
-exports.ids = [869];
-exports.modules = {
+export const id = 869;
+export const ids = [869];
+export const modules = {
 
 /***/ 75869:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
@@ -528,5 +527,5 @@ exports.fromLoginCredentials = fromLoginCredentials;
 /***/ })
 
 };
-;
+
 //# sourceMappingURL=869.index.js.map

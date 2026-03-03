@@ -1,7 +1,6 @@
-"use strict";
-exports.id = 956;
-exports.ids = [956,136];
-exports.modules = {
+export const id = 956;
+export const ids = [956,136];
+export const modules = {
 
 /***/ 88079:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
@@ -1031,5 +1030,5 @@ module.exports = /*#__PURE__*/JSON.parse('{"name":"@aws-sdk/nested-clients","ver
 /***/ })
 
 };
-;
+
 //# sourceMappingURL=956.index.js.map
