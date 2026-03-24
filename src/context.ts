@@ -42,24 +42,26 @@ export function getAuthList(inputs: Inputs): Array<Auth> {
   }
   let auths: Array<Auth> = [];
   if (!inputs.registryAuth) {
+    const registry = inputs.registry || 'docker.io';
     auths.push({
-      registry: inputs.registry || 'docker.io',
+      registry,
       username: inputs.username,
       password: inputs.password,
       scope: inputs.scope,
       ecr: inputs.ecr || 'auto',
-      configDir: scopeToConfigDir(inputs.registry, inputs.scope)
+      configDir: scopeToConfigDir(registry, inputs.scope)
     });
   } else {
     auths = (yaml.load(inputs.registryAuth) as Array<Auth>).map(auth => {
       core.setSecret(auth.password); // redacted in workflow logs
+      const registry = auth.registry || 'docker.io';
       return {
-        registry: auth.registry || 'docker.io',
+        registry,
         username: auth.username,
         password: auth.password,
         scope: auth.scope,
         ecr: auth.ecr || 'auto',
-        configDir: scopeToConfigDir(auth.registry || 'docker.io', auth.scope)
+        configDir: scopeToConfigDir(registry, auth.scope)
       };
     });
   }

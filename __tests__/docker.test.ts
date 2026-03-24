@@ -1,15 +1,10 @@
 import {expect, test, vi} from 'vitest';
-import * as path from 'path';
 
 import {Docker} from '@docker/actions-toolkit/lib/docker/docker.js';
 
 import {loginStandard, logout} from '../src/docker.js';
 
-process.env['RUNNER_TEMP'] = path.join(__dirname, 'runner');
-
 test('loginStandard calls exec', async () => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   const execSpy = vi.spyOn(Docker, 'getExecOutput').mockImplementation(async () => {
     return {
       exitCode: expect.any(Number),
@@ -38,8 +33,6 @@ test('loginStandard calls exec', async () => {
 });
 
 test('logout calls exec', async () => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   const execSpy = vi.spyOn(Docker, 'getExecOutput').mockImplementation(async () => {
     return {
       exitCode: expect.any(Number),
