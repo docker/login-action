@@ -4,7 +4,7 @@ permissions:
   contents: read
 
 on:
-  pull_request_target:
+  pull_request_target: # zizmor: ignore[dangerous-triggers] safe to use without checkout
     types:
       - opened
       - reopened
