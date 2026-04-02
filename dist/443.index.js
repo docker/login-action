@@ -8,7 +8,7 @@ export const modules = {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.resolveHttpAuthSchemeConfig = exports.defaultSSOOIDCHttpAuthSchemeProvider = exports.defaultSSOOIDCHttpAuthSchemeParametersProvider = void 0;
-const core_1 = __webpack_require__(8704);
+const httpAuthSchemes_1 = __webpack_require__(7523);
 const util_middleware_1 = __webpack_require__(6324);
 const defaultSSOOIDCHttpAuthSchemeParametersProvider = async (config, context, input) => {
     return {
@@ -55,7 +55,7 @@ const defaultSSOOIDCHttpAuthSchemeProvider = (authParameters) => {
 };
 exports.defaultSSOOIDCHttpAuthSchemeProvider = defaultSSOOIDCHttpAuthSchemeProvider;
 const resolveHttpAuthSchemeConfig = (config) => {
-    const config_0 = (0, core_1.resolveAwsSdkSigV4Config)(config);
+    const config_0 = (0, httpAuthSchemes_1.resolveAwsSdkSigV4Config)(config);
     return Object.assign(config_0, {
         authSchemePreference: (0, util_middleware_1.normalizeProvider)(config.authSchemePreference ?? []),
     });
@@ -611,7 +611,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getRuntimeConfig = void 0;
 const tslib_1 = __webpack_require__(1860);
 const package_json_1 = tslib_1.__importDefault(__webpack_require__(9955));
-const core_1 = __webpack_require__(8704);
+const client_1 = __webpack_require__(5152);
+const httpAuthSchemes_1 = __webpack_require__(7523);
 const util_user_agent_node_1 = __webpack_require__(1656);
 const config_resolver_1 = __webpack_require__(9316);
 const hash_node_1 = __webpack_require__(2711);
@@ -628,7 +629,7 @@ const getRuntimeConfig = (config) => {
     const defaultsMode = (0, util_defaults_mode_node_1.resolveDefaultsModeConfig)(config);
     const defaultConfigProvider = () => defaultsMode().then(smithy_client_1.loadConfigsForDefaultMode);
     const clientSharedValues = (0, runtimeConfig_shared_1.getRuntimeConfig)(config);
-    (0, core_1.emitWarningIfUnsupportedVersion)(process.version);
+    (0, client_1.emitWarningIfUnsupportedVersion)(process.version);
     const loaderConfig = {
         profile: config?.profile,
         logger: clientSharedValues.logger,
@@ -638,7 +639,7 @@ const getRuntimeConfig = (config) => {
         ...config,
         runtime: "node",
         defaultsMode,
-        authSchemePreference: config?.authSchemePreference ?? (0, node_config_provider_1.loadConfig)(core_1.NODE_AUTH_SCHEME_PREFERENCE_OPTIONS, loaderConfig),
+        authSchemePreference: config?.authSchemePreference ?? (0, node_config_provider_1.loadConfig)(httpAuthSchemes_1.NODE_AUTH_SCHEME_PREFERENCE_OPTIONS, loaderConfig),
         bodyLengthChecker: config?.bodyLengthChecker ?? util_body_length_node_1.calculateBodyLength,
         defaultUserAgentProvider: config?.defaultUserAgentProvider ??
             (0, util_user_agent_node_1.createDefaultUserAgentProvider)({ serviceId: clientSharedValues.serviceId, clientVersion: package_json_1.default.version }),
@@ -669,9 +670,9 @@ exports.getRuntimeConfig = getRuntimeConfig;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getRuntimeConfig = void 0;
-const core_1 = __webpack_require__(8704);
+const httpAuthSchemes_1 = __webpack_require__(7523);
 const protocols_1 = __webpack_require__(7288);
-const core_2 = __webpack_require__(402);
+const core_1 = __webpack_require__(402);
 const smithy_client_1 = __webpack_require__(1411);
 const url_parser_1 = __webpack_require__(4494);
 const util_base64_1 = __webpack_require__(8385);
@@ -692,12 +693,12 @@ const getRuntimeConfig = (config) => {
             {
                 schemeId: "aws.auth#sigv4",
                 identityProvider: (ipc) => ipc.getIdentityProvider("aws.auth#sigv4"),
-                signer: new core_1.AwsSdkSigV4Signer(),
+                signer: new httpAuthSchemes_1.AwsSdkSigV4Signer(),
             },
             {
                 schemeId: "smithy.api#noAuth",
                 identityProvider: (ipc) => ipc.getIdentityProvider("smithy.api#noAuth") || (async () => ({})),
-                signer: new core_2.NoAuthSigner(),
+                signer: new core_1.NoAuthSigner(),
             },
         ],
         logger: config?.logger ?? new smithy_client_1.NoOpLogger(),

@@ -2,320 +2,6 @@ export const id = 998;
 export const ids = [998];
 export const modules = {
 
-/***/ 7523:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-
-var protocolHttp = __webpack_require__(2356);
-var core = __webpack_require__(402);
-var propertyProvider = __webpack_require__(8857);
-var client = __webpack_require__(5152);
-var signatureV4 = __webpack_require__(5118);
-
-const getDateHeader = (response) => protocolHttp.HttpResponse.isInstance(response) ? response.headers?.date ?? response.headers?.Date : undefined;
-
-const getSkewCorrectedDate = (systemClockOffset) => new Date(Date.now() + systemClockOffset);
-
-const isClockSkewed = (clockTime, systemClockOffset) => Math.abs(getSkewCorrectedDate(systemClockOffset).getTime() - clockTime) >= 300000;
-
-const getUpdatedSystemClockOffset = (clockTime, currentSystemClockOffset) => {
-    const clockTimeInMs = Date.parse(clockTime);
-    if (isClockSkewed(clockTimeInMs, currentSystemClockOffset)) {
-        return clockTimeInMs - Date.now();
-    }
-    return currentSystemClockOffset;
-};
-
-const throwSigningPropertyError = (name, property) => {
-    if (!property) {
-        throw new Error(`Property \`${name}\` is not resolved for AWS SDK SigV4Auth`);
-    }
-    return property;
-};
-const validateSigningProperties = async (signingProperties) => {
-    const context = throwSigningPropertyError("context", signingProperties.context);
-    const config = throwSigningPropertyError("config", signingProperties.config);
-    const authScheme = context.endpointV2?.properties?.authSchemes?.[0];
-    const signerFunction = throwSigningPropertyError("signer", config.signer);
-    const signer = await signerFunction(authScheme);
-    const signingRegion = signingProperties?.signingRegion;
-    const signingRegionSet = signingProperties?.signingRegionSet;
-    const signingName = signingProperties?.signingName;
-    return {
-        config,
-        signer,
-        signingRegion,
-        signingRegionSet,
-        signingName,
-    };
-};
-class AwsSdkSigV4Signer {
-    async sign(httpRequest, identity, signingProperties) {
-        if (!protocolHttp.HttpRequest.isInstance(httpRequest)) {
-            throw new Error("The request is not an instance of `HttpRequest` and cannot be signed");
-        }
-        const validatedProps = await validateSigningProperties(signingProperties);
-        const { config, signer } = validatedProps;
-        let { signingRegion, signingName } = validatedProps;
-        const handlerExecutionContext = signingProperties.context;
-        if (handlerExecutionContext?.authSchemes?.length ?? 0 > 1) {
-            const [first, second] = handlerExecutionContext.authSchemes;
-            if (first?.name === "sigv4a" && second?.name === "sigv4") {
-                signingRegion = second?.signingRegion ?? signingRegion;
-                signingName = second?.signingName ?? signingName;
-            }
-        }
-        const signedRequest = await signer.sign(httpRequest, {
-            signingDate: getSkewCorrectedDate(config.systemClockOffset),
-            signingRegion: signingRegion,
-            signingService: signingName,
-        });
-        return signedRequest;
-    }
-    errorHandler(signingProperties) {
-        return (error) => {
-            const serverTime = error.ServerTime ?? getDateHeader(error.$response);
-            if (serverTime) {
-                const config = throwSigningPropertyError("config", signingProperties.config);
-                const initialSystemClockOffset = config.systemClockOffset;
-                config.systemClockOffset = getUpdatedSystemClockOffset(serverTime, config.systemClockOffset);
-                const clockSkewCorrected = config.systemClockOffset !== initialSystemClockOffset;
-                if (clockSkewCorrected && error.$metadata) {
-                    error.$metadata.clockSkewCorrected = true;
-                }
-            }
-            throw error;
-        };
-    }
-    successHandler(httpResponse, signingProperties) {
-        const dateHeader = getDateHeader(httpResponse);
-        if (dateHeader) {
-            const config = throwSigningPropertyError("config", signingProperties.config);
-            config.systemClockOffset = getUpdatedSystemClockOffset(dateHeader, config.systemClockOffset);
-        }
-    }
-}
-const AWSSDKSigV4Signer = AwsSdkSigV4Signer;
-
-class AwsSdkSigV4ASigner extends AwsSdkSigV4Signer {
-    async sign(httpRequest, identity, signingProperties) {
-        if (!protocolHttp.HttpRequest.isInstance(httpRequest)) {
-            throw new Error("The request is not an instance of `HttpRequest` and cannot be signed");
-        }
-        const { config, signer, signingRegion, signingRegionSet, signingName } = await validateSigningProperties(signingProperties);
-        const configResolvedSigningRegionSet = await config.sigv4aSigningRegionSet?.();
-        const multiRegionOverride = (configResolvedSigningRegionSet ??
-            signingRegionSet ?? [signingRegion]).join(",");
-        const signedRequest = await signer.sign(httpRequest, {
-            signingDate: getSkewCorrectedDate(config.systemClockOffset),
-            signingRegion: multiRegionOverride,
-            signingService: signingName,
-        });
-        return signedRequest;
-    }
-}
-
-const getArrayForCommaSeparatedString = (str) => typeof str === "string" && str.length > 0 ? str.split(",").map((item) => item.trim()) : [];
-
-const getBearerTokenEnvKey = (signingName) => `AWS_BEARER_TOKEN_${signingName.replace(/[\s-]/g, "_").toUpperCase()}`;
-
-const NODE_AUTH_SCHEME_PREFERENCE_ENV_KEY = "AWS_AUTH_SCHEME_PREFERENCE";
-const NODE_AUTH_SCHEME_PREFERENCE_CONFIG_KEY = "auth_scheme_preference";
-const NODE_AUTH_SCHEME_PREFERENCE_OPTIONS = {
-    environmentVariableSelector: (env, options) => {
-        if (options?.signingName) {
-            const bearerTokenKey = getBearerTokenEnvKey(options.signingName);
-            if (bearerTokenKey in env)
-                return ["httpBearerAuth"];
-        }
-        if (!(NODE_AUTH_SCHEME_PREFERENCE_ENV_KEY in env))
-            return undefined;
-        return getArrayForCommaSeparatedString(env[NODE_AUTH_SCHEME_PREFERENCE_ENV_KEY]);
-    },
-    configFileSelector: (profile) => {
-        if (!(NODE_AUTH_SCHEME_PREFERENCE_CONFIG_KEY in profile))
-            return undefined;
-        return getArrayForCommaSeparatedString(profile[NODE_AUTH_SCHEME_PREFERENCE_CONFIG_KEY]);
-    },
-    default: [],
-};
-
-const resolveAwsSdkSigV4AConfig = (config) => {
-    config.sigv4aSigningRegionSet = core.normalizeProvider(config.sigv4aSigningRegionSet);
-    return config;
-};
-const NODE_SIGV4A_CONFIG_OPTIONS = {
-    environmentVariableSelector(env) {
-        if (env.AWS_SIGV4A_SIGNING_REGION_SET) {
-            return env.AWS_SIGV4A_SIGNING_REGION_SET.split(",").map((_) => _.trim());
-        }
-        throw new propertyProvider.ProviderError("AWS_SIGV4A_SIGNING_REGION_SET not set in env.", {
-            tryNextLink: true,
-        });
-    },
-    configFileSelector(profile) {
-        if (profile.sigv4a_signing_region_set) {
-            return (profile.sigv4a_signing_region_set ?? "").split(",").map((_) => _.trim());
-        }
-        throw new propertyProvider.ProviderError("sigv4a_signing_region_set not set in profile.", {
-            tryNextLink: true,
-        });
-    },
-    default: undefined,
-};
-
-const resolveAwsSdkSigV4Config = (config) => {
-    let inputCredentials = config.credentials;
-    let isUserSupplied = !!config.credentials;
-    let resolvedCredentials = undefined;
-    Object.defineProperty(config, "credentials", {
-        set(credentials) {
-            if (credentials && credentials !== inputCredentials && credentials !== resolvedCredentials) {
-                isUserSupplied = true;
-            }
-            inputCredentials = credentials;
-            const memoizedProvider = normalizeCredentialProvider(config, {
-                credentials: inputCredentials,
-                credentialDefaultProvider: config.credentialDefaultProvider,
-            });
-            const boundProvider = bindCallerConfig(config, memoizedProvider);
-            if (isUserSupplied && !boundProvider.attributed) {
-                const isCredentialObject = typeof inputCredentials === "object" && inputCredentials !== null;
-                resolvedCredentials = async (options) => {
-                    const creds = await boundProvider(options);
-                    const attributedCreds = creds;
-                    if (isCredentialObject && (!attributedCreds.$source || Object.keys(attributedCreds.$source).length === 0)) {
-                        return client.setCredentialFeature(attributedCreds, "CREDENTIALS_CODE", "e");
-                    }
-                    return attributedCreds;
-                };
-                resolvedCredentials.memoized = boundProvider.memoized;
-                resolvedCredentials.configBound = boundProvider.configBound;
-                resolvedCredentials.attributed = true;
-            }
-            else {
-                resolvedCredentials = boundProvider;
-            }
-        },
-        get() {
-            return resolvedCredentials;
-        },
-        enumerable: true,
-        configurable: true,
-    });
-    config.credentials = inputCredentials;
-    const { signingEscapePath = true, systemClockOffset = config.systemClockOffset || 0, sha256, } = config;
-    let signer;
-    if (config.signer) {
-        signer = core.normalizeProvider(config.signer);
-    }
-    else if (config.regionInfoProvider) {
-        signer = () => core.normalizeProvider(config.region)()
-            .then(async (region) => [
-            (await config.regionInfoProvider(region, {
-                useFipsEndpoint: await config.useFipsEndpoint(),
-                useDualstackEndpoint: await config.useDualstackEndpoint(),
-            })) || {},
-            region,
-        ])
-            .then(([regionInfo, region]) => {
-            const { signingRegion, signingService } = regionInfo;
-            config.signingRegion = config.signingRegion || signingRegion || region;
-            config.signingName = config.signingName || signingService || config.serviceId;
-            const params = {
-                ...config,
-                credentials: config.credentials,
-                region: config.signingRegion,
-                service: config.signingName,
-                sha256,
-                uriEscapePath: signingEscapePath,
-            };
-            const SignerCtor = config.signerConstructor || signatureV4.SignatureV4;
-            return new SignerCtor(params);
-        });
-    }
-    else {
-        signer = async (authScheme) => {
-            authScheme = Object.assign({}, {
-                name: "sigv4",
-                signingName: config.signingName || config.defaultSigningName,
-                signingRegion: await core.normalizeProvider(config.region)(),
-                properties: {},
-            }, authScheme);
-            const signingRegion = authScheme.signingRegion;
-            const signingService = authScheme.signingName;
-            config.signingRegion = config.signingRegion || signingRegion;
-            config.signingName = config.signingName || signingService || config.serviceId;
-            const params = {
-                ...config,
-                credentials: config.credentials,
-                region: config.signingRegion,
-                service: config.signingName,
-                sha256,
-                uriEscapePath: signingEscapePath,
-            };
-            const SignerCtor = config.signerConstructor || signatureV4.SignatureV4;
-            return new SignerCtor(params);
-        };
-    }
-    const resolvedConfig = Object.assign(config, {
-        systemClockOffset,
-        signingEscapePath,
-        signer,
-    });
-    return resolvedConfig;
-};
-const resolveAWSSDKSigV4Config = resolveAwsSdkSigV4Config;
-function normalizeCredentialProvider(config, { credentials, credentialDefaultProvider, }) {
-    let credentialsProvider;
-    if (credentials) {
-        if (!credentials?.memoized) {
-            credentialsProvider = core.memoizeIdentityProvider(credentials, core.isIdentityExpired, core.doesIdentityRequireRefresh);
-        }
-        else {
-            credentialsProvider = credentials;
-        }
-    }
-    else {
-        if (credentialDefaultProvider) {
-            credentialsProvider = core.normalizeProvider(credentialDefaultProvider(Object.assign({}, config, {
-                parentClientConfig: config,
-            })));
-        }
-        else {
-            credentialsProvider = async () => {
-                throw new Error("@aws-sdk/core::resolveAwsSdkSigV4Config - `credentials` not provided and no credentialDefaultProvider was configured.");
-            };
-        }
-    }
-    credentialsProvider.memoized = true;
-    return credentialsProvider;
-}
-function bindCallerConfig(config, credentialsProvider) {
-    if (credentialsProvider.configBound) {
-        return credentialsProvider;
-    }
-    const fn = async (options) => credentialsProvider({ ...options, callerClientConfig: config });
-    fn.memoized = credentialsProvider.memoized;
-    fn.configBound = true;
-    return fn;
-}
-
-exports.AWSSDKSigV4Signer = AWSSDKSigV4Signer;
-exports.AwsSdkSigV4ASigner = AwsSdkSigV4ASigner;
-exports.AwsSdkSigV4Signer = AwsSdkSigV4Signer;
-exports.NODE_AUTH_SCHEME_PREFERENCE_OPTIONS = NODE_AUTH_SCHEME_PREFERENCE_OPTIONS;
-exports.NODE_SIGV4A_CONFIG_OPTIONS = NODE_SIGV4A_CONFIG_OPTIONS;
-exports.getBearerTokenEnvKey = getBearerTokenEnvKey;
-exports.resolveAWSSDKSigV4Config = resolveAWSSDKSigV4Config;
-exports.resolveAwsSdkSigV4AConfig = resolveAwsSdkSigV4AConfig;
-exports.resolveAwsSdkSigV4Config = resolveAwsSdkSigV4Config;
-exports.validateSigningProperties = validateSigningProperties;
-
-
-/***/ }),
-
 /***/ 998:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
@@ -537,7 +223,7 @@ exports.SSOClient = sso.SSOClient;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.resolveHttpAuthSchemeConfig = exports.defaultSSOHttpAuthSchemeProvider = exports.defaultSSOHttpAuthSchemeParametersProvider = void 0;
-const core_1 = __webpack_require__(8704);
+const httpAuthSchemes_1 = __webpack_require__(7523);
 const util_middleware_1 = __webpack_require__(6324);
 const defaultSSOHttpAuthSchemeParametersProvider = async (config, context, input) => {
     return {
@@ -584,7 +270,7 @@ const defaultSSOHttpAuthSchemeProvider = (authParameters) => {
 };
 exports.defaultSSOHttpAuthSchemeProvider = defaultSSOHttpAuthSchemeProvider;
 const resolveHttpAuthSchemeConfig = (config) => {
-    const config_0 = (0, core_1.resolveAwsSdkSigV4Config)(config);
+    const config_0 = (0, httpAuthSchemes_1.resolveAwsSdkSigV4Config)(config);
     return Object.assign(config_0, {
         authSchemePreference: (0, util_middleware_1.normalizeProvider)(config.authSchemePreference ?? []),
     });
@@ -989,7 +675,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getRuntimeConfig = void 0;
 const tslib_1 = __webpack_require__(1860);
 const package_json_1 = tslib_1.__importDefault(__webpack_require__(9955));
-const core_1 = __webpack_require__(8704);
+const client_1 = __webpack_require__(5152);
+const httpAuthSchemes_1 = __webpack_require__(7523);
 const util_user_agent_node_1 = __webpack_require__(1656);
 const config_resolver_1 = __webpack_require__(9316);
 const hash_node_1 = __webpack_require__(2711);
@@ -1006,7 +693,7 @@ const getRuntimeConfig = (config) => {
     const defaultsMode = (0, util_defaults_mode_node_1.resolveDefaultsModeConfig)(config);
     const defaultConfigProvider = () => defaultsMode().then(smithy_client_1.loadConfigsForDefaultMode);
     const clientSharedValues = (0, runtimeConfig_shared_1.getRuntimeConfig)(config);
-    (0, core_1.emitWarningIfUnsupportedVersion)(process.version);
+    (0, client_1.emitWarningIfUnsupportedVersion)(process.version);
     const loaderConfig = {
         profile: config?.profile,
         logger: clientSharedValues.logger,
@@ -1016,7 +703,7 @@ const getRuntimeConfig = (config) => {
         ...config,
         runtime: "node",
         defaultsMode,
-        authSchemePreference: config?.authSchemePreference ?? (0, node_config_provider_1.loadConfig)(core_1.NODE_AUTH_SCHEME_PREFERENCE_OPTIONS, loaderConfig),
+        authSchemePreference: config?.authSchemePreference ?? (0, node_config_provider_1.loadConfig)(httpAuthSchemes_1.NODE_AUTH_SCHEME_PREFERENCE_OPTIONS, loaderConfig),
         bodyLengthChecker: config?.bodyLengthChecker ?? util_body_length_node_1.calculateBodyLength,
         defaultUserAgentProvider: config?.defaultUserAgentProvider ??
             (0, util_user_agent_node_1.createDefaultUserAgentProvider)({ serviceId: clientSharedValues.serviceId, clientVersion: package_json_1.default.version }),
@@ -1047,9 +734,9 @@ exports.getRuntimeConfig = getRuntimeConfig;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getRuntimeConfig = void 0;
-const core_1 = __webpack_require__(8704);
+const httpAuthSchemes_1 = __webpack_require__(7523);
 const protocols_1 = __webpack_require__(7288);
-const core_2 = __webpack_require__(402);
+const core_1 = __webpack_require__(402);
 const smithy_client_1 = __webpack_require__(1411);
 const url_parser_1 = __webpack_require__(4494);
 const util_base64_1 = __webpack_require__(8385);
@@ -1070,12 +757,12 @@ const getRuntimeConfig = (config) => {
             {
                 schemeId: "aws.auth#sigv4",
                 identityProvider: (ipc) => ipc.getIdentityProvider("aws.auth#sigv4"),
-                signer: new core_1.AwsSdkSigV4Signer(),
+                signer: new httpAuthSchemes_1.AwsSdkSigV4Signer(),
             },
             {
                 schemeId: "smithy.api#noAuth",
                 identityProvider: (ipc) => ipc.getIdentityProvider("smithy.api#noAuth") || (async () => ({})),
-                signer: new core_2.NoAuthSigner(),
+                signer: new core_1.NoAuthSigner(),
             },
         ],
         logger: config?.logger ?? new smithy_client_1.NoOpLogger(),
@@ -1361,7 +1048,7 @@ exports.nodeProvider = nodeProvider;
 /***/ 9955:
 /***/ ((module) => {
 
-module.exports = /*#__PURE__*/JSON.parse('{"name":"@aws-sdk/nested-clients","version":"3.996.3","description":"Nested clients for AWS SDK packages.","main":"./dist-cjs/index.js","module":"./dist-es/index.js","types":"./dist-types/index.d.ts","scripts":{"build":"yarn lint && concurrently \'yarn:build:types\' \'yarn:build:es\' && yarn build:cjs","build:cjs":"node ../../scripts/compilation/inline nested-clients","build:es":"tsc -p tsconfig.es.json","build:include:deps":"yarn g:turbo run build -F=\\"$npm_package_name\\"","build:types":"tsc -p tsconfig.types.json","build:types:downlevel":"downlevel-dts dist-types dist-types/ts3.4","clean":"premove dist-cjs dist-es dist-types tsconfig.cjs.tsbuildinfo tsconfig.es.tsbuildinfo tsconfig.types.tsbuildinfo","lint":"node ../../scripts/validation/submodules-linter.js --pkg nested-clients","test":"yarn g:vitest run","test:watch":"yarn g:vitest watch"},"engines":{"node":">=20.0.0"},"sideEffects":false,"author":{"name":"AWS SDK for JavaScript Team","url":"https://aws.amazon.com/javascript/"},"license":"Apache-2.0","dependencies":{"@aws-crypto/sha256-browser":"5.2.0","@aws-crypto/sha256-js":"5.2.0","@aws-sdk/core":"^3.973.15","@aws-sdk/middleware-host-header":"^3.972.6","@aws-sdk/middleware-logger":"^3.972.6","@aws-sdk/middleware-recursion-detection":"^3.972.6","@aws-sdk/middleware-user-agent":"^3.972.15","@aws-sdk/region-config-resolver":"^3.972.6","@aws-sdk/types":"^3.973.4","@aws-sdk/util-endpoints":"^3.996.3","@aws-sdk/util-user-agent-browser":"^3.972.6","@aws-sdk/util-user-agent-node":"^3.973.0","@smithy/config-resolver":"^4.4.9","@smithy/core":"^3.23.6","@smithy/fetch-http-handler":"^5.3.11","@smithy/hash-node":"^4.2.10","@smithy/invalid-dependency":"^4.2.10","@smithy/middleware-content-length":"^4.2.10","@smithy/middleware-endpoint":"^4.4.20","@smithy/middleware-retry":"^4.4.37","@smithy/middleware-serde":"^4.2.11","@smithy/middleware-stack":"^4.2.10","@smithy/node-config-provider":"^4.3.10","@smithy/node-http-handler":"^4.4.12","@smithy/protocol-http":"^5.3.10","@smithy/smithy-client":"^4.12.0","@smithy/types":"^4.13.0","@smithy/url-parser":"^4.2.10","@smithy/util-base64":"^4.3.1","@smithy/util-body-length-browser":"^4.2.1","@smithy/util-body-length-node":"^4.2.2","@smithy/util-defaults-mode-browser":"^4.3.36","@smithy/util-defaults-mode-node":"^4.2.39","@smithy/util-endpoints":"^3.3.1","@smithy/util-middleware":"^4.2.10","@smithy/util-retry":"^4.2.10","@smithy/util-utf8":"^4.2.1","tslib":"^2.6.2"},"devDependencies":{"concurrently":"7.0.0","downlevel-dts":"0.10.1","premove":"4.0.0","typescript":"~5.8.3"},"typesVersions":{"<4.0":{"dist-types/*":["dist-types/ts3.4/*"]}},"files":["./cognito-identity.d.ts","./cognito-identity.js","./signin.d.ts","./signin.js","./sso-oidc.d.ts","./sso-oidc.js","./sso.d.ts","./sso.js","./sts.d.ts","./sts.js","dist-*/**"],"browser":{"./dist-es/submodules/signin/runtimeConfig":"./dist-es/submodules/signin/runtimeConfig.browser","./dist-es/submodules/sso-oidc/runtimeConfig":"./dist-es/submodules/sso-oidc/runtimeConfig.browser","./dist-es/submodules/sts/runtimeConfig":"./dist-es/submodules/sts/runtimeConfig.browser"},"react-native":{},"homepage":"https://github.com/aws/aws-sdk-js-v3/tree/main/packages/nested-clients","repository":{"type":"git","url":"https://github.com/aws/aws-sdk-js-v3.git","directory":"packages/nested-clients"},"exports":{"./package.json":"./package.json","./sso-oidc":{"types":"./dist-types/submodules/sso-oidc/index.d.ts","module":"./dist-es/submodules/sso-oidc/index.js","node":"./dist-cjs/submodules/sso-oidc/index.js","import":"./dist-es/submodules/sso-oidc/index.js","require":"./dist-cjs/submodules/sso-oidc/index.js"},"./sts":{"types":"./dist-types/submodules/sts/index.d.ts","module":"./dist-es/submodules/sts/index.js","node":"./dist-cjs/submodules/sts/index.js","import":"./dist-es/submodules/sts/index.js","require":"./dist-cjs/submodules/sts/index.js"},"./signin":{"types":"./dist-types/submodules/signin/index.d.ts","module":"./dist-es/submodules/signin/index.js","node":"./dist-cjs/submodules/signin/index.js","import":"./dist-es/submodules/signin/index.js","require":"./dist-cjs/submodules/signin/index.js"},"./cognito-identity":{"types":"./dist-types/submodules/cognito-identity/index.d.ts","module":"./dist-es/submodules/cognito-identity/index.js","node":"./dist-cjs/submodules/cognito-identity/index.js","import":"./dist-es/submodules/cognito-identity/index.js","require":"./dist-cjs/submodules/cognito-identity/index.js"},"./sso":{"types":"./dist-types/submodules/sso/index.d.ts","module":"./dist-es/submodules/sso/index.js","node":"./dist-cjs/submodules/sso/index.js","import":"./dist-es/submodules/sso/index.js","require":"./dist-cjs/submodules/sso/index.js"}}}');
+module.exports = /*#__PURE__*/JSON.parse('{"name":"@aws-sdk/nested-clients","version":"3.996.18","description":"Nested clients for AWS SDK packages.","main":"./dist-cjs/index.js","module":"./dist-es/index.js","types":"./dist-types/index.d.ts","scripts":{"build":"yarn lint && concurrently \'yarn:build:types\' \'yarn:build:es\' && yarn build:cjs","build:cjs":"node ../../scripts/compilation/inline nested-clients","build:es":"tsc -p tsconfig.es.json","build:include:deps":"yarn g:turbo run build -F=\\"$npm_package_name\\"","build:types":"tsc -p tsconfig.types.json","build:types:downlevel":"downlevel-dts dist-types dist-types/ts3.4","clean":"premove dist-cjs dist-es dist-types tsconfig.cjs.tsbuildinfo tsconfig.es.tsbuildinfo tsconfig.types.tsbuildinfo","lint":"node ../../scripts/validation/submodules-linter.js --pkg nested-clients","test":"yarn g:vitest run","test:watch":"yarn g:vitest watch"},"engines":{"node":">=20.0.0"},"sideEffects":false,"author":{"name":"AWS SDK for JavaScript Team","url":"https://aws.amazon.com/javascript/"},"license":"Apache-2.0","dependencies":{"@aws-crypto/sha256-browser":"5.2.0","@aws-crypto/sha256-js":"5.2.0","@aws-sdk/core":"^3.973.26","@aws-sdk/middleware-host-header":"^3.972.8","@aws-sdk/middleware-logger":"^3.972.8","@aws-sdk/middleware-recursion-detection":"^3.972.9","@aws-sdk/middleware-user-agent":"^3.972.28","@aws-sdk/region-config-resolver":"^3.972.10","@aws-sdk/types":"^3.973.6","@aws-sdk/util-endpoints":"^3.996.5","@aws-sdk/util-user-agent-browser":"^3.972.8","@aws-sdk/util-user-agent-node":"^3.973.14","@smithy/config-resolver":"^4.4.13","@smithy/core":"^3.23.13","@smithy/fetch-http-handler":"^5.3.15","@smithy/hash-node":"^4.2.12","@smithy/invalid-dependency":"^4.2.12","@smithy/middleware-content-length":"^4.2.12","@smithy/middleware-endpoint":"^4.4.28","@smithy/middleware-retry":"^4.4.46","@smithy/middleware-serde":"^4.2.16","@smithy/middleware-stack":"^4.2.12","@smithy/node-config-provider":"^4.3.12","@smithy/node-http-handler":"^4.5.1","@smithy/protocol-http":"^5.3.12","@smithy/smithy-client":"^4.12.8","@smithy/types":"^4.13.1","@smithy/url-parser":"^4.2.12","@smithy/util-base64":"^4.3.2","@smithy/util-body-length-browser":"^4.2.2","@smithy/util-body-length-node":"^4.2.3","@smithy/util-defaults-mode-browser":"^4.3.44","@smithy/util-defaults-mode-node":"^4.2.48","@smithy/util-endpoints":"^3.3.3","@smithy/util-middleware":"^4.2.12","@smithy/util-retry":"^4.2.13","@smithy/util-utf8":"^4.2.2","tslib":"^2.6.2"},"devDependencies":{"concurrently":"7.0.0","downlevel-dts":"0.10.1","premove":"4.0.0","typescript":"~5.8.3"},"typesVersions":{"<4.5":{"dist-types/*":["dist-types/ts3.4/*"]}},"files":["./cognito-identity.d.ts","./cognito-identity.js","./signin.d.ts","./signin.js","./sso-oidc.d.ts","./sso-oidc.js","./sso.d.ts","./sso.js","./sts.d.ts","./sts.js","dist-*/**"],"browser":{"./dist-es/submodules/cognito-identity/runtimeConfig":"./dist-es/submodules/cognito-identity/runtimeConfig.browser","./dist-es/submodules/signin/runtimeConfig":"./dist-es/submodules/signin/runtimeConfig.browser","./dist-es/submodules/sso-oidc/runtimeConfig":"./dist-es/submodules/sso-oidc/runtimeConfig.browser","./dist-es/submodules/sso/runtimeConfig":"./dist-es/submodules/sso/runtimeConfig.browser","./dist-es/submodules/sts/runtimeConfig":"./dist-es/submodules/sts/runtimeConfig.browser"},"react-native":{},"homepage":"https://github.com/aws/aws-sdk-js-v3/tree/main/packages/nested-clients","repository":{"type":"git","url":"https://github.com/aws/aws-sdk-js-v3.git","directory":"packages/nested-clients"},"exports":{"./package.json":"./package.json","./sso-oidc":{"types":"./dist-types/submodules/sso-oidc/index.d.ts","module":"./dist-es/submodules/sso-oidc/index.js","node":"./dist-cjs/submodules/sso-oidc/index.js","import":"./dist-es/submodules/sso-oidc/index.js","require":"./dist-cjs/submodules/sso-oidc/index.js"},"./sts":{"types":"./dist-types/submodules/sts/index.d.ts","module":"./dist-es/submodules/sts/index.js","node":"./dist-cjs/submodules/sts/index.js","import":"./dist-es/submodules/sts/index.js","require":"./dist-cjs/submodules/sts/index.js"},"./signin":{"types":"./dist-types/submodules/signin/index.d.ts","module":"./dist-es/submodules/signin/index.js","node":"./dist-cjs/submodules/signin/index.js","import":"./dist-es/submodules/signin/index.js","require":"./dist-cjs/submodules/signin/index.js"},"./cognito-identity":{"types":"./dist-types/submodules/cognito-identity/index.d.ts","module":"./dist-es/submodules/cognito-identity/index.js","node":"./dist-cjs/submodules/cognito-identity/index.js","import":"./dist-es/submodules/cognito-identity/index.js","require":"./dist-cjs/submodules/cognito-identity/index.js"},"./sso":{"types":"./dist-types/submodules/sso/index.d.ts","module":"./dist-es/submodules/sso/index.js","node":"./dist-cjs/submodules/sso/index.js","import":"./dist-es/submodules/sso/index.js","require":"./dist-cjs/submodules/sso/index.js"}}}');
 
 /***/ })
 
