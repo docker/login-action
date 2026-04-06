@@ -2643,10 +2643,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"agent-base@npm:8.0.0":
-  version: 8.0.0
-  resolution: "agent-base@npm:8.0.0"
-  checksum: 10/a660ae60d389c4ce0f5a178efd5e6ebeefeddf0f6defbb105c638056ec0ebd3828d00d029cf5b26e3ce52d09c393735bf9c187ed1000a0be2c6cf5d95ac15bff
+"agent-base@npm:9.0.0":
+  version: 9.0.0
+  resolution: "agent-base@npm:9.0.0"
+  checksum: 10/3a61414cd10dbb17fa8dae35124ffaa55fbb00f495004b2e7a8f4eca3a2b6ed9879474d4e2ebc27ee2f4207265652341525b4154e85c4d479be4854acd786bfb
   languageName: node
   linkType: hard
 
@@ -3170,8 +3170,8 @@ __metadata:
     eslint-config-prettier: "npm:^10.1.8"
     eslint-plugin-prettier: "npm:^5.5.5"
     globals: "npm:^17.3.0"
-    http-proxy-agent: "npm:^8.0.0"
-    https-proxy-agent: "npm:^8.0.0"
+    http-proxy-agent: "npm:^9.0.0"
+    https-proxy-agent: "npm:^9.0.0"
     js-yaml: "npm:^4.1.1"
     prettier: "npm:^3.8.1"
     typescript: "npm:^5.9.3"
@@ -3846,13 +3846,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"http-proxy-agent@npm:^8.0.0":
-  version: 8.0.0
-  resolution: "http-proxy-agent@npm:8.0.0"
+"http-proxy-agent@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "http-proxy-agent@npm:9.0.0"
   dependencies:
-    agent-base: "npm:8.0.0"
+    agent-base: "npm:9.0.0"
     debug: "npm:^4.3.4"
-  checksum: 10/ad68856d85c58b654cbe238dc00dde177b5085271e2ff174be65c5b58f6f4e782199683771e8c6b697127620da5dda6643008fd508627414950261a482416347
+  checksum: 10/8cf23a49ab274b2a5199011e5a96268d75dd6e4031cf72b723182c41b47d876c507c2fa125451743b87cd9f826cf60f5260dcc5e7db58f9dcc38823c9c07e625
   languageName: node
   linkType: hard
 
@@ -3876,13 +3876,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"https-proxy-agent@npm:^8.0.0":
-  version: 8.0.0
-  resolution: "https-proxy-agent@npm:8.0.0"
+"https-proxy-agent@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "https-proxy-agent@npm:9.0.0"
   dependencies:
-    agent-base: "npm:8.0.0"
+    agent-base: "npm:9.0.0"
     debug: "npm:^4.3.4"
-  checksum: 10/0de830cb33a47d521783479ef6d1ff256c7bfcee7109bbda279c66bb1ba220ef025a2f25b73e187d9cbf5691a2dd9336a779b389f9fdd29ad772f1dbc51aaaf0
+  checksum: 10/27457d671278c8c1074cc901fe305b70d1e340127433219124c4aefc44153a179a8921e4b16d67beb2868a3a39b6b7ec84d91d8f24f2ec1d39cf4ac385351a92
   languageName: node
   linkType: hard
 

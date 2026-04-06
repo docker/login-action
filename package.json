@@ -26,8 +26,8 @@
     "@aws-sdk/client-ecr": "^3.1020.0",
     "@aws-sdk/client-ecr-public": "^3.1020.0",
     "@docker/actions-toolkit": "^0.86.0",
-    "http-proxy-agent": "^8.0.0",
-    "https-proxy-agent": "^8.0.0",
+    "http-proxy-agent": "^9.0.0",
+    "https-proxy-agent": "^9.0.0",
     "js-yaml": "^4.1.1"
   },
   "devDependencies": {
