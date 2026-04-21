@@ -19,6 +19,12 @@ inputs:
   ecr:
     description: 'Specifies whether the given registry is ECR (auto, true or false)'
     required: false
+  chainguard:
+    description: 'Specifies whether the given registry is Chainguard (auto, true or false)'
+    required: false
+  chainguard-identity:
+    description: 'Chainguard identity to assume for OIDC-based authentication'
+    required: false
   scope:
     description: 'Scope for the authentication token'
     required: false

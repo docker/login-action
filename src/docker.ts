@@ -3,11 +3,14 @@ import * as core from '@actions/core';
 import {Docker} from '@docker/actions-toolkit/lib/docker/docker.js';
 
 import * as aws from './aws.js';
+import * as chainguard from './chainguard.js';
 import * as context from './context.js';
 
 export async function login(auth: context.Auth): Promise<void> {
   if (/true/i.test(auth.ecr) || (auth.ecr == 'auto' && aws.isECR(auth.registry))) {
     await loginECR(auth.registry, auth.username, auth.password, auth.scope);
+  } else if (/true/i.test(auth.chainguard) || (auth.chainguard == 'auto' && chainguard.isChainguard(auth.registry))) {
+    await loginChainguard(auth.registry, auth.chainguardIdentity, auth.scope);
   } else {
     await loginStandard(auth.registry, auth.username, auth.password, auth.scope);
   }
@@ -52,6 +55,15 @@ export async function loginECR(registry: string, username: string, password: str
   for (const regData of regDatas) {
     await loginExec(regData.registry, regData.username, regData.password, scope);
   }
+}
+
+export async function loginChainguard(registry: string, identity: string, scope?: string): Promise<void> {
+  if (!identity) {
+    throw new Error('Chainguard identity is required for Chainguard registry login. Set the chainguard-identity input.');
+  }
+  core.info(`Retrieving Chainguard registry token via OIDC exchange...`);
+  const creds = await chainguard.getRegistryToken(identity);
+  await loginExec(registry, creds.username, creds.password, scope);
 }
 
 async function loginExec(registry: string, username: string, password: string, scope?: string): Promise<void> {

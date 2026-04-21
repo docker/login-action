@@ -24,6 +24,7 @@ ___
   * [OCI Oracle Cloud Infrastructure Registry (OCIR)](#oci-oracle-cloud-infrastructure-registry-ocir)
   * [Quay.io](#quayio)
   * [DigitalOcean](#digitalocean-container-registry)
+  * [Chainguard](#chainguard-registry)
   * [Authenticate to multiple registries](#authenticate-to-multiple-registries)
   * [Set scopes for the authentication token](#set-scopes-for-the-authentication-token)
 * [Customizing](#customizing)
@@ -496,6 +497,72 @@ jobs:
           password: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 ```
 
+### Chainguard Registry
+
+To authenticate to the [Chainguard Registry](https://edu.chainguard.dev/chainguard/chainguard-registry/authenticating/)
+(`cgr.dev`) using OIDC federation with GitHub Actions, first create a Chainguard
+identity scoped to your repository:
+
+```shell
+chainctl iam identity create github <identity-name> \
+  --github-repo=<org>/<repo> \
+  --github-ref=refs/heads/main \
+  --role=registry.pull
+```
+
+Then use the identity ID in your workflow. The action will automatically exchange
+a GitHub Actions OIDC token for a Chainguard registry token:
+
+```yaml
+name: ci
+
+on:
+  push:
+    branches: main
+
+permissions:
+  contents: read
+  id-token: write  # Required for OIDC federation
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Login to Chainguard Registry
+        uses: docker/login-action@v4
+        with:
+          registry: cgr.dev
+          chainguard-identity: ${{ secrets.CHAINGUARD_IDENTITY }}
+```
+
+> The `id-token: write` permission is required for the GitHub Actions runner to
+> request an OIDC token for Chainguard's token exchange.
+
+You can also authenticate using a [pull token](https://edu.chainguard.dev/chainguard/chainguard-registry/authenticating/#authenticating-with-a-pull-token)
+with standard username/password login:
+
+```yaml
+name: ci
+
+on:
+  push:
+    branches: main
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Login to Chainguard Registry
+        uses: docker/login-action@v4
+        with:
+          registry: cgr.dev
+          username: ${{ vars.CHAINGUARD_USERNAME }}
+          password: ${{ secrets.CHAINGUARD_PULL_TOKEN }}
+          chainguard: false
+```
+
 ### Authenticate to multiple registries
 
 To authenticate against multiple registries, you can specify the login-action
@@ -618,15 +685,17 @@ credentials, while authenticated access is used only to push `myorg/myimage`.
 
 The following inputs can be used as `step.with` keys:
 
-| Name            | Type   | Default     | Description                                                                   |
-|-----------------|--------|-------------|-------------------------------------------------------------------------------|
-| `registry`      | String | `docker.io` | Server address of Docker registry. If not set then will default to Docker Hub |
-| `username`      | String |             | Username for authenticating to the Docker registry                            |
-| `password`      | String |             | Password or personal access token for authenticating the Docker registry      |
-| `scope`         | String |             | Scope for the authentication token                                            |
-| `ecr`           | String | `auto`      | Specifies whether the given registry is ECR (`auto`, `true` or `false`)       |
-| `logout`        | Bool   | `true`      | Log out from the Docker registry at the end of a job                          |
-| `registry-auth` | YAML   |             | Raw authentication to registries, defined as YAML objects                     |
+| Name                   | Type   | Default     | Description                                                                   |
+|------------------------|--------|-------------|-------------------------------------------------------------------------------|
+| `registry`             | String | `docker.io` | Server address of Docker registry. If not set then will default to Docker Hub |
+| `username`             | String |             | Username for authenticating to the Docker registry                            |
+| `password`             | String |             | Password or personal access token for authenticating the Docker registry      |
+| `scope`                | String |             | Scope for the authentication token                                            |
+| `ecr`                  | String | `auto`      | Specifies whether the given registry is ECR (`auto`, `true` or `false`)       |
+| `chainguard`           | String | `auto`      | Specifies whether the given registry is Chainguard (`auto`, `true` or `false`)|
+| `chainguard-identity`  | String |             | Chainguard identity to assume for OIDC-based authentication                   |
+| `logout`               | Bool   | `true`      | Log out from the Docker registry at the end of a job                          |
+| `registry-auth`        | YAML   |             | Raw authentication to registries, defined as YAML objects                     |
 
 > [!NOTE]
 > The `registry-auth` input cannot be used with other inputs except `logout`.
