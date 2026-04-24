@@ -181,9 +181,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-ecr-public@npm:^3.1020.0":
-  version: 3.1022.0
-  resolution: "@aws-sdk/client-ecr-public@npm:3.1022.0"
+"@aws-sdk/client-ecr-public@npm:^3.1024.0":
+  version: 3.1024.0
+  resolution: "@aws-sdk/client-ecr-public@npm:3.1024.0"
   dependencies:
     "@aws-crypto/sha256-browser": "npm:5.2.0"
     "@aws-crypto/sha256-js": "npm:5.2.0"
@@ -224,13 +224,13 @@ __metadata:
     "@smithy/util-retry": "npm:^4.2.13"
     "@smithy/util-utf8": "npm:^4.2.2"
     tslib: "npm:^2.6.2"
-  checksum: 10/c91a98928130052f521b59aedd2469b11b2f03a8394dceb23e48b84c201e64474efd1d13fcceaea0f507ea3b72c11615ae58c4fcb1343cc485786a4cb9a8bc1f
+  checksum: 10/57ee978ac000e9ea86a763138f80f66d9c91ab260d3b3e3c4bfd93e0080f69e6cf928f62c1fb59ae777d550df69227f98ed0e224e1426f55c92cf296864a8534
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-ecr@npm:^3.1020.0":
-  version: 3.1022.0
-  resolution: "@aws-sdk/client-ecr@npm:3.1022.0"
+"@aws-sdk/client-ecr@npm:^3.1024.0":
+  version: 3.1024.0
+  resolution: "@aws-sdk/client-ecr@npm:3.1024.0"
   dependencies:
     "@aws-crypto/sha256-browser": "npm:5.2.0"
     "@aws-crypto/sha256-js": "npm:5.2.0"
@@ -272,7 +272,7 @@ __metadata:
     "@smithy/util-utf8": "npm:^4.2.2"
     "@smithy/util-waiter": "npm:^4.2.14"
     tslib: "npm:^2.6.2"
-  checksum: 10/ba985c4d19589eaab17416518c96686e8ef204bb526f606064a23b44c9b27f5c9b71d8f9926ac8785f5afe10e157f66689156d825d88d177c509cfd3224f3063
+  checksum: 10/afd06042e0c629140ac2b232fc77290e99d15f67de02e6fe82d9991a8a507bf4541efbf55d55bc3b1a01e2ca49e5624d7e8c28ed0fdd9f4ef3d19d514baff14a
   languageName: node
   linkType: hard
 
@@ -3155,8 +3155,8 @@ __metadata:
   resolution: "docker-login@workspace:."
   dependencies:
     "@actions/core": "npm:^3.0.0"
-    "@aws-sdk/client-ecr": "npm:^3.1020.0"
-    "@aws-sdk/client-ecr-public": "npm:^3.1020.0"
+    "@aws-sdk/client-ecr": "npm:^3.1024.0"
+    "@aws-sdk/client-ecr-public": "npm:^3.1024.0"
     "@docker/actions-toolkit": "npm:^0.86.0"
     "@eslint/js": "npm:^9.39.3"
     "@types/js-yaml": "npm:^4.0.9"
