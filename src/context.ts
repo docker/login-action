@@ -11,6 +11,8 @@ export interface Inputs {
   password: string;
   scope: string;
   ecr: string;
+  chainguard: string;
+  chainguardIdentity: string;
   logout: boolean;
   registryAuth: string;
 }
@@ -21,6 +23,8 @@ export interface Auth {
   password: string;
   scope: string;
   ecr: string;
+  chainguard: string;
+  chainguardIdentity: string;
   configDir: string;
 }
 
@@ -31,13 +35,15 @@ export function getInputs(): Inputs {
     password: core.getInput('password'),
     scope: core.getInput('scope'),
     ecr: core.getInput('ecr'),
+    chainguard: core.getInput('chainguard'),
+    chainguardIdentity: core.getInput('chainguard-identity'),
     logout: core.getBooleanInput('logout'),
     registryAuth: core.getInput('registry-auth')
   };
 }
 
 export function getAuthList(inputs: Inputs): Array<Auth> {
-  if (inputs.registryAuth && (inputs.registry || inputs.username || inputs.password || inputs.scope || inputs.ecr)) {
+  if (inputs.registryAuth && (inputs.registry || inputs.username || inputs.password || inputs.scope || inputs.ecr || inputs.chainguard || inputs.chainguardIdentity)) {
     throw new Error('Cannot use registry-auth with other inputs');
   }
   let auths: Array<Auth> = [];
@@ -49,11 +55,15 @@ export function getAuthList(inputs: Inputs): Array<Auth> {
       password: inputs.password,
       scope: inputs.scope,
       ecr: inputs.ecr || 'auto',
+      chainguard: inputs.chainguard || 'auto',
+      chainguardIdentity: inputs.chainguardIdentity,
       configDir: scopeToConfigDir(registry, inputs.scope)
     });
   } else {
     auths = (yaml.load(inputs.registryAuth) as Array<Auth>).map(auth => {
-      core.setSecret(auth.password); // redacted in workflow logs
+      if (auth.password) {
+        core.setSecret(auth.password);
+      }
       const registry = auth.registry || 'docker.io';
       return {
         registry,
@@ -61,6 +71,8 @@ export function getAuthList(inputs: Inputs): Array<Auth> {
         password: auth.password,
         scope: auth.scope,
         ecr: auth.ecr || 'auto',
+        chainguard: auth.chainguard || 'auto',
+        chainguardIdentity: auth.chainguardIdentity,
         configDir: scopeToConfigDir(registry, auth.scope)
       };
     });
