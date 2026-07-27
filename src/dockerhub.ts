@@ -108,24 +108,19 @@ const handleResponse = async (resp: httpm.HttpClientResponse): Promise<string> =
 };
 
 const parseError = (statusCode: number, body: string): Error => {
+  if (body) {
+    let errResp: unknown;
+    try {
+      errResp = JSON.parse(body);
+    } catch {
+      errResp = undefined;
+    }
+    if (errResp !== undefined) {
+      throw new Error(`Docker Hub API: bad status code ${statusCode}: ${JSON.stringify(errResp)}`);
+    }
+  }
   if (statusCode === 401) {
     throw new Error(`Docker Hub API: operation not permitted`);
   }
-  if (body) {
-    const errResp = parseErrorBody(body);
-    for (const k of ['description', 'message', 'detail', 'error']) {
-      if (errResp[k]) {
-        throw new Error(`Docker Hub API: bad status code ${statusCode}: ${errResp[k]}`);
-      }
-    }
-  }
   throw new Error(`Docker Hub API: bad status code ${statusCode}`);
-};
-
-const parseErrorBody = (body: string): Record<string, string> => {
-  try {
-    return <Record<string, string>>JSON.parse(body);
-  } catch {
-    return {};
-  }
 };

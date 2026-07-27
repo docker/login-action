@@ -126,8 +126,14 @@ describe('getOIDCToken', () => {
     expect(core.info).toHaveBeenCalledWith('Docker Hub OIDC token request rate limited, retrying in 0ms (attempt 1/5)');
   });
 
-  test('throws Docker Hub API errors', async () => {
-    postSpy.mockResolvedValue(httpResponse(400, JSON.stringify({description: 'bad connection'})));
-    await expect(dockerhub.getOIDCToken('docker.io', 'dbowie')).rejects.toThrow('Docker Hub API: bad status code 400: bad connection');
+  test('throws Docker Hub OIDC error responses', async () => {
+    postSpy.mockResolvedValue(httpResponse(400, JSON.stringify({error: 'invalid_request', error_description: 'bad connection', error_uri: 'https://docs.docker.com'})));
+    await expect(dockerhub.getOIDCToken('docker.io', 'dbowie')).rejects.toThrow('Docker Hub API: bad status code 400: {"error":"invalid_request","error_description":"bad connection","error_uri":"https://docs.docker.com"}');
+  });
+
+  test('throws rate limited Docker Hub OIDC error response after retries', async () => {
+    postSpy.mockResolvedValue(httpResponse(429, JSON.stringify({error: 'rate_limited', error_description: 'slow down'}), {'retry-after': '0'}));
+    await expect(dockerhub.getOIDCToken('docker.io', 'dbowie')).rejects.toThrow('Docker Hub API: bad status code 429: {"error":"rate_limited","error_description":"slow down"}');
+    expect(postSpy).toHaveBeenCalledTimes(6);
   });
 });
