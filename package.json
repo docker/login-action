@@ -30,7 +30,7 @@
     "@docker/actions-toolkit": "^0.94.0",
     "http-proxy-agent": "^9.1.0",
     "https-proxy-agent": "^9.1.0",
-    "js-yaml": "^5.2.1",
+    "js-yaml": "^5.2.2",
     "uuid": "^14.0.1"
   },
   "devDependencies": {
