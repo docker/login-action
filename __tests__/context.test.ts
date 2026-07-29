@@ -35,6 +35,87 @@ test('getAuthList uses the default Docker Hub registry when computing scoped con
   });
 });
 
+test('getAuthList supports @ scopes appended to the registry config dir', async () => {
+  process.env['INPUT_USERNAME'] = 'dbowie';
+  process.env['INPUT_PASSWORD'] = 'groundcontrol';
+  process.env['INPUT_SCOPE'] = '@push';
+  process.env['INPUT_LOGOUT'] = 'false';
+  const [auth] = getAuthList(getInputs());
+  expect(auth).toMatchObject({
+    configDir: path.join(Buildx.configDir, 'config', 'registry-1.docker.io') + '@push'
+  });
+});
+
+test('getAuthList supports repository scopes with appended actions', async () => {
+  process.env['INPUT_USERNAME'] = 'dbowie';
+  process.env['INPUT_PASSWORD'] = 'groundcontrol';
+  process.env['INPUT_SCOPE'] = 'docker/buildx-bin@push';
+  process.env['INPUT_LOGOUT'] = 'false';
+  const [auth] = getAuthList(getInputs());
+  expect(auth).toMatchObject({
+    configDir: path.join(Buildx.configDir, 'config', 'registry-1.docker.io', 'docker', 'buildx-bin@push')
+  });
+});
+
+test('getAuthList supports comma-separated scope actions', async () => {
+  process.env['INPUT_USERNAME'] = 'dbowie';
+  process.env['INPUT_PASSWORD'] = 'groundcontrol';
+  process.env['INPUT_SCOPE'] = 'docker/buildx-bin@pull,push';
+  process.env['INPUT_LOGOUT'] = 'false';
+  const [auth] = getAuthList(getInputs());
+  expect(auth).toMatchObject({
+    configDir: path.join(Buildx.configDir, 'config', 'registry-1.docker.io', 'docker', 'buildx-bin@pull,push')
+  });
+});
+
+// prettier-ignore
+test.each([
+  '../../../../work/leaked',
+  '..',
+  'foo/../../../../etc',
+  '@../../../leaked',
+  'foo/bar@../../../leaked',
+  '@push@pull',
+  'foo/bar@push@pull',
+  '@push,',
+  '@,push',
+  '@pull,,push',
+  '@Push',
+  path.join(path.parse(Buildx.configDir).root, 'work', 'leaked')
+])('getAuthList rejects unsafe or unsupported scope path: %s', async scope => {
+  expect(() => {
+    getAuthList({
+      registry: '',
+      username: 'dbowie',
+      password: 'groundcontrol',
+      scope,
+      ecr: '',
+      logout: false,
+      registryAuth: ''
+    });
+  }).toThrow(/Invalid scope/);
+});
+
+// prettier-ignore
+test.each([
+  '../../../../work/leaked',
+  '..',
+  'foo/../../../../etc',
+  path.join(path.parse(Buildx.configDir).root, 'work', 'leaked')
+])('getAuthList rejects unsafe registry path: %s', async registry => {
+  expect(() => {
+    getAuthList({
+      registry,
+      username: 'dbowie',
+      password: 'groundcontrol',
+      scope: '@push',
+      ecr: '',
+      logout: false,
+      registryAuth: ''
+    });
+  }).toThrow(/Invalid registry/);
+});
+
 test('getAuthList skips secret masking when registry-auth password is absent', async () => {
   const stdoutWriteSpy = vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
   const [auth] = getAuthList({

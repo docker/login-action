@@ -77,13 +77,33 @@ export function scopeToConfigDir(registry: string, scope?: string): string {
   if (scopeDisabled() || !scope || scope === '') {
     return '';
   }
-  let configDir = path.join(Buildx.configDir, 'config', registry === 'docker.io' ? 'registry-1.docker.io' : registry);
-  if (scope.startsWith('@')) {
-    configDir += scope;
-  } else {
-    configDir = path.join(configDir, scope);
+  const configRoot = path.resolve(Buildx.configDir, 'config');
+  const registryDir = path.resolve(configRoot, registry === 'docker.io' ? 'registry-1.docker.io' : registry);
+  if (!isChildPath(configRoot, registryDir)) {
+    throw new Error(`Invalid registry '${registry}': resolved config path escapes the Buildx config directory`);
   }
-  return configDir;
+  const scopeParts = scope.split('@');
+  if (scopeParts.length > 2) {
+    throw new Error(`Invalid scope '${scope}': scope can contain at most one @ separator`);
+  }
+  const [scopePath, scopeActions] = scopeParts;
+  if (scopeActions !== undefined && !/^[a-z]+(,[a-z]+)*$/.test(scopeActions)) {
+    throw new Error(`Invalid scope '${scope}': scope actions must be lowercase names separated by commas`);
+  }
+  const scopeSuffix = scopeActions === undefined ? '' : `@${scopeActions}`;
+  if (scopePath === '') {
+    return `${registryDir}${scopeSuffix}`;
+  }
+  const configDir = path.resolve(registryDir, scopePath);
+  if (!isChildPath(registryDir, configDir)) {
+    throw new Error(`Invalid scope '${scope}': resolved config path escapes the Buildx config directory`);
+  }
+  return `${configDir}${scopeSuffix}`;
+}
+
+function isChildPath(parent: string, child: string): boolean {
+  const relativePath = path.relative(parent, child);
+  return relativePath !== '' && relativePath !== '..' && !relativePath.startsWith(`..${path.sep}`) && !path.isAbsolute(relativePath);
 }
 
 function scopeDisabled(): boolean {
