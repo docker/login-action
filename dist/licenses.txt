@@ -2399,7 +2399,7 @@ SOFTWARE.
 The following npm packages may be included in this product:
 
  - js-yaml@5.2.1
- - js-yaml@5.2.2
+ - js-yaml@5.2.3
 
 These packages each contain the following license:
 
