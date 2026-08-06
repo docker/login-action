@@ -86,10 +86,10 @@ describe('getOIDCToken', () => {
   });
 
   test('uses custom token expiration', async () => {
-    process.env.DOCKERHUB_OIDC_EXPIREIN = '900';
+    process.env.DOCKERHUB_OIDC_EXPIREIN = '21600';
     await dockerhub.getOIDCToken('docker.io', 'dbowie');
     const body = new URLSearchParams(postSpy.mock.calls[0][1]);
-    expect(body.get('expires_in')).toBe('900');
+    expect(body.get('expires_in')).toBe('21600');
   });
 
   test('uses stage identity host for stage registry', async () => {
@@ -112,9 +112,9 @@ describe('getOIDCToken', () => {
     expect(postSpy).not.toHaveBeenCalled();
   });
 
-  test.each(['not-a-number', '299', '3601'])('validates token expiration %p', async expiresIn => {
+  test.each(['not-a-number', '299', '21601'])('validates token expiration %p', async expiresIn => {
     process.env.DOCKERHUB_OIDC_EXPIREIN = expiresIn;
-    await expect(dockerhub.getOIDCToken('docker.io', 'dbowie')).rejects.toThrow(`Invalid DOCKERHUB_OIDC_EXPIREIN: ${expiresIn}. Must be between 300 and 3600`);
+    await expect(dockerhub.getOIDCToken('docker.io', 'dbowie')).rejects.toThrow(`Invalid DOCKERHUB_OIDC_EXPIREIN: ${expiresIn}. Must be between 300 and 21600`);
     expect(getIDTokenMock).not.toHaveBeenCalled();
     expect(postSpy).not.toHaveBeenCalled();
   });
