@@ -35,6 +35,10 @@ export const getOIDCToken = async (registry: string, username: string): Promise<
   const expiresIn = getExpiresIn();
   const identityHost = registry === 'registry-1-stage.docker.io' ? 'identity-stage.docker.com' : 'identity.docker.com';
   const audience = `https://${identityHost}`;
+  core.info(`Docker Hub OIDC detected for ${registry || 'docker.io'}`);
+  core.debug(`Docker Hub OIDC token audience: ${audience}`);
+  core.debug(`Docker Hub OIDC token expiration: ${expiresIn}s`);
+  core.info(`Retrieving GitHub OIDC token for Docker Hub`);
   const idToken = await core.getIDToken(audience);
   const http: httpm.HttpClient = new httpm.HttpClient('github.com/docker/login-action', [], {
     headers: {
@@ -49,10 +53,12 @@ export const getOIDCToken = async (registry: string, username: string): Promise<
   data.set('connection_id', connectionID);
   data.set('expires_in', expiresIn.toString());
 
+  core.info(`Exchanging GitHub OIDC token for Docker Hub token`);
   const resp = await postWithRetry(http, `https://${identityHost}/oauth/token`, data.toString());
 
   const tokenResp = <OIDCTokenResponse>JSON.parse(await handleResponse(resp));
   core.setSecret(tokenResp.access_token);
+  core.info(`Docker Hub OIDC token exchange succeeded`);
 
   return {
     username,
@@ -70,16 +76,20 @@ const getExpiresIn = (): number => {
 };
 
 const postWithRetry = async (http: httpm.HttpClient, url: string, data: string): Promise<httpm.HttpClientResponse> => {
+  core.debug(`Sending Docker Hub OIDC token request to ${url}`);
   let resp = await http.post(url, data);
+  core.debug(`Docker Hub OIDC token request returned status code ${resp.message.statusCode || HttpCodes.InternalServerError}`);
   for (let attempt = 0; (resp.message.statusCode || HttpCodes.InternalServerError) === HttpCodes.TooManyRequests && attempt < maxRetries; attempt++) {
     const delay = parseRetryAfter(resp.message.headers['retry-after']);
     if (delay === null) {
+      core.debug(`Docker Hub OIDC token request rate limited without retry-after header`);
       break;
     }
     await resp.readBody();
     core.info(`Docker Hub OIDC token request rate limited, retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries})`);
     await new Promise(resolve => setTimeout(resolve, delay));
     resp = await http.post(url, data);
+    core.debug(`Docker Hub OIDC token request returned status code ${resp.message.statusCode || HttpCodes.InternalServerError}`);
   }
   return resp;
 };
@@ -101,6 +111,7 @@ const parseRetryAfter = (value: string | string[] | undefined): number | null =>
 const handleResponse = async (resp: httpm.HttpClientResponse): Promise<string> => {
   const body = await resp.readBody();
   const statusCode = resp.message.statusCode || HttpCodes.InternalServerError;
+  core.debug(`Docker Hub OIDC token response status code: ${statusCode}`);
   if (statusCode < HttpCodes.OK || statusCode >= HttpCodes.MultipleChoices) {
     throw parseError(statusCode, body);
   }
