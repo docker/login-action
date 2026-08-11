@@ -13,7 +13,7 @@ interface OIDCTokenResponse {
 }
 
 const registries = new Set(['', 'docker.io', 'registry-1.docker.io', 'registry-1-stage.docker.io', 'dhi.io']);
-const defaultExpiresIn = 300;
+const defaultExpiresIn = 3600;
 const minExpiresIn = 300;
 const maxExpiresIn = 21600;
 const maxRetries = 5;
