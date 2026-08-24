@@ -1,0 +1,3 @@
+FROM docker:29.3@sha256:4d90f1f6c400315c2dba96d3ec93c01e64198395cbba04f79d12adce4f737029
+
+ENTRYPOINT ["docker"]

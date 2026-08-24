@@ -1,0 +1,15 @@
+name: Pull Docker image
+
+description: Pull an image from a Docker container action
+
+inputs:
+  image:
+    description: Image reference to pull
+    required: true
+
+runs:
+  using: docker
+  image: Dockerfile
+  args:
+    - pull
+    - ${{ inputs.image }}
