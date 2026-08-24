@@ -760,7 +760,7 @@ The following environment variables can be set as `step.env` keys:
 | Name                          | Type   | Default | Description                                                                                        |
 |-------------------------------|--------|---------|----------------------------------------------------------------------------------------------------|
 | `DOCKERHUB_OIDC_CONNECTIONID` | String |         | Docker Hub OIDC connection ID. Required for Docker Hub OIDC login                                  |
-| `DOCKERHUB_OIDC_EXPIREIN`     | Number | `300`   | Docker Hub OIDC token lifetime in seconds. Must be between `300` (5 minutes) and `21600` (6 hours) |
+| `DOCKERHUB_OIDC_EXPIREIN`     | Number | `3600`  | Docker Hub OIDC token lifetime in seconds. Must be between `300` (5 minutes) and `21600` (6 hours) |
 
 ## Contributing
 

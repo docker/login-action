@@ -82,14 +82,14 @@ describe('getOIDCToken', () => {
     expect(body.get('subject_token_type')).toBe('urn:ietf:params:oauth:token-type:id_token');
     expect(body.get('subject_token')).toBe('github-id-token');
     expect(body.get('connection_id')).toBe(validConnectionID);
-    expect(body.get('expires_in')).toBe('300');
+    expect(body.get('expires_in')).toBe('3600');
     expect(setSecretMock).toHaveBeenCalledWith('hub-token');
     expect(core.info).toHaveBeenCalledWith('Docker Hub OIDC detected for docker.io');
     expect(core.info).toHaveBeenCalledWith('Retrieving GitHub OIDC token for Docker Hub');
     expect(core.info).toHaveBeenCalledWith('Exchanging GitHub OIDC token for Docker Hub token');
     expect(core.info).toHaveBeenCalledWith('Docker Hub OIDC token exchange succeeded');
     expect(core.debug).toHaveBeenCalledWith('Docker Hub OIDC token audience: https://identity.docker.com');
-    expect(core.debug).toHaveBeenCalledWith('Docker Hub OIDC token expiration: 300s');
+    expect(core.debug).toHaveBeenCalledWith('Docker Hub OIDC token expiration: 3600s');
     expect(core.debug).toHaveBeenCalledWith('Sending Docker Hub OIDC token request to https://identity.docker.com/oauth/token');
     expect(core.debug).toHaveBeenCalledWith('Docker Hub OIDC token request returned status code 200');
     expect(core.debug).toHaveBeenCalledWith('Docker Hub OIDC token response status code: 200');
