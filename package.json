@@ -25,8 +25,8 @@
   "dependencies": {
     "@actions/core": "^3.0.1",
     "@actions/http-client": "^4.0.1",
-    "@aws-sdk/client-ecr": "^3.1095.0",
-    "@aws-sdk/client-ecr-public": "^3.1095.0",
+    "@aws-sdk/client-ecr": "^3.1116.0",
+    "@aws-sdk/client-ecr-public": "^3.1116.0",
     "@docker/actions-toolkit": "^0.94.0",
     "http-proxy-agent": "^9.1.0",
     "https-proxy-agent": "^9.1.0",
