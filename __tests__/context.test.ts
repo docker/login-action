@@ -3,7 +3,7 @@ import * as path from 'path';
 
 import {Buildx} from '@docker/actions-toolkit/lib/buildx/buildx.js';
 
-import {getAuthList, getInputs} from '../src/context.js';
+import {getAuthList, getInputs, scopeToConfigDir} from '../src/context.js';
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -167,4 +167,16 @@ test('getAuthList masks registry-auth password when present', async () => {
   });
 
   expect(stdoutWriteSpy.mock.calls.map(call => call[0]).join('')).toContain('::add-mask::groundcontrol');
+});
+
+// prettier-ignore
+test.each([
+  ['ghcr.io', 'ghcr.io'],
+  ['https://ghcr.io', 'ghcr.io'],
+  ['https://ghcr.io/', 'ghcr.io'],
+  ['http://localhost:5000', 'localhost:5000'],
+  ['https://012345678910.dkr.ecr.eu-west-3.amazonaws.com', '012345678910.dkr.ecr.eu-west-3.amazonaws.com'],
+  ['https://docker.io', 'registry-1.docker.io']
+])('scopeToConfigDir uses the registry host for %s', async (registry, host) => {
+  expect(scopeToConfigDir(registry, 'myorg/myimage@push')).toBe(path.join(Buildx.configDir, 'config', host, 'myorg', 'myimage') + '@push');
 });

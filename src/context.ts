@@ -77,8 +77,11 @@ export function scopeToConfigDir(registry: string, scope?: string): string {
   if (scopeDisabled() || !scope || scope === '') {
     return '';
   }
+  // Buildx looks up scoped credentials by registry host, so drop any URL
+  // scheme (e.g. the https:// in AWS ECR proxy endpoints) and trailing slash.
+  const registryHost = registry.replace(/^[a-z][a-z0-9+.-]*:\/\//i, '').replace(/\/+$/, '');
   const configRoot = path.resolve(Buildx.configDir, 'config');
-  const registryDir = path.resolve(configRoot, registry === 'docker.io' ? 'registry-1.docker.io' : registry);
+  const registryDir = path.resolve(configRoot, registryHost === 'docker.io' ? 'registry-1.docker.io' : registryHost);
   if (!isChildPath(configRoot, registryDir)) {
     throw new Error(`Invalid registry '${registry}': resolved config path escapes the Buildx config directory`);
   }

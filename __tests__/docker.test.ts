@@ -1,8 +1,12 @@
 import {afterEach, expect, test, vi} from 'vitest';
+import * as path from 'path';
 
+import {Buildx} from '@docker/actions-toolkit/lib/buildx/buildx.js';
 import {Docker} from '@docker/actions-toolkit/lib/docker/docker.js';
 
-import {login, loginStandard, logout} from '../src/docker.js';
+import * as aws from '../src/aws.js';
+import {getAuthList} from '../src/context.js';
+import {login, loginECR, loginStandard, logout} from '../src/docker.js';
 import * as dockerhub from '../src/dockerhub.js';
 
 afterEach(() => {
@@ -91,4 +95,32 @@ test('logout calls exec', async () => {
   expect(execSpy).toHaveBeenCalledWith(['logout', registry], {
     ignoreReturnCode: true
   });
+});
+
+test('loginECR writes scoped credentials to the config dir of the registry host', async () => {
+  const execSpy = vi.spyOn(Docker, 'getExecOutput').mockResolvedValue({
+    exitCode: 0,
+    stdout: '',
+    stderr: ''
+  });
+  // ECR returns the proxy endpoint as a URL, e.g. https://012345678910.dkr.ecr.eu-west-3.amazonaws.com
+  vi.spyOn(aws, 'getRegistriesData').mockResolvedValue([
+    {
+      registry: 'https://012345678910.dkr.ecr.eu-west-3.amazonaws.com',
+      username: 'AWS',
+      password: 'world'
+    }
+  ]);
+
+  const registry = '012345678910.dkr.ecr.eu-west-3.amazonaws.com';
+  const scope = 'myapp@push';
+  await loginECR(registry, 'CAFEBABE', 'DEADBEEF', scope);
+
+  const expectedConfigDir = path.join(Buildx.configDir, 'config', registry, 'myapp') + '@push';
+  expect(execSpy).toHaveBeenCalledTimes(1);
+  expect(execSpy.mock.calls[0][1]?.env?.DOCKER_CONFIG).toBe(expectedConfigDir);
+
+  // logout in the post step uses the config dir computed from the inputs
+  const [auth] = getAuthList({registry, username: 'CAFEBABE', password: 'DEADBEEF', scope, ecr: 'auto', logout: true, registryAuth: ''});
+  expect(auth.configDir).toBe(expectedConfigDir);
 });
