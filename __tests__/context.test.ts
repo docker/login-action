@@ -168,3 +168,23 @@ test('getAuthList masks registry-auth password when present', async () => {
 
   expect(stdoutWriteSpy.mock.calls.map(call => call[0]).join('')).toContain('::add-mask::groundcontrol');
 });
+
+// prettier-ignore
+test.each([
+  ['false', 'false'],
+  ['"false"', 'false'],
+  ['true', 'true'],
+  ['auto', 'auto'],
+  ['""', 'auto']
+])('getAuthList keeps registry-auth ecr: %s', async (ecr, expected) => {
+  const [auth] = getAuthList({
+    registry: '',
+    username: '',
+    password: '',
+    scope: '',
+    ecr: '',
+    logout: true,
+    registryAuth: `- registry: 012345678910.dkr.ecr.eu-west-3.amazonaws.com\n  username: AWS\n  password: token\n  ecr: ${ecr}\n`
+  });
+  expect(auth.ecr).toBe(expected);
+});
