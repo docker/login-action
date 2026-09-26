@@ -2,6 +2,8 @@ import {afterEach, expect, test, vi} from 'vitest';
 
 import {Docker} from '@docker/actions-toolkit/lib/docker/docker.js';
 
+import * as aws from '../src/aws.js';
+import {getAuthList} from '../src/context.js';
 import {login, loginStandard, logout} from '../src/docker.js';
 import * as dockerhub from '../src/dockerhub.js';
 
@@ -89,6 +91,33 @@ test('logout calls exec', async () => {
     callfunc[1].env = undefined;
   }
   expect(execSpy).toHaveBeenCalledWith(['logout', registry], {
+    ignoreReturnCode: true
+  });
+});
+
+test('login uses standard login for an ECR registry with registry-auth ecr: false', async () => {
+  const execSpy = vi.spyOn(Docker, 'getExecOutput').mockResolvedValue({
+    exitCode: 0,
+    stdout: '',
+    stderr: ''
+  });
+  const ecrSpy = vi.spyOn(aws, 'getRegistriesData').mockRejectedValue(new Error('AWS SDK called'));
+
+  const [auth] = getAuthList({
+    registry: '',
+    username: '',
+    password: '',
+    scope: '',
+    ecr: '',
+    logout: true,
+    registryAuth: '- registry: 012345678910.dkr.ecr.eu-west-3.amazonaws.com\n  username: AWS\n  password: token\n  ecr: false\n'
+  });
+  await login(auth);
+
+  expect(ecrSpy).not.toHaveBeenCalled();
+  expect(execSpy).toHaveBeenCalledWith(['login', '--password-stdin', '--username', 'AWS', '012345678910.dkr.ecr.eu-west-3.amazonaws.com'], {
+    input: Buffer.from('token'),
+    silent: true,
     ignoreReturnCode: true
   });
 });
