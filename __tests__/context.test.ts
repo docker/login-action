@@ -3,7 +3,7 @@ import * as path from 'path';
 
 import {Buildx} from '@docker/actions-toolkit/lib/buildx/buildx.js';
 
-import {getAuthList, getInputs} from '../src/context.js';
+import {getAuthList, getInputs, scopeToConfigDir} from '../src/context.js';
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -187,4 +187,24 @@ test.each([
     registryAuth: `- registry: 012345678910.dkr.ecr.eu-west-3.amazonaws.com\n  username: AWS\n  password: token\n  ecr: ${ecr}\n`
   });
   expect(auth.ecr).toBe(expected);
+});
+
+// prettier-ignore
+test.each([
+  ['ghcr.io', 'ghcr.io'],
+  ['ghcr.io/', 'ghcr.io'],
+  ['https://ghcr.io', 'ghcr.io'],
+  ['https://ghcr.io/', 'ghcr.io'],
+  ['https://ghcr.io/v2/', 'ghcr.io'],
+  ['http://localhost:5000', 'localhost:5000'],
+  ['http://localhost:80', 'localhost:80'],
+  ['https://ghcr.io:443', 'ghcr.io:443'],
+  ['https://012345678910.dkr.ecr.eu-west-3.amazonaws.com', '012345678910.dkr.ecr.eu-west-3.amazonaws.com'],
+  ['https://docker.io', 'registry-1.docker.io']
+])('scopeToConfigDir uses the registry host for %s', (registry, host) => {
+  expect(scopeToConfigDir(registry, 'myorg/myimage@push')).toBe(path.join(Buildx.configDir, 'config', host, 'myorg', 'myimage') + '@push');
+});
+
+test('scopeToConfigDir rejects a URL whose host escapes the config directory', () => {
+  expect(() => scopeToConfigDir('https://../', '@push')).toThrow(/Invalid registry/);
 });
