@@ -62,7 +62,7 @@ export function getAuthList(inputs: Inputs): Array<Auth> {
         username: auth.username,
         password: auth.password,
         scope: auth.scope,
-        ecr: auth.ecr || 'auto',
+        ecr: String(auth.ecr ?? '') || 'auto',
         configDir: scopeToConfigDir(registry, auth.scope)
       };
     });
