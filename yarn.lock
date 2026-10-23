@@ -3194,7 +3194,7 @@ __metadata:
     js-yaml: "npm:^5.5.0"
     prettier: "npm:^3.8.1"
     typescript: "npm:^5.9.3"
-    uuid: "npm:^14.0.1"
+    uuid: "npm:^14.0.3"
     vitest: "npm:^4.0.18"
   languageName: unknown
   linkType: soft
@@ -6330,12 +6330,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^14.0.1":
-  version: 14.0.1
-  resolution: "uuid@npm:14.0.1"
+"uuid@npm:^14.0.3":
+  version: 14.0.3
+  resolution: "uuid@npm:14.0.3"
   bin:
     uuid: dist-node/bin/uuid
-  checksum: 10/0f978fd5b0269d7acb615342aeb131f0b8d85eeb8ec34f2915d906baa3befcc14a079a430d0f8116aec6fd20c850cbfab65d1b3d1643fa81ed373c0cf9574f18
+  checksum: 10/a6ab4e6ef84ff77b574846215c425c915de035395710e09f083f3bc1d4744df63db78598da0d04619a0a60a15a9cce2bc7c1ef10bf302349e761838816d798a7
   languageName: node
   linkType: hard
 

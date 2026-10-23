@@ -5649,7 +5649,7 @@ SOFTWARE.
 
 The following npm package may be included in this product:
 
- - uuid@14.0.1
+ - uuid@14.0.3
 
 This package contains the following license:
 
