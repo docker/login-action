@@ -1,8 +1,12 @@
 import {afterEach, expect, test, vi} from 'vitest';
+import * as path from 'path';
 
+import {Buildx} from '@docker/actions-toolkit/lib/buildx/buildx.js';
 import {Docker} from '@docker/actions-toolkit/lib/docker/docker.js';
 
-import {login, loginStandard, logout} from '../src/docker.js';
+import * as aws from '../src/aws.js';
+import {getAuthList} from '../src/context.js';
+import {login, loginECR, loginStandard, logout} from '../src/docker.js';
 import * as dockerhub from '../src/dockerhub.js';
 
 afterEach(() => {
@@ -91,4 +95,30 @@ test('logout calls exec', async () => {
   expect(execSpy).toHaveBeenCalledWith(['logout', registry], {
     ignoreReturnCode: true
   });
+});
+
+test('loginECR and logout use the config dir of the registry host', async () => {
+  const execSpy = vi.spyOn(Docker, 'getExecOutput').mockResolvedValue({
+    exitCode: 0,
+    stdout: '',
+    stderr: ''
+  });
+  const registry = '012345678910.dkr.ecr.eu-west-3.amazonaws.com';
+  vi.spyOn(aws, 'getRegistriesData').mockResolvedValue([
+    {
+      registry: `https://${registry}`,
+      username: 'AWS',
+      password: 'world'
+    }
+  ]);
+
+  const scope = 'myapp@push';
+  const [auth] = getAuthList({registry, username: 'CAFEBABE', password: 'DEADBEEF', scope, ecr: 'auto', logout: true, registryAuth: ''});
+  await loginECR(auth.registry, auth.username, auth.password, auth.scope);
+  await logout(auth.registry, auth.configDir);
+
+  const expectedConfigDir = path.join(Buildx.configDir, 'config', registry, 'myapp@push');
+  expect(execSpy).toHaveBeenCalledTimes(2);
+  expect(execSpy.mock.calls[0][1]?.env?.DOCKER_CONFIG).toBe(expectedConfigDir);
+  expect(execSpy.mock.calls[1][1]?.env?.DOCKER_CONFIG).toBe(expectedConfigDir);
 });
