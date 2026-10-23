@@ -3121,9 +3121,9 @@ __metadata:
   linkType: hard
 
 "csv-parse@npm:^7.0.1":
-  version: 7.0.1
-  resolution: "csv-parse@npm:7.0.1"
-  checksum: 10/5c914f01181dbb381068b98e17b49361d853faa95db3e8e82bc96b6a0de5313ecc8325a77db35ff66644d7747099965ba3167ec21bd9ce4500edf21b5bdd49bf
+  version: 7.0.3
+  resolution: "csv-parse@npm:7.0.3"
+  checksum: 10/98d80273b47603cbf754f4b75e7ea769ea63eb83fa18e4c92061e64b3575694eb98151100ddbb907670e7210ef7eac594ef850ecd3f23119062eeb8d9a2e2684
   languageName: node
   linkType: hard
 
