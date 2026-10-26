@@ -1909,8 +1909,8 @@ Apache License
 
 The following npm packages may be included in this product:
 
- - @aws-sdk/client-ecr-public@3.1154.0
- - @aws-sdk/client-ecr@3.1154.0
+ - @aws-sdk/client-ecr-public@3.1156.0
+ - @aws-sdk/client-ecr@3.1156.0
 
 These packages each contain the following license:
 
@@ -2120,8 +2120,9 @@ Apache License
 
 The following npm packages may be included in this product:
 
- - @aws-sdk/signature-v4-multi-region@3.996.48
+ - @aws-sdk/signature-v4-multi-region@3.996.49
  - @smithy/core@3.36.1
+ - @smithy/core@3.36.2
  - @smithy/types@4.19.0
 
 These packages each contain the following license:
@@ -2940,7 +2941,7 @@ software or this license, under any kind of legal claim.***
 
 The following npm package may be included in this product:
 
- - @aws-sdk/core@3.978.4
+ - @aws-sdk/core@3.978.5
 
 This package contains the following license:
 
@@ -3150,11 +3151,11 @@ Apache License
 
 The following npm packages may be included in this product:
 
- - @aws-sdk/credential-provider-env@3.972.75
- - @aws-sdk/credential-provider-ini@3.973.20
- - @aws-sdk/credential-provider-node@3.972.87
- - @aws-sdk/token-providers@3.1153.0
- - @aws-sdk/types@3.974.6
+ - @aws-sdk/credential-provider-env@3.972.76
+ - @aws-sdk/credential-provider-ini@3.973.21
+ - @aws-sdk/credential-provider-node@3.972.88
+ - @aws-sdk/token-providers@3.1155.0
+ - @aws-sdk/types@3.975.0
  - @aws-sdk/xml-builder@3.972.41
  - @smithy/credential-provider-imds@4.5.2
  - @smithy/fetch-http-handler@5.8.0
@@ -3369,9 +3370,9 @@ Apache License
 
 The following npm packages may be included in this product:
 
- - @aws-sdk/credential-provider-process@3.972.75
- - @aws-sdk/credential-provider-sso@3.973.19
- - @aws-sdk/credential-provider-web-identity@3.972.81
+ - @aws-sdk/credential-provider-process@3.972.76
+ - @aws-sdk/credential-provider-sso@3.973.20
+ - @aws-sdk/credential-provider-web-identity@3.972.82
 
 These packages each contain the following license:
 
@@ -3581,9 +3582,9 @@ Apache License
 
 The following npm packages may be included in this product:
 
- - @aws-sdk/credential-provider-http@3.972.77
- - @aws-sdk/credential-provider-login@3.972.82
- - @aws-sdk/nested-clients@3.997.49
+ - @aws-sdk/credential-provider-http@3.972.78
+ - @aws-sdk/credential-provider-login@3.972.83
+ - @aws-sdk/nested-clients@3.997.50
  - @sigstore/verify@4.1.2
 
 These packages each contain the following license:
